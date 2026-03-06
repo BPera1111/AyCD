@@ -52,14 +52,16 @@ Jtm_tb = 7.0;               % Inercia equivalente eje rápido [kg.m^2] [cite: 30
 btm = 6.0;                  % Fricción viscosa eje rápido [N.m/(rad/s)] [cite: 309]
 btb = 5.0e6;                % Fricción viscosa freno operación cerrado [N.m/(rad/s)] [cite: 310]
 Ttb_Max = 5.0e3;            % Torque máximo freno operación [N.m] [cite: 311]
-tau_tm = 0.001;             % Constante de tiempo modulador torque [s] [cite: 314]
+%tau_tm = 0.001;             % Constante de tiempo modulador torque [s] [cite: 314]
+tau_tm = 1;
 Ttm_Max = 4.0e3;            % Torque máximo motor carro [N.m] [cite: 314]
 
 %% 5. Parámetros de Contacto (Interacción con el Ambiente)
-Kcy = 1.8e9;                % Rigidez compresión vertical [N/m] [cite: 296]
-bcy = 10.0e6;               % Amortiguamiento compresión vertical [N/(m/s)] [cite: 299]
+%Kcy = 1.8e9;                % Rigidez compresión vertical [N/m] [cite: 296]
+%bcy = 10.0e6;               % Amortiguamiento compresión vertical [N/(m/s)] [cite: 299]
 bcx = 1.0e6;                % Fricción de arrastre horizontal [N/(m/s)] [cite: 299]
-
+Kcy = 2e6;      % N/m  - misma frecuencia natural pero tratable
+bcy = 2*sqrt(Kcy * 40000) * 0.7;  % amortiguamiento critico 70%
 %% Asignacion aleatoria de la masa del carro (Entorno)
 %Mc_Xvect=
 Mc_X=25000;
@@ -177,5 +179,41 @@ end
 
 y0(idx_borde) = 0;
 
+ml_total = Ms + Mc_X;          % 40000 kg
+f_contact = (1/(2*pi)) * sqrt(Kcy / ml_total);
+dt_required = 1 / (20 * f_contact);
+
+fprintf('Frecuencia natural contacto: %.1f Hz\n', f_contact);
+fprintf('Paso máximo requerido:       %.2e s\n', dt_required);
+fprintf('Min step actual (1e-10):     %s\n', string(dt_required > 1e-10));
+
 %% Fin
 fprintf('Parámetros de la planta cargados correctamente.\n');
+
+
+%% Condiciones iniciales consistentes
+% Spreader suspendido, detenido, centrado, a altura y_h_ini sobre el muelle
+
+y_h_ini  = 10.0;          % altura inicial del spreader [m] (sobre muelle)
+x_t_ini  = 0.0;           % posicion inicial del carro [m]
+x_l_ini  = 0.0;           % carga centrada bajo el carro
+lh_ini   = Yt0 - y_h_ini; % longitud cable tambor = 45 - 10 = 35 m
+l_ini    = lh_ini;         % cable sin elongacion inicial (equilibrio)
+
+% Velocidades todas cero
+vt_ini   = 0;
+vlx_ini  = 0;
+vly_ini  = 0;
+whd_ini  = 0;
+whm_ini  = 0;
+wtd_ini  = 0;
+wtm_ini  = 0;
+
+% Verificacion
+Fhw_ini  = Ms * g / 2;    % tension estatica cable (TLK=Off, spreader solo)
+fprintf('--- Condiciones iniciales ---\n');
+fprintf('y_h_ini  = %.1f m\n',  y_h_ini);
+fprintf('lh_ini   = %.1f m\n',  lh_ini);
+fprintf('l_ini    = %.1f m\n',  l_ini);
+fprintf('Fhw_ini  = %.1f N  (debe ser positivo y < ThEb_Max/rhd)\n', Fhw_ini);
+fprintf('Cable tenso: %s\n', string(l_ini >= lh_ini));
