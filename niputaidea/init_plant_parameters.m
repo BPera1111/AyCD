@@ -52,16 +52,16 @@ Jtm_tb = 7.0;               % Inercia equivalente eje rápido [kg.m^2] [cite: 30
 btm = 6.0;                  % Fricción viscosa eje rápido [N.m/(rad/s)] [cite: 309]
 btb = 5.0e6;                % Fricción viscosa freno operación cerrado [N.m/(rad/s)] [cite: 310]
 Ttb_Max = 5.0e3;            % Torque máximo freno operación [N.m] [cite: 311]
-%tau_tm = 0.001;             % Constante de tiempo modulador torque [s] [cite: 314]
-tau_tm = 1;
+tau_tm = 0.001;             % Constante de tiempo modulador torque [s] [cite: 314]
+%tau_tm = 1;
 Ttm_Max = 4.0e3;            % Torque máximo motor carro [N.m] [cite: 314]
 
 %% 5. Parámetros de Contacto (Interacción con el Ambiente)
-%Kcy = 1.8e9;                % Rigidez compresión vertical [N/m] [cite: 296]
-%bcy = 10.0e6;               % Amortiguamiento compresión vertical [N/(m/s)] [cite: 299]
+Kcy = 1.8e9;                % Rigidez compresión vertical [N/m] [cite: 296]
+bcy = 10.0e6;               % Amortiguamiento compresión vertical [N/(m/s)] [cite: 299]
 bcx = 1.0e6;                % Fricción de arrastre horizontal [N/(m/s)] [cite: 299]
-Kcy = 2e6;      % N/m  - misma frecuencia natural pero tratable
-bcy = 2*sqrt(Kcy * 40000) * 0.7;  % amortiguamiento critico 70%
+%Kcy = 2e6;      % N/m  - misma frecuencia natural pero tratable
+%bcy = 2*sqrt(Kcy * 40000) * 0.7;  % amortiguamiento critico 70%
 %% Asignacion aleatoria de la masa del carro (Entorno)
 %Mc_Xvect=
 Mc_X=25000;
