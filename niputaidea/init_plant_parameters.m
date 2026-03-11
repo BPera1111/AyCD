@@ -37,6 +37,8 @@ khwu = 236e6;               % Rigidez unitaria a tracción [N/m * m] [cite: 299]
 bhwu = 150;                 % Amortiguamiento unitario [(N/m/s)/m] [cite: 299]
 Lh0 = 110;                  % Longitud de despliegue fijo [m] [cite: 299]
 
+vh_nom=1.5;
+
 %% 4. Parámetros del Carro (Trolley)
 Mt = 30000;                 % Masa equivalente del carro [kg] [cite: 299]
 bt = 90.0;                  % Fricción viscosa del carro [N/(m/s)] [cite: 299]
@@ -208,12 +210,3 @@ whd_ini  = 0;
 whm_ini  = 0;
 wtd_ini  = 0;
 wtm_ini  = 0;
-
-% Verificacion
-Fhw_ini  = Ms * g / 2;    % tension estatica cable (TLK=Off, spreader solo)
-fprintf('--- Condiciones iniciales ---\n');
-fprintf('y_h_ini  = %.1f m\n',  y_h_ini);
-fprintf('lh_ini   = %.1f m\n',  lh_ini);
-fprintf('l_ini    = %.1f m\n',  l_ini);
-fprintf('Fhw_ini  = %.1f N  (debe ser positivo y < ThEb_Max/rhd)\n', Fhw_ini);
-fprintf('Cable tenso: %s\n', string(l_ini >= lh_ini));
