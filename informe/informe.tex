@@ -142,7 +142,25 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 \newpage
 \section{Modelado, Análisis y Simulación dinámica del sistema físico a lazo abierto}
 
-\subsection{Subsistema mecánico}
+\begin{align}
+l(t) &= +\sqrt{\left(x_l(t)-x_t(t)\right)^2 + \left(Y_{t0}-y_l(t)\right)^2}
+\quad (>0) \\
+\frac{dl(t)}{dt} &=
+\frac{\left(x_l(t)-x_t(t)\right)\left(v_{lx}(t)-v_t(t)\right) - \left(Y_{t0}-y_l(t)\right)v_{ly}(t)}{l(t)}
+\quad (\lesseqgtr 0) \\
+\theta_l(t) &= \operatorname{atan2}\!\left(\frac{x_l(t)-x_t(t)}{Y_{t0}-y_l(t)}\right)
+\quad (\lesseqgtr 0)
+\end{align}
+
+\begin{align}
+F_{cx}\!\left(t,\,\left(y_l(t)-h_c(TLK)\right)\le y_{c0}(x_l,t)\right)
+&= -b_{cx}\,v_{lx}(t) \\
+F_{cy}\!\left(t,\,\left(y_l(t)-h_c(TLK)\right)\le y_{c0}(x_l,t)\right)
+&= K_{cy}\!\left(y_{c0}(x_l,t)-\left(y_l(t)-h_c(TLK)\right)\right)-b_{cy}\,v_{ly}(t)
+\end{align}
+
+
+
 
 \[
 -\left(\frac{2J_{hd+hEb}+2J_{hm+hb}\cdot i_h^{\,2}}{r_{hd}}\right)\ddot{l}_h(t)
@@ -158,6 +176,47 @@ J_{eq}=\frac{J_{hd+hEb}}{i_h}+J_{hm+hb}\cdot{i}_h
 \[
 B_{eq}=\frac{b_{hd}}{i_h}+b_{hm}\cdot i_h
 \]
+
+
+
+\noindent \textbf{ON)} Cable \textbf{tensado} (tracción por gravedad sobre carga suspendida), sin pandeo $\Leftrightarrow l(t) \geq l_h(t) \rightarrow$
+
+\begin{equation}
+F_{hw}\!\left(t,\, l(t) \geq l_h(t)\right) = K_{hw}(l_h(t))\cdot 2\cdot\bigl(l(t) - l_h(t)\bigr) + b_{hw}(l_h(t))\cdot 2\cdot\left(\frac{dl(t)}{dt} - \frac{dl_h(t)}{dt}\right)
+\tag{Ec. 5}
+\end{equation}
+
+\begin{equation}
+K_{hw}(l_h(t)) \equiv \frac{k_{hwu}}{2\,l_h(t)+L_{ho}}; \qquad b_{hw}(l_h(t)) \equiv b_{hwu}\cdot\bigl(2\,l_h(t)+L_{ho}\bigr)
+\tag{Ec. 5.a/b}
+\end{equation}
+
+\noindent \textbf{OFF)} Cable ``flojo'' (carga apoyada), con flexión o pandeo $\Leftrightarrow l(t) < l_h(t) \rightarrow$
+
+\begin{equation}
+F_{hw}\!\left(t,\, l(t) < l_h(t)\right) = 0\ \text{N}
+\tag{Ec. 5'}
+\end{equation}
+
+\noindent\textbf{Movimiento de la Carga:}
+
+\[
+m_l(TLK)\cdot\frac{dv_{lx}(t)}{dt} = -2\cdot F_{hw}\!\left(t,\,l(t)\geq l_h(t)\right)\cdot\sin\theta_1(t) + F_{cx}\!\left(t,\,\bigl(y_1(t)-h_c(TLK)\bigr)\leq y_{c0}(x_1,t)\right)
+\]
+
+\begin{equation}
+\frac{dx_1(t)}{dt} \equiv v_{lx}(t)
+\tag{Ec. 4.a}
+\end{equation}
+
+\[
+m_l(TLK)\cdot\frac{dv_{ly}(t)}{dt} = 2\cdot F_{hw}\!\left(t,\,l(t)\geq l_h(t)\right)\cdot\cos\theta_1(t) + F_{cy}\!\left(t,\,\bigl(y_1(t)-h_c(TLK)\bigr)\leq y_{c0}(x_1,t)\right) - m_l(TLK)\cdot g
+\]
+
+\begin{equation}
+\frac{dy_1(t)}{dt} \equiv v_{ly}(t)
+\tag{Ec. 4.b}
+\end{equation}
 
 \end{document}
 
