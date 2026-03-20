@@ -189,6 +189,40 @@ fprintf('Frecuencia natural contacto: %.1f Hz\n', f_contact);
 fprintf('Paso máximo requerido:       %.2e s\n', dt_required);
 fprintf('Min step actual (1e-10):     %s\n', string(dt_required > 1e-10));
 
+%% CN2 - Controlador de movimiento - Izaje
+% J_eqh=(1/rhd)*(2*Jhd_hEb+2*Jhm_hb*(ih)^2);
+% b_eqh=(1/rhd)*(2*bhd+2*bhm*(ih)^2);
+% p1_h=0;
+% p2_h=-b_eqh/J_eqh;
+% w_pos_h=6*p2_h;
+% n_h=2;
+
+J_eq = Jhd_hEb/ih + Jhm_hb*ih;  
+B_eq = bhd/ih + bhm*ih;
+
+coef_h = [1; -B_eq/J_eq; 0];
+polos_h = roots(coef_h)
+
+w_pos = 10*polos_h(2)
+zeta = 0.8;
+
+% Definición simbólica
+syms Kd Kp Ki
+
+% Ecuaciones del sistema
+eq1 = (B_eq*Kd*ih)/J_eq == (2*zeta + 1)*w_pos;
+eq2 = (Kp*ih)/J_eq == (2*zeta + 1)*w_pos^2;
+eq3 = (Ki*ih)/J_eq == w_pos^3;
+
+% Resolver sistema
+sol = solve([eq1, eq2, eq3], [Kd, Kp, Ki]);
+
+% Convertir a valores numéricos
+Kd = double(sol.Kd)
+Kp = double(sol.Kp)
+Ki = double(sol.Ki)
+
+
 %% Fin
 fprintf('Parámetros de la planta cargados correctamente.\n');
 

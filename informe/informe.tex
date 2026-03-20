@@ -232,7 +232,7 @@ M_t \frac{dv_t(t)}{dt} = F_{tw}(t) - b_t \cdot v_t(t) + 2 \cdot F_{hw}(t, l(t) \
 \left(\frac{J_{td} + J_{tm+tb}\cdot{i}_t^2}{r_{td}}\right)\ddot{x}_{td} = -\left(\frac{b_{tm}\cdot{i}_t^2 + b_{td}}{r_{td}}\right)\dot{x}_{td} + i_t(T_{tm} + T_{tb}) - F_{tw}r_{td}
 \end{equation}
 
-
+\newpage
 
 \[
 J_{eq}=\frac{J_{hd+hEb}}{i_h}+J_{hm+hb}\cdot{i}_h
@@ -241,6 +241,20 @@ J_{eq}=\frac{J_{hd+hEb}}{i_h}+J_{hm+hb}\cdot{i}_h
 \[
 B_{eq}=\frac{b_{hd}}{i_h}+b_{hm}\cdot i_h
 \]
+
+\begin{align}
+\frac{B_{eq}*K_d*i_h}{J_{eq}} &= (2 \cdot \zeta + 1) \cdot \omega_{pos} \\
+\frac{K_{p}*i_h}{J_{eq}} &= (2 \cdot \zeta + 1) \cdot \omega_{pos}^2 \\
+\frac{K_{i}*i_h}{J_{eq}} &= \omega_{pos}^3
+\end{align}
+
+% \[
+% \dot{\omega}=(B_{eq}\omega+T_{hm})/J_{eq}
+% \]
+
+% \[
+% \dot{\theta}=\omega
+% \]
 
 \end{document}
 
