@@ -200,7 +200,7 @@ fprintf('Min step actual (1e-10):     %s\n', string(dt_required > 1e-10));
 J_eq = Jhd_hEb/ih + Jhm_hb*ih;  
 B_eq = bhd/ih + bhm*ih;
 
-coef_h = [1; -B_eq/J_eq; 0];
+coef_h = [1; (B_eq*Kd*ih)/J_eq; (Kp*ih)/J_eq; (Ki*ih)/J_eq];
 polos_h = roots(coef_h)
 
 w_pos = 10*polos_h(2)
