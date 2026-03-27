@@ -14,6 +14,8 @@
 \usepackage{enumitem}
 \usepackage{lastpage}% Para el número de la última página
 \usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \hypersetup{
     colorlinks=true,
     linkcolor=black,
@@ -255,6 +257,211 @@ B_{eq}=\frac{b_{hd}}{i_h}+b_{hm}\cdot i_h
 % \[
 % \dot{\theta}=\omega
 % \]
+
+\section{Identificación de Parámetros de la Planta e Implementación del Controlador PI}
+
+\subsection{Modelo de la Planta de Velocidad de Izaje}
+
+El accionamiento de izaje puede representarse, referido al eje rápido del motor,
+mediante la ecuación diferencial de primer orden:
+
+\begin{equation}
+    J_{eq}\,\dot{\omega}_{hm}(t) = i_h\,T_{hm}(t) - B_{eq}\,\omega_{hm}(t)
+    \label{eq:dinamica_motor}
+\end{equation}
+
+donde los parámetros equivalentes referidos al eje del motor son:
+
+\begin{align}
+    J_{eq} &= J_{hm+hb} + \frac{J_{hd+hEb}}{i_h^2}  \label{eq:Jeq}\\[4pt]
+    B_{eq} &= b_{hm}     + \frac{b_{hd}}{i_h^2}       \label{eq:Beq}
+\end{align}
+
+Tomando la Transformada de Laplace de \eqref{eq:dinamica_motor} con condiciones
+iniciales nulas, la función de transferencia de la planta resulta:
+
+\begin{equation}
+    G(s) = \frac{\omega_{hm}(s)}{T_{hm}(s)}
+         = \frac{i_h}{J_{eq}\,s + B_{eq}}
+    \label{eq:FT_planta}
+\end{equation}
+
+Expresada en forma estándar de primer orden:
+
+\begin{equation}
+    G(s) = \frac{K}{\tau\,s + 1},
+    \qquad
+    K = \frac{i_h}{B_{eq}},
+    \qquad
+    \tau = \frac{J_{eq}}{B_{eq}}
+    \label{eq:FT_estandar}
+\end{equation}
+
+donde $K$ es la ganancia estática de la planta y $\tau$ su constante de tiempo.
+
+% ----------------------------------------------------------------
+\subsection{Identificación Experimental por Respuesta al Escalón}
+
+Dado que los parámetros nominales calculados con \eqref{eq:Jeq}--\eqref{eq:Beq}
+no contemplan efectos de carga variable ni la componente gravitacional, se adopta
+el método de identificación por \textit{Process Reaction Curve}: se aplica un
+escalón de torque conocido $T_0$ en lazo abierto y se registra la respuesta
+$\omega_{hm}(t)$.
+
+\subsubsection{Solución analítica ante escalón}
+
+Para una entrada $T_{hm}(s) = T_0/s$, la salida en el dominio de Laplace es:
+
+\begin{equation}
+    \omega_{hm}(s)
+    = G(s)\,\frac{T_0}{s}
+    = \frac{K\,T_0}{s\,(\tau s + 1)}
+\end{equation}
+
+Antitransformando:
+
+\begin{equation}
+    \omega_{hm}(t)
+    = \omega_0
+      + \bigl(\omega_\infty - \omega_0\bigr)
+        \!\left(1 - e^{-t/\tau}\right)
+    \label{eq:respuesta_escalon}
+\end{equation}
+
+donde $\omega_0 = \omega_{hm}(0)$ es la condición inicial.
+
+\subsubsection{Valor final por el Teorema del Valor Final}
+
+Aplicando el Teorema del Valor Final a la salida:
+
+\begin{equation}
+    \omega_\infty
+    = \lim_{s \to 0}\, s\,\omega_{hm}(s)
+    = \lim_{s \to 0}\, s \cdot \frac{K}{\tau s + 1} \cdot \frac{T_0}{s}
+    = K\,T_0
+    = \frac{i_h\,T_0}{B_{eq}}
+    \label{eq:valor_final}
+\end{equation}
+
+En régimen permanente $\dot{\omega} = 0$, de modo que \eqref{eq:valor_final}
+equivale directamente al equilibrio estático de \eqref{eq:dinamica_motor}.
+
+\subsubsection{Extracción de parámetros desde el ensayo}
+
+A partir de la curva de respuesta se identifican experimentalmente:
+
+\begin{itemize}
+    \item $\omega_0$: valor de $\omega_{hm}$ en $t = 0$.
+    \item $\omega_\infty$: valor en régimen permanente.
+    \item $\tau$: tiempo en alcanzar
+          $\omega_0 + 0{,}632\,(\omega_\infty - \omega_0)$,
+          según \eqref{eq:respuesta_escalon}.
+\end{itemize}
+
+Los parámetros físicos equivalentes resultan:
+
+\begin{align}
+    B_{eq} &= \frac{i_h\,T_0}{\omega_\infty - \omega_0}
+    \label{eq:Beq_id}\\[6pt]
+    J_{eq} &= \tau\,B_{eq}
+    \label{eq:Jeq_id}\\[6pt]
+    p_{OL} &= -\frac{B_{eq}}{J_{eq}} = -\frac{1}{\tau}
+    \label{eq:polo_OL}
+\end{align}
+
+% ----------------------------------------------------------------
+\subsection{Diseño del Controlador PI por Colocación de Polos}
+
+Se adopta un controlador Proporcional-Integral (PI):
+
+\begin{equation}
+    C(s) = K_p + \frac{K_i}{s}
+         = \frac{K_p\,s + K_i}{s}
+    \label{eq:PI}
+\end{equation}
+
+\subsubsection{Ecuación característica en lazo cerrado}
+
+Con realimentación unitaria, los polos en lazo cerrado son las raíces de
+$1 + C(s)\,G(s) = 0$:
+
+\begin{equation}
+    s\,(J_{eq}\,s + B_{eq})
+    + i_h\,(K_p\,s + K_i) = 0
+\end{equation}
+
+Dividiendo por $J_{eq}$:
+
+\begin{equation}
+    s^2
+    + \frac{B_{eq} + i_h\,K_p}{J_{eq}}\,s
+    + \frac{i_h\,K_i}{J_{eq}}
+    = 0
+    \label{eq:ec_caract}
+\end{equation}
+
+\subsubsection{Polinomio deseado}
+
+Se especifica un polo doble real en $s = -\omega_{cl}$
+(factor de amortiguamiento $\zeta = 1$, sin sobreoscilación):
+
+\begin{equation}
+    (s + \omega_{cl})^2
+    = s^2 + 2\,\omega_{cl}\,s + \omega_{cl}^2
+    = 0
+    \label{eq:pol_deseado}
+\end{equation}
+
+donde $\omega_{cl}$ es el único parámetro libre de diseño, elegido como:
+
+\begin{equation}
+    \omega_{cl} = \alpha\,|p_{OL}| = \frac{\alpha}{\tau},
+    \qquad \alpha \in [3,\,20]
+    \label{eq:wcl}
+\end{equation}
+
+El tiempo de estabilización al 2\% resulta aproximadamente:
+
+\begin{equation}
+    t_s \approx \frac{4}{\omega_{cl}}
+\end{equation}
+
+\subsubsection{Igualación de coeficientes}
+
+Igualando \eqref{eq:ec_caract} con \eqref{eq:pol_deseado} término a término:
+
+\begin{align}
+    \frac{B_{eq} + i_h\,K_p}{J_{eq}} &= 2\,\omega_{cl}
+    \label{eq:ec1}\\[4pt]
+    \frac{i_h\,K_i}{J_{eq}} &= \omega_{cl}^2
+    \label{eq:ec2}
+\end{align}
+
+Despejando las ganancias del controlador:
+
+\begin{align}
+    \boxed{K_p = \frac{2\,\omega_{cl}\,J_{eq} - B_{eq}}{i_h}}
+    \label{eq:Kp}\\[8pt]
+    \boxed{K_i = \frac{\omega_{cl}^2\,J_{eq}}{i_h}}
+    \label{eq:Ki}
+\end{align}
+
+\subsubsection{Anti-windup por back-calculation}
+
+Para evitar la saturación del integrador cuando la consigna de torque supera
+$T_{hm,\text{MAX}}$ (límite físico del accionamiento), se implementa la corrección
+por \textit{back-calculation}:
+
+\begin{equation}
+    \dot{x}_i(t) = e(t) + K_b\,\bigl[T^*_{sat}(t) - T^*(t)\bigr],
+    \qquad
+    K_b = \frac{1}{K_p}
+\end{equation}
+
+donde $T^*_{sat}$ es la salida del limitador y $T^*$ la salida no saturada del PI.
+Cuando no hay saturación ambas coinciden y la corrección es nula.
+Cuando el actuador satura, el término de corrección detiene la integración,
+eliminando el fenómeno de \textit{windup}.
 
 \end{document}
 

@@ -196,8 +196,9 @@ fprintf('Min step actual (1e-10):     %s\n', string(dt_required > 1e-10));
 % p2_h=-b_eqh/J_eqh;
 % w_pos_h=6*p2_h;
 % n_h=2;
-tau = 0.677
-B_eq = ih * 10000 / 167
+%tau = 0.677
+tau = 1.825
+B_eq = ih * 10000 / 130.7
 J_eq = tau * B_eq
 p_OL = -B_eq / J_eq
 
