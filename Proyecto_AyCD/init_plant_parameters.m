@@ -196,33 +196,35 @@ fprintf('Min step actual (1e-10):     %s\n', string(dt_required > 1e-10));
 % p2_h=-b_eqh/J_eqh;
 % w_pos_h=6*p2_h;
 % n_h=2;
+tau = 0.677
+B_eq = ih * 10000 / 167
+J_eq = tau * B_eq
+p_OL = -B_eq / J_eq
 
-J_eq = Jhd_hEb/ih + Jhm_hb*ih;  
-B_eq = bhd/ih + bhm*ih;
+% Planta referida al eje motor
+%J_eq = Jhm_hb + Jhd_hEb / ih^2;   % ≈ 37.9 kg·m²
+%B_eq = bhm   + bhd   / ih^2;       % ≈ 18.0 N·m·s
 
-coef_h = [1; (B_eq*Kd*ih)/J_eq; (Kp*ih)/J_eq; (Ki*ih)/J_eq];
-polos_h = roots(coef_h)
+% Polo de lazo abierto
+%p_OL = -B_eq / J_eq;               % ≈ -0.475 rad/s
 
-w_pos = 10*polos_h(2)
-zeta = 0.8;
+% Polo deseado (10x más rápido, ζ=1 → polo doble real)
+w_cl = 5 * abs(p_OL);             % ≈ 4.75 rad/s
 
-% Definición simbólica
-syms Kd Kp Ki
+% Polinomio deseado: (s + w_cl)²  = s² + 2·w_cl·s + w_cl²
+% EC lazo cerrado PI:
+% J_eq·s² + (B_eq + ih·Kp)·s + ih·Ki = 0
+% dividido J_eq:
+% s² + (B_eq + ih·Kp)/J_eq · s + ih·Ki/J_eq = 0
 
-% Ecuaciones del sistema
-eq1 = (B_eq*Kd*ih)/J_eq == (2*zeta + 1)*w_pos;
-eq2 = (Kp*ih)/J_eq == (2*zeta + 1)*w_pos^2;
-eq3 = (Ki*ih)/J_eq == w_pos^3;
+Kp = (2*w_cl*J_eq - B_eq) / ih     % ≈ (2·4.75·37.9 − 18)/22 ≈ 15.6 N·m·s/rad
+Ki = w_cl^2 * J_eq / ih            % ≈ (22.6·37.9)/22 ≈ 38.9 N·m/rad
 
-% Resolver sistema
-sol = solve([eq1, eq2, eq3], [Kd, Kp, Ki]);
+% Verificación
+coef = [1, (B_eq + ih*Kp)/J_eq, ih*Ki/J_eq];
+polos_CL = roots(coef)             % deben ser ≈ [-4.75, -4.75]
 
-% Convertir a valores numéricos
-Kd = double(sol.Kd)
-Kp = double(sol.Kp)
-Ki = double(sol.Ki)
-
-
+tau_f = 3 / w_cl;
 %% Fin
 fprintf('Parámetros de la planta cargados correctamente.\n');
 
