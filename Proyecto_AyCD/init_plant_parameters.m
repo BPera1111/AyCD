@@ -197,53 +197,61 @@ fprintf('Min step actual (1e-10):     %s\n', string(dt_required > 1e-10));
 % w_pos_h=6*p2_h;
 % n_h=2;
 %tau = 0.677
-tau = 1.825
-B_eq = ih * 10000 / 130.7
-J_eq = tau * B_eq
-p_OL = -B_eq / J_eq
+% tau = 1.825
+% B_eq = ih * 10000 / 130.7
+% J_eq = tau * B_eq
+% p_OL = -B_eq / J_eq
 
-% Planta referida al eje motor
-%J_eq = Jhm_hb + Jhd_hEb / ih^2;   % ≈ 37.9 kg·m²
-%B_eq = bhm   + bhd   / ih^2;       % ≈ 18.0 N·m·s
+% % Planta referida al eje motor
+% %J_eq = Jhm_hb + Jhd_hEb / ih^2;   % ≈ 37.9 kg·m²
+% %B_eq = bhm   + bhd   / ih^2;       % ≈ 18.0 N·m·s
 
-% Polo de lazo abierto
-%p_OL = -B_eq / J_eq;               % ≈ -0.475 rad/s
+% % Polo de lazo abierto
+% %p_OL = -B_eq / J_eq;               % ≈ -0.475 rad/s
 
-% Polo deseado (10x más rápido, ζ=1 → polo doble real)
-w_cl = 5 * abs(p_OL);             % ≈ 4.75 rad/s
+% % Polo deseado (10x más rápido, ζ=1 → polo doble real)
+% w_cl = 5 * abs(p_OL);             % ≈ 4.75 rad/s
 
-% Polinomio deseado: (s + w_cl)²  = s² + 2·w_cl·s + w_cl²
-% EC lazo cerrado PI:
-% J_eq·s² + (B_eq + ih·Kp)·s + ih·Ki = 0
-% dividido J_eq:
-% s² + (B_eq + ih·Kp)/J_eq · s + ih·Ki/J_eq = 0
+% % Polinomio deseado: (s + w_cl)²  = s² + 2·w_cl·s + w_cl²
+% % EC lazo cerrado PI:
+% % J_eq·s² + (B_eq + ih·Kp)·s + ih·Ki = 0
+% % dividido J_eq:
+% % s² + (B_eq + ih·Kp)/J_eq · s + ih·Ki/J_eq = 0
 
-Kp = (2*w_cl*J_eq - B_eq) / ih     % ≈ (2·4.75·37.9 − 18)/22 ≈ 15.6 N·m·s/rad
-Ki = w_cl^2 * J_eq / ih            % ≈ (22.6·37.9)/22 ≈ 38.9 N·m/rad
+% Kp_i = (2*w_cl*J_eq - B_eq) / ih;     % ≈ (2·4.75·37.9 − 18)/22 ≈ 15.6 N·m·s/rad
+% Ki_i = w_cl^2 * J_eq / ih;            % ≈ (22.6·37.9)/22 ≈ 38.9 N·m/rad
 
-% Verificación
-coef = [1, (B_eq + ih*Kp)/J_eq, ih*Ki/J_eq];
-polos_CL = roots(coef)             % deben ser ≈ [-4.75, -4.75]
+% % Verificación
+% coef = [1, (B_eq + ih*Kp)/J_eq, ih*Ki/J_eq];
+% polos_CL = roots(coef);             % deben ser ≈ [-4.75, -4.75]
 
-tau_f = 3 / w_cl;
+% tau_f = 3 / w_cl;
+Ki_i=1;
+Kp_i=1;
+
+Kp_c=1;
+Ki_c=1;
+
+%calculo_PI_izaje;
+calculo_PI_carro;
 %% Fin
 fprintf('Parámetros de la planta cargados correctamente.\n');
 
 
-%% Condiciones iniciales consistentes
-% Spreader suspendido, detenido, centrado, a altura y_h_ini sobre el muelle
+% %% Condiciones iniciales consistentes
+% % Spreader suspendido, detenido, centrado, a altura y_h_ini sobre el muelle
 
-y_h_ini  = 10.0;          % altura inicial del spreader [m] (sobre muelle)
-x_t_ini  = 0.0;           % posicion inicial del carro [m]
-x_l_ini  = 0.0;           % carga centrada bajo el carro
-lh_ini   = Yt0 - y_h_ini; % longitud cable tambor = 45 - 10 = 35 m
-l_ini    = lh_ini;         % cable sin elongacion inicial (equilibrio)
+% y_h_ini  = 10.0;          % altura inicial del spreader [m] (sobre muelle)
+% x_t_ini  = 0.0;           % posicion inicial del carro [m]
+% x_l_ini  = 0.0;           % carga centrada bajo el carro
+% lh_ini   = Yt0 - y_h_ini; % longitud cable tambor = 45 - 10 = 35 m
+% l_ini    = lh_ini;         % cable sin elongacion inicial (equilibrio)
 
-% Velocidades todas cero
-vt_ini   = 0;
-vlx_ini  = 0;
-vly_ini  = 0;
-whd_ini  = 0;
-whm_ini  = 0;
-wtd_ini  = 0;
-wtm_ini  = 0;
+% % Velocidades todas cero
+% vt_ini   = 0;
+% vlx_ini  = 0;
+% vly_ini  = 0;
+% whd_ini  = 0;
+% whm_ini  = 0;
+% wtd_ini  = 0;
+% wtm_ini  = 0;

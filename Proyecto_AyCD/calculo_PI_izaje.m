@@ -1,3 +1,15 @@
+T0=10000;
+w_cl_factor=5;
+buffer_w = [];
+buffer_t = [];
+out = sim('controlador_torque.slx');
+[Kp_i,Ki_i,identificado] = auto_tune(T0, ih, w_cl_factor, true, out.whm_t.Data, out.whm_t.Time);
+if identificado
+    fprintf('Identificación completa: Kp=%.4f, Ki=%.4f\n', Kp_i, Ki_i);
+else
+    fprintf('Se rompio')
+end
+
 function [B_eq, J_eq, Kp, Ki] = identificar_planta_izaje(T0, w_hm_signal, t_signal, ih, w_cl_factor)
     % Entradas:
     %   T0          — torque de escalón aplicado [N·m]
@@ -32,31 +44,31 @@ function [B_eq, J_eq, Kp, Ki] = identificar_planta_izaje(T0, w_hm_signal, t_sign
     fprintf('B_eq=%.1f  J_eq=%.1f  p_OL=%.4f\n', B_eq, J_eq, p_OL)
     fprintf('w_cl=%.3f  Kp=%.4f  Ki=%.4f\n', w_cl, Kp, Ki)
 end
-```
-
-### Paso 2 — Integración en Simulink como fase de arranque
-
-En Simulink podés implementar esto como una **secuencia de inicialización** antes de habilitar el PI. La estructura es:
-```
-t < t_id  →  Modo identificación: T_hm* = T0 (escalón fijo, PI desconectado)
-t = t_id  →  Ejecutar identificar_planta_izaje() con datos grabados
-t > t_id  →  Modo control: PI activo con Kp y Ki calculados
-```
-
-En el modelo usás un `MATLAB Function` block o un `Stateflow` chart con dos estados:
-```
-Estado IDENTIFICACION:
-  - Aplicar T0 fijo por t_id segundos (ej: 15 s)
-  - Grabar w_hm en buffer circular
-  - Al salir: llamar función identificación → setear Kp, Ki en workspace
-
-Estado CONTROL:
-  - PI activo con Kp, Ki identificados
-  - Operación normal
 
 
+% ### Paso 2 — Integración en Simulink como fase de arranque
 
-function [Kp, Ki, identificado] = auto_tune(w_hm, t, T0, ih, w_cl_factor, ...
+% En Simulink podés implementar esto como una **secuencia de inicialización** antes de habilitar el PI. La estructura es:
+% ```
+% t < t_id  →  Modo identificación: T_hm* = T0 (escalón fijo, PI desconectado)
+% t = t_id  →  Ejecutar identificar_planta_izaje() con datos grabados
+% t > t_id  →  Modo control: PI activo con Kp y Ki calculados
+% ```
+
+% En el modelo usás un `MATLAB Function` block o un `Stateflow` chart con dos estados:
+% ```
+% Estado IDENTIFICACION:
+%   - Aplicar T0 fijo por t_id segundos (ej: 15 s)
+%   - Grabar w_hm en buffer circular
+%   - Al salir: llamar función identificación → setear Kp, Ki en workspace
+
+% Estado CONTROL:
+%   - PI activo con Kp, Ki identificados
+%   - Operación normal
+
+
+
+function [Kp, Ki, identificado] = auto_tune(T0, ih, w_cl_factor, ...
                                              activar, buffer_w, buffer_t)
     persistent Kp_out Ki_out done
 
@@ -79,4 +91,6 @@ function [Kp, Ki, identificado] = auto_tune(w_hm, t, T0, ih, w_cl_factor, ...
             Ki = Ki_out;
         end
     end
+    identificado = done;
+
 end
