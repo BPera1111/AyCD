@@ -226,14 +226,16 @@ fprintf('Min step actual (1e-10):     %s\n', string(dt_required > 1e-10));
 % polos_CL = roots(coef);             % deben ser ≈ [-4.75, -4.75]
 
 % tau_f = 3 / w_cl;
-Ki_i=1;
-Kp_i=1;
 
-Kp_c=1;
-Ki_c=1;
+%Ki_i=1;Kp_i=1;
+%Kp_c=1; Ki_c=1;
 
 %calculo_PI_izaje;
-calculo_PI_carro;
+Kp_i=687.7431, Ki_i=1141.8992
+
+%calculo_PI_carro;
+
+Kp_c=1080.5232, Ki_c=230.6223
 %% Fin
 fprintf('Parámetros de la planta cargados correctamente.\n');
 
