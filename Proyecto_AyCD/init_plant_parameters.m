@@ -39,6 +39,13 @@ Lh0 = 110;                  % Longitud de despliegue fijo [m] [cite: 299]
 
 vh_nom=1.5;
 
+Jh_eq = (2*Jhd_hEb+2*Jhm_hb*ih^2)/rhd;
+bh_eq = (2*bhd + 2*bhm*ih^2)/rhd;
+
+vh_lim = vh_nom;
+ah_max = 0.75; 
+vh_0 = 0;
+
 %% 4. Parámetros del Carro (Trolley)
 Mt = 30000;                 % Masa equivalente del carro [kg] [cite: 299]
 bt = 90.0;                  % Fricción viscosa del carro [N/(m/s)] [cite: 299]
@@ -57,6 +64,17 @@ Ttb_Max = 5.0e3;            % Torque máximo freno operación [N.m] [cite: 311]
 tau_tm = 0.001;             % Constante de tiempo modulador torque [s] [cite: 314]
 %tau_tm = 1;
 Ttm_Max = 4.0e3;            % Torque máximo motor carro [N.m] [cite: 314]
+
+xt_min = -30.0;      % [m] Límite mínimo posición carro
+xt_max = 50.0;       % [m] Límite máximo posición carro
+vt_max = 4.0;        % [m/s] Velocidad máxima carro
+at_max = 0.80;       % [m/s^2] Aceleración máxima carro
+
+Jt_eq = (Jtd+Jtm_tb*it^2)/rtd;
+bt_eq = (btd + btm*it^2)/rtd;
+
+%Controlador de Balanceo
+zitta = 0.5;
 
 %% 5. Parámetros de Contacto (Interacción con el Ambiente)
 Kcy = 1.8e9;                % Rigidez compresión vertical [N/m] [cite: 296]
@@ -189,53 +207,48 @@ fprintf('Frecuencia natural contacto: %.1f Hz\n', f_contact);
 fprintf('Paso máximo requerido:       %.2e s\n', dt_required);
 fprintf('Min step actual (1e-10):     %s\n', string(dt_required > 1e-10));
 
+%% CN2 - Controlador de movimiento - Carro
+Kf = it/rtd;                                        % Ganancia de conversión torque motor a fuerza lineal en el carro
+
+zitta_t = 1.4;                                      % (orig 1.1)
+wn_t = 0.8;                                         % (orig 0.95)
+
+
+Kp_c = (2*zitta_t*wn_t*Mc_X)/Kf;                      % Ganancia proporcional lazo velocidad carro
+Ki_c = (wn_t^2*Mc_X)/Kf; 
+
+
 %% CN2 - Controlador de movimiento - Izaje
-% J_eqh=(1/rhd)*(2*Jhd_hEb+2*Jhm_hb*(ih)^2);
-% b_eqh=(1/rhd)*(2*bhd+2*bhm*(ih)^2);
-% p1_h=0;
-% p2_h=-b_eqh/J_eqh;
-% w_pos_h=6*p2_h;
-% n_h=2;
-%tau = 0.677
-% tau = 1.825
-% B_eq = ih * 10000 / 130.7
-% J_eq = tau * B_eq
-% p_OL = -B_eq / J_eq
+zitta_h = 1.1;                                      % Puede tomar valores entre 0.707 y 2
+wn_h = 0.95;                                        % [rad/s] Puede tomar valores entre 0.5 y 10 rad/s
 
-% % Planta referida al eje motor
-% %J_eq = Jhm_hb + Jhd_hEb / ih^2;   % ≈ 37.9 kg·m²
-% %B_eq = bhm   + bhd   / ih^2;       % ≈ 18.0 N·m·s
+Jh_eq_eq=Jh_eq* rhd/(2*ih^2);
 
-% % Polo de lazo abierto
-% %p_OL = -B_eq / J_eq;               % ≈ -0.475 rad/s
+Kp_i = 2*zitta_h*wn_h*Jh_eq_eq;                        % Ganancia proporcional lazo velocidad izaje
+Ki_i = (wn_h^2)*Jh_eq_eq;                              % Ganancia integral lazo velocidad izaje
 
-% % Polo deseado (10x más rápido, ζ=1 → polo doble real)
-% w_cl = 5 * abs(p_OL);             % ≈ 4.75 rad/s
+%% CN2 - Observador de estado - Carro
+Jt_eq_eq = Jt_eq * rtd / it^2;
+bt_eq_eq = bt_eq * rtd / it^2;
 
-% % Polinomio deseado: (s + w_cl)²  = s² + 2·w_cl·s + w_cl²
-% % EC lazo cerrado PI:
-% % J_eq·s² + (B_eq + ih·Kp)·s + ih·Ki = 0
-% % dividido J_eq:
-% % s² + (B_eq + ih·Kp)/J_eq · s + ih·Ki/J_eq = 0
+polos_obs_c = 20*-bt_eq/Jt_eq;
 
-% Kp_i = (2*w_cl*J_eq - B_eq) / ih;     % ≈ (2·4.75·37.9 − 18)/22 ≈ 15.6 N·m·s/rad
-% Ki_i = w_cl^2 * J_eq / ih;            % ≈ (22.6·37.9)/22 ≈ 38.9 N·m/rad
+k_tita_c = 3 * abs(polos_obs_c);   % Ganancia del observador de estado para el carro
+k_omega_c = 3 * abs(polos_obs_c)^2;  % Ganancia del observador de estado para el carro
+k_i_c = abs(polos_obs_c)^3;     % Ganancia del observador de estado para el carro
 
-% % Verificación
-% coef = [1, (B_eq + ih*Kp)/J_eq, ih*Ki/J_eq];
-% polos_CL = roots(coef);             % deben ser ≈ [-4.75, -4.75]
+%% CN2 - Observador de estado - Izaje
+A_aug_h = [0, 1, 0; 0, -bh_eq/Jh_eq, 1/Jh_eq; 0, 0, 0];   
+C_aug_h = [1, 0, 0];
+polo_veloz_h = min(eig(A_aug_h));   
 
-% tau_f = 3 / w_cl;
+bh_eq_eq = bh_eq * rhd / (2*ih);
 
-%Ki_i=1;Kp_i=1;
-%Kp_c=1; Ki_c=1;
+polos_obs_h = 20*polo_veloz_h;
 
-%calculo_PI_izaje;
-Kp_i=687.7431, Ki_i=1141.8992
-
-%calculo_PI_carro;
-
-Kp_c=1080.5232, Ki_c=230.6223
+k_tita_h = 3 * abs(polos_obs_h);   % Ganancia del observador de estado para el izaje
+k_omega_h = 3 * abs(polos_obs_h)^2;  % Ganancia del observador de estado para el izaje
+k_i_h = abs(polos_obs_h)^3;     % Ganancia del observador de estado para el izaje
 %% Fin
 fprintf('Parámetros de la planta cargados correctamente.\n');
 
@@ -257,3 +270,13 @@ fprintf('Parámetros de la planta cargados correctamente.\n');
 % whm_ini  = 0;
 % wtd_ini  = 0;
 % wtm_ini  = 0;
+vt_0 = 0;    
+xt_0 = 25;
+xl_0 = 25; % integradores carga y perfil de obstaculos 
+yl_0 = 20; % integradores carga y perfil de obstaculos 
+lh_0 = 25; % Integrador accionamiento de izaje
+Ttm_0 = 0;                                    % [Nm] Torque inicial en el motor del carro
+Thm_0 = 0;
+
+
+xtd_0 = xt_0;  
