@@ -244,11 +244,16 @@ polo_veloz_h = min(eig(A_aug_h));
 
 bh_eq_eq = bh_eq * rhd / (2*ih);
 
-polos_obs_h = 20*polo_veloz_h;
+polos_obs_h = 20*-bh_eq/Jh_eq;
 
-k_tita_h = 3 * abs(polos_obs_h);   % Ganancia del observador de estado para el izaje
-k_omega_h = 3 * abs(polos_obs_h)^2;  % Ganancia del observador de estado para el izaje
+k_tita_h = 3 * abs(polos_obs_h)-bh_eq/Jh_eq;   % Ganancia del observador de estado para el izaje
+k_omega_h = 3 * abs(polos_obs_h)^2-k_tita_h*bh_eq/Jh_eq;  % Ganancia del observador de estado para el izaje
 k_i_h = abs(polos_obs_h)^3;     % Ganancia del observador de estado para el izaje
+
+
+wh_obs = 20 * polo_veloz_h;                         % 20 veces la frecuencia del polo más rápido
+polos_obs_h = [wh_obs, wh_obs*1.01, wh_obs*1.02];   % Separamos polos ligeramente (1-2%) para evitar problemas con 'place'
+Lh = place(A_aug_h', C_aug_h', polos_obs_h)';       % Cálculo de ganancias
 %% Fin
 fprintf('Parámetros de la planta cargados correctamente.\n');
 
