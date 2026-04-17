@@ -219,8 +219,8 @@ Ki_c = (wn_t^2*Mc_X)/Kf;
 
 
 %% CN2 - Controlador de movimiento - Izaje
-zitta_h = 1.1;                                      % Puede tomar valores entre 0.707 y 2
-wn_h = 0.95;                                        % [rad/s] Puede tomar valores entre 0.5 y 10 rad/s
+zitta_h = 2;                                      % Puede tomar valores entre 0.707 y 2
+wn_h = 8;                                        % [rad/s] Puede tomar valores entre 0.5 y 10 rad/s
 
 Jh_eq_eq=Jh_eq* rhd/(2*ih^2);
 
