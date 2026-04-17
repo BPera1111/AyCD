@@ -244,7 +244,7 @@ polo_veloz_h = min(eig(A_aug_h));
 
 bh_eq_eq = bh_eq * rhd / (2*ih);
 
-polos_obs_h = 20*-bh_eq/Jh_eq;
+polos_obs_h = 2*20*-bh_eq/Jh_eq;
 
 k_tita_h = 3 * abs(polos_obs_h)-bh_eq/Jh_eq;   % Ganancia del observador de estado para el izaje
 k_omega_h = 3 * abs(polos_obs_h)^2-k_tita_h*bh_eq/Jh_eq;  % Ganancia del observador de estado para el izaje
