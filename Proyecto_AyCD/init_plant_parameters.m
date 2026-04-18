@@ -210,12 +210,14 @@ fprintf('Min step actual (1e-10):     %s\n', string(dt_required > 1e-10));
 %% CN2 - Controlador de movimiento - Carro
 Kf = it/rtd;                                        % Ganancia de conversión torque motor a fuerza lineal en el carro
 
+M_carro_total = Mt + Ms + Mc_X;                     % masa total reflejada al eje (usable por tune_controllers)
+
 zitta_t = 1.4;                                      % (orig 1.1)
 wn_t = 0.8;                                         % (orig 0.95)
 
 
 Kp_c = (2*zitta_t*wn_t*Mc_X)/Kf;                      % Ganancia proporcional lazo velocidad carro
-Ki_c = (wn_t^2*Mc_X)/Kf; 
+Ki_c = (wn_t^2*Mc_X)/Kf;
 
 
 %% CN2 - Controlador de movimiento - Izaje
@@ -223,6 +225,7 @@ zitta_h = 2;                                      % Puede tomar valores entre 0.
 wn_h = 8;                                        % [rad/s] Puede tomar valores entre 0.5 y 10 rad/s
 
 Jh_eq_eq=Jh_eq* rhd/(2*ih^2);
+J_motor_izaje = Jhm_hb + Jhd_hEb/ih^2;              % inercia motor (usable por tune_controllers)
 
 Kp_i = 2*zitta_h*wn_h*Jh_eq_eq;                        % Ganancia proporcional lazo velocidad izaje
 Ki_i = (wn_h^2)*Jh_eq_eq;                              % Ganancia integral lazo velocidad izaje
@@ -238,9 +241,9 @@ k_omega_c = 3 * abs(polos_obs_c)^2;  % Ganancia del observador de estado para el
 k_i_c = abs(polos_obs_c)^3;     % Ganancia del observador de estado para el carro
 
 %% CN2 - Observador de estado - Izaje
-A_aug_h = [0, 1, 0; 0, -bh_eq/Jh_eq, 1/Jh_eq; 0, 0, 0];   
+A_aug_h = [0, 1, 0; 0, -bh_eq/Jh_eq, 1/Jh_eq; 0, 0, 0];
 C_aug_h = [1, 0, 0];
-polo_veloz_h = min(eig(A_aug_h));   
+polo_veloz_h = min(eig(A_aug_h));
 
 bh_eq_eq = bh_eq * rhd / (2*ih);
 
@@ -254,6 +257,7 @@ k_i_h = abs(polos_obs_h)^3;     % Ganancia del observador de estado para el izaj
 wh_obs = 20 * polo_veloz_h;                         % 20 veces la frecuencia del polo más rápido
 polos_obs_h = [wh_obs, wh_obs*1.01, wh_obs*1.02];   % Separamos polos ligeramente (1-2%) para evitar problemas con 'place'
 Lh = place(A_aug_h', C_aug_h', polos_obs_h)';       % Cálculo de ganancias
+
 %% Fin
 fprintf('Parámetros de la planta cargados correctamente.\n');
 

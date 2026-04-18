@@ -1,0 +1,13 @@
+# Simulink build cache & generated files
+slprj/
+**/slprj/
+*.slxc
+*.autosave
+*.slx.r*
+
+# MATLAB temporary
+*.asv
+*.mex*
+
+# Tune results binary
+Proyecto_AyCD/tune_results.mat
