@@ -27,6 +27,11 @@ set_param([modelName '/Manual Switch1'], 'sw','1');  % BRK_h = 0
 set_param([modelName '/Manual Switch2'], 'sw','1');  % BRK_hE = 0
 set_param([modelName '/Manual Switch3'], 'sw','0');  % TLK = 1
 
+% El modelo tiene un Signal Editor hardcoded que alimenta vx_cmd con una
+% señal del .mat, ignorando la variable del workspace. Lo reemplazamos por
+% un Constant que sí lee vx_cmd del workspace.
+bypass_signal_editor(modelName);
+
 % Estados auxiliares (el path alterno usa BRK_*_state; lo dejamos coherente)
 BRK_t_state  = 0;
 BRK_h_state  = 0;
@@ -42,10 +47,11 @@ J_motor_izaje = Jhm_hb + Jhd_hEb/ih^2;
 fprintf('\n=== Barrido Controlador+Observador CARRO ===\n');
 
 % Escalón del carro a partir de t=2s, hasta fin de sim. Izaje quieto.
+% vx_step pequeño para operar en régimen lineal (no saturar torque).
 t_step_c = 2;
-T_sim_c  = 20;
-vx_step  = 1.5;            % objetivo moderado (vt_max=4, evitamos saturación)
-vx_cmd   = vx_step;        % Constant del Simulink lee escalar; construimos ref offline
+T_sim_c  = 15;
+vx_step  = 0.15;
+vx_cmd   = vx_step;
 vh       = 0;
 
 % Mallas (chicas para ciclo inicial rápido — subir luego si el óptimo toca borde)
