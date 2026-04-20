@@ -208,55 +208,46 @@ fprintf('Paso máximo requerido:       %.2e s\n', dt_required);
 fprintf('Min step actual (1e-10):     %s\n', string(dt_required > 1e-10));
 
 %% CN2 - Controlador de movimiento - Carro
-Kf = it/rtd;                                        % Ganancia de conversión torque motor a fuerza lineal en el carro
+% Parámetros óptimos hallados por tune_controllers.m (barrido 2025-04-20)
+%   wn_t=0.80 rad/s, zitta_t=0.70, kobs=3  →  J=24.37, ov=1.5%, set=4.67s
+Kf = it/rtd;
+M_carro_total = Mt + Ms + Mc_X;
 
-M_carro_total = Mt + Ms + Mc_X;                     % masa total reflejada al eje (usable por tune_controllers)
+zitta_t = 0.70;
+wn_t    = 0.80;
 
-zitta_t = 1.4;                                      % (orig 1.1)
-wn_t = 0.8;                                         % (orig 0.95)
-
-
-Kp_c = (2*zitta_t*wn_t*Mc_X)/Kf;                      % Ganancia proporcional lazo velocidad carro
-Ki_c = (wn_t^2*Mc_X)/Kf;
-
+Kp_c = (2*zitta_t*wn_t*M_carro_total)/Kf;
+Ki_c = (wn_t^2      *M_carro_total)/Kf;
 
 %% CN2 - Controlador de movimiento - Izaje
-zitta_h = 2;                                      % Puede tomar valores entre 0.707 y 2
-wn_h = 8;                                        % [rad/s] Puede tomar valores entre 0.5 y 10 rad/s
+% Parámetros óptimos: wn_h=5.00 rad/s, zitta_h=0.70, kobs=8  →  J=1.10, ov=0.2%, set=0.20s
+J_motor_izaje = Jhm_hb + Jhd_hEb/ih^2;
+Jh_eq_eq = Jh_eq * rhd/(2*ih^2);    % conservado para compatibilidad
 
-Jh_eq_eq=Jh_eq* rhd/(2*ih^2);
-J_motor_izaje = Jhm_hb + Jhd_hEb/ih^2;              % inercia motor (usable por tune_controllers)
+zitta_h = 0.70;
+wn_h    = 5.00;
 
-Kp_i = 2*zitta_h*wn_h*Jh_eq_eq;                        % Ganancia proporcional lazo velocidad izaje
-Ki_i = (wn_h^2)*Jh_eq_eq;                              % Ganancia integral lazo velocidad izaje
+Kp_i = 2*zitta_h*wn_h*J_motor_izaje;
+Ki_i = (wn_h^2)      *J_motor_izaje;
 
 %% CN2 - Observador de estado - Carro
-Jt_eq_eq = Jt_eq * rtd / it^2;
-bt_eq_eq = bt_eq * rtd / it^2;
-
-polos_obs_c = 20*-bt_eq/Jt_eq;
-
-k_tita_c = 3 * abs(polos_obs_c);   % Ganancia del observador de estado para el carro
-k_omega_c = 3 * abs(polos_obs_c)^2;  % Ganancia del observador de estado para el carro
-k_i_c = abs(polos_obs_c)^3;     % Ganancia del observador de estado para el carro
+% Polos triples en p_obs_c = kobs*wn_t = 3*0.8 = 2.4 rad/s
+p_obs_c   = 3 * wn_t;
+k_tita_c  = 3 * p_obs_c;
+k_omega_c = 3 * p_obs_c^2;
+k_i_c     =     p_obs_c^3;
 
 %% CN2 - Observador de estado - Izaje
+% Polos triples en p_obs_h = kobs*wn_h = 8*5 = 40 rad/s
+p_obs_h   = 8 * wn_h;
+k_tita_h  = 3*p_obs_h      - bh_eq/Jh_eq;
+k_omega_h = 3*p_obs_h^2    - k_tita_h*bh_eq/Jh_eq;
+k_i_h     =   p_obs_h^3;
+
+% Conservado para compatibilidad (no usado por el modelo, sólo referencia)
 A_aug_h = [0, 1, 0; 0, -bh_eq/Jh_eq, 1/Jh_eq; 0, 0, 0];
 C_aug_h = [1, 0, 0];
-polo_veloz_h = min(eig(A_aug_h));
-
-bh_eq_eq = bh_eq * rhd / (2*ih);
-
-polos_obs_h = 2*20*-bh_eq/Jh_eq;
-
-k_tita_h = 3 * abs(polos_obs_h)-bh_eq/Jh_eq;   % Ganancia del observador de estado para el izaje
-k_omega_h = 3 * abs(polos_obs_h)^2-k_tita_h*bh_eq/Jh_eq;  % Ganancia del observador de estado para el izaje
-k_i_h = abs(polos_obs_h)^3;     % Ganancia del observador de estado para el izaje
-
-
-wh_obs = 20 * polo_veloz_h;                         % 20 veces la frecuencia del polo más rápido
-polos_obs_h = [wh_obs, wh_obs*1.01, wh_obs*1.02];   % Separamos polos ligeramente (1-2%) para evitar problemas con 'place'
-Lh = place(A_aug_h', C_aug_h', polos_obs_h)';       % Cálculo de ganancias
+Lh = place(A_aug_h', C_aug_h', [-p_obs_h, -p_obs_h*1.01, -p_obs_h*1.02])';
 
 %% Fin
 fprintf('Parámetros de la planta cargados correctamente.\n');

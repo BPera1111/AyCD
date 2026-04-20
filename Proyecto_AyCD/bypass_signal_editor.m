@@ -1,64 +1,61 @@
 function bypass_signal_editor(modelName)
-%BYPASS_SIGNAL_EDITOR  Reemplaza el Signal Editor "Controlador de Velocidad"
-% del subsistema Subsystem2 por un Constant que lee vx_cmd del workspace.
-% Idempotente: si ya hay un Constant 'VxCmd_WS', sólo se asegura el cableado.
+%BYPASS_SIGNAL_EDITOR  Reemplaza fuentes hardcodeadas de referencia por
+% Constants que leen del workspace, para que vx_cmd y vh sean efectivos.
 %
-% El modelo debe estar ya cargado. Los cambios se pueden descartar con
-% close_system(modelName, 0).
+%  CARRO: Signal Editor "Signal Editor" en Subsystem2 → Constant(vx_cmd)
+%  IZAJE: Step "Step" en Subsystem1 → Constant(vh)
+%
+% Idempotente. El modelo debe estar cargado. Descarte con close_system(modelName,0).
 
-parent = [modelName '/Subsystem2'];
-sePath = [parent '/Signal Editor'];
-constName = 'VxCmd_WS';
+bypass_block(modelName, [modelName '/Subsystem2'], 'Signal Editor', 'VxCmd_WS', 'vx_cmd');
+bypass_block(modelName, [modelName '/Subsystem1'], 'Step',          'Vh_WS',    'vh');
+
+end
+
+function bypass_block(modelName, parent, srcName, constName, wsVar)
+% Reemplaza srcName en parent por un Constant que lee wsVar del workspace.
+srcPath   = [parent '/' srcName];
 constPath = [parent '/' constName];
 
-if isempty(find_system(parent, 'SearchDepth', 1, 'Name', 'Signal Editor'))
-    % Ya bypassado antes — no hacer nada
-    if ~isempty(find_system(parent, 'SearchDepth', 1, 'Name', constName))
-        return;
-    end
+% Idempotente: si ya existe el Constant, no hacer nada
+if ~isempty(find_system(parent, 'SearchDepth', 1, 'Name', constName))
+    return;
 end
 
-% Si el Signal Editor existe, obtener sus conexiones y removerlo
-if ~isempty(find_system(parent, 'SearchDepth', 1, 'Name', 'Signal Editor'))
-    lh = get_param(sePath, 'LineHandles');
-    outLine = lh.Outport(1);
-    if outLine ~= -1
-        dstHandles = get_param(outLine, 'DstBlockHandle');
-        dstPorts   = get_param(outLine, 'DstPortHandle');
-        if ~iscell(dstHandles)
-            dstHandles = {dstHandles};
-            dstPorts   = {dstPorts};
-        end
-        delete_line(outLine);
-    else
-        dstHandles = {};
-        dstPorts   = {};
-    end
-    pos = get_param(sePath, 'Position');
-    delete_block(sePath);
-else
-    dstHandles = {};
-    dstPorts   = {};
-    pos = [165 440 250 480];
+if isempty(find_system(parent, 'SearchDepth', 1, 'Name', srcName))
+    fprintf('bypass_signal_editor: %s no encontrado en %s, skip\n', srcName, parent);
+    return;
 end
 
-% Crear Constant si no existe
-if isempty(find_system(parent, 'SearchDepth', 1, 'Name', constName))
-    add_block('simulink/Sources/Constant', constPath, 'Position', pos);
-    set_param(constPath, 'Value', 'vx_cmd');
+% Capturar destinos de la línea de salida
+lh = get_param(srcPath, 'LineHandles');
+outLine = lh.Outport(1);
+dstHandles = {};  dstPorts = {};
+if outLine ~= -1
+    h = get_param(outLine, 'DstBlockHandle');
+    p = get_param(outLine, 'DstPortHandle');
+    if ~iscell(h), h = {h}; p = {p}; end
+    dstHandles = h;  dstPorts = p;
+    delete_line(outLine);
 end
+pos = get_param(srcPath, 'Position');
+delete_block(srcPath);
 
-% Reconectar líneas al Constant
+% Crear Constant
+add_block('simulink/Sources/Constant', constPath, 'Position', pos);
+set_param(constPath, 'Value', wsVar);
+
+% Reconectar
 for k = 1:numel(dstHandles)
-    dstBlk = get_param(dstHandles{k}, 'Name');
-    dstPortNum = get_param(dstPorts{k}, 'PortNumber');
+    dstBlk    = get_param(dstHandles{k}, 'Name');
+    dstPortNum = get_param(dstPorts{k},  'PortNumber');
     try
         add_line(parent, [constName '/1'], sprintf('%s/%d', dstBlk, dstPortNum), ...
                  'autorouting', 'on');
     catch ME
-        fprintf('bypass_signal_editor: aviso reconectando %s: %s\n', dstBlk, ME.message);
+        fprintf('bypass_signal_editor: aviso reconectando %s/%s: %s\n', ...
+                parent, dstBlk, ME.message);
     end
 end
-
-fprintf('bypass_signal_editor: reemplazado %s por Constant(vx_cmd)\n', sePath);
+fprintf('bypass_signal_editor: %s/%s → Constant(%s)\n', parent, srcName, wsVar);
 end
