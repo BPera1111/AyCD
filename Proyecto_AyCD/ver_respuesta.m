@@ -18,7 +18,7 @@ anti_sway_estate=1;
 %% ── Escenario 1: CARRO ───────────────────────────────────────────────────
 fprintf('Simulando carro...\n');
 Mc_X = Mc_max;   % peor caso: contenedor lleno (50 t)
-vx_cmd = 1.5;    % comando de velocidad [m/s]
+vx_cmd = 1;    % comando de velocidad [m/s]
 vh     = 0;
 T_sim  = 15;  t_step = 2;
 

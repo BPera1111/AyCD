@@ -213,7 +213,7 @@ fprintf('Min step actual (1e-10):     %s\n', string(dt_required > 1e-10));
 Kf = it/rtd;
 M_carro_total = Mt + Ms + Mc_X;
 
-zitta_t = 0.70;
+zitta_t = 1.000;
 wn_t    = 0.80;
 
 Kp_c = (2*zitta_t*wn_t*M_carro_total)/Kf;
@@ -232,14 +232,14 @@ Ki_i = (wn_h^2)      *J_motor_izaje;
 
 %% CN2 - Observador de estado - Carro
 % Polos triples en p_obs_c = kobs*wn_t = 3*0.8 = 2.4 rad/s
-p_obs_c   = 3 * wn_t;
+p_obs_c   = 6.40;
 k_tita_c  = 3 * p_obs_c;
 k_omega_c = 3 * p_obs_c^2;
 k_i_c     =     p_obs_c^3;
 
 %% CN2 - Observador de estado - Izaje
 % Polos triples en p_obs_h = kobs*wn_h = 8*5 = 40 rad/s
-p_obs_h   = 8 * wn_h;
+p_obs_h   = 40.00;
 k_tita_h  = 3*p_obs_h      - bh_eq/Jh_eq;
 k_omega_h = 3*p_obs_h^2    - k_tita_h*bh_eq/Jh_eq;
 k_i_h     =   p_obs_h^3;

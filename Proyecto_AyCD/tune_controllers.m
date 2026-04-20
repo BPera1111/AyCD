@@ -117,8 +117,8 @@ k_tita_c  = 3*p_obs_c;   k_omega_c = 3*p_obs_c^2;   k_i_c = p_obs_c^3;
 
 % Ahora el carro queda quieto y probamos izaje: subir a vh_step
 t_step_h = 2;
-T_sim_h  = 20;
-vh_step  = 0.5;    % moderado (vh_nom=1.5)
+T_sim_h  = 15;
+vh_step  = 0.15;   % pequeño para operar en zona lineal (vh_nom=1.5)
 vx_cmd   = 0;
 vh       = vh_step;
 
@@ -220,7 +220,9 @@ end
 function [J, m] = costo_izaje(simOut, t_step, vh_step, ah_max, Thm_Max, ih, rhd) %#ok<INUSD>
     t   = simOut.whm_t.Time;
     whm = simOut.whm_t.Data(:);
-    y   = whm * rhd / (2*ih);          % velocidad lineal del cable [m/s]
+    % El modelo usa convención vh>0 = desciende → vcable<0; invertimos para
+    % que y>0 corresponda a movimiento en el sentido del comando positivo.
+    y   = -whm * rhd / (2*ih);
     r   = construye_ref(t, t_step, vh_step, ah_max);
 
     m = metricas_respuesta(y, r, t, struct('banda',0.02,'t_inicio',t_step));
