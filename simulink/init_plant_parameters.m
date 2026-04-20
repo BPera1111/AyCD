@@ -39,8 +39,8 @@ Lh0 = 110;                  % Longitud de despliegue fijo [m] [cite: 299]
 
 vh_nom=1.5;
 
-Jh_eq = (2*Jhd_hEb+2*Jhm_hb*ih^2)/rhd;
-bh_eq = (2*bhd + 2*bhm*ih^2)/rhd;
+Jh_eq = Jhm_hb+Jhd_hEb/ih^2;
+bh_eq = bhm+bhd/ih^2;
 
 vh_lim = vh_nom;
 ah_max = 0.75; 
@@ -70,8 +70,8 @@ xt_max = 50.0;       % [m] Límite máximo posición carro
 vt_max = 4.0;        % [m/s] Velocidad máxima carro
 at_max = 0.80;       % [m/s^2] Aceleración máxima carro
 
-Jt_eq = (Jtd+Jtm_tb*it^2)/rtd;
-bt_eq = (btd + btm*it^2)/rtd;
+Jt_eq = Jtm_tb+Jtd/it^2;
+bt_eq = btm+btd/it^2;
 
 %Controlador de Balanceo
 zitta = 0.5;
@@ -214,24 +214,24 @@ zitta_t = 1.4;                                      % (orig 1.1)
 wn_t = 0.8;                                         % (orig 0.95)
 
 
-Kp_c = (2*zitta_t*wn_t*Mc_X)/Kf;                      % Ganancia proporcional lazo velocidad carro
-Ki_c = (wn_t^2*Mc_X)/Kf; 
+Kp_c = (2*zitta_t*wn_t*Mt)/Kf;                      % Ganancia proporcional lazo velocidad carro
+Ki_c = (wn_t^2*Mt)/Kf; 
 
 
 %% CN2 - Controlador de movimiento - Izaje
 zitta_h = 2;                                      % Puede tomar valores entre 0.707 y 2
 wn_h = 8;                                        % [rad/s] Puede tomar valores entre 0.5 y 10 rad/s
 
-Jh_eq_eq=Jh_eq* rhd/(2*ih^2);
+%Jh_eq_eq=Jh_eq* rhd/(2*ih^2);
 
-Kp_i = 2*zitta_h*wn_h*Jh_eq_eq;                        % Ganancia proporcional lazo velocidad izaje
-Ki_i = (wn_h^2)*Jh_eq_eq;                              % Ganancia integral lazo velocidad izaje
+Kp_i = 2*zitta_h*wn_h*Jh_eq;                        % Ganancia proporcional lazo velocidad izaje
+Ki_i = (wn_h^2)*Jh_eq;                              % Ganancia integral lazo velocidad izaje
 
 %% CN2 - Observador de estado - Carro
-Jt_eq_eq = Jt_eq * rtd / it^2;
-bt_eq_eq = bt_eq * rtd / it^2;
+%Jt_eq_eq = Jt_eq * rtd / it^2;
+%bt_eq_eq = bt_eq * rtd / it^2;
 
-polos_obs_c = 20*-bt_eq/Jt_eq;
+polos_obs_c = 10*20*-bt_eq/Jt_eq;
 
 k_tita_c = 3 * abs(polos_obs_c);   % Ganancia del observador de estado para el carro
 k_omega_c = 3 * abs(polos_obs_c)^2;  % Ganancia del observador de estado para el carro
@@ -242,9 +242,9 @@ A_aug_h = [0, 1, 0; 0, -bh_eq/Jh_eq, 1/Jh_eq; 0, 0, 0];
 C_aug_h = [1, 0, 0];
 polo_veloz_h = min(eig(A_aug_h));   
 
-bh_eq_eq = bh_eq * rhd / (2*ih);
+%bh_eq_eq = bh_eq * rhd / (2*ih);
 
-polos_obs_h = 2*20*-bh_eq/Jh_eq;
+polos_obs_h = 10*20*-bh_eq/Jh_eq;
 
 k_tita_h = 3 * abs(polos_obs_h)-bh_eq/Jh_eq;   % Ganancia del observador de estado para el izaje
 k_omega_h = 3 * abs(polos_obs_h)^2-k_tita_h*bh_eq/Jh_eq;  % Ganancia del observador de estado para el izaje
@@ -279,9 +279,11 @@ vt_0 = 0;
 xt_0 = 25;
 xl_0 = 25; % integradores carga y perfil de obstaculos 
 yl_0 = 20; % integradores carga y perfil de obstaculos 
-lh_0 = 25; % Integrador accionamiento de izaje
+lh_0 = Yt0-yl_0; % Integrador accionamiento de izaje
 Ttm_0 = 0;                                    % [Nm] Torque inicial en el motor del carro
 Thm_0 = 0;
 
 
 xtd_0 = xt_0;  
+titatm_0 = xtd_0/(rtd/it); 
+titahm_0 = lh_0/(rhd/(2*ih)); 
