@@ -145,6 +145,271 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 \section{Modelado, Análisis y Simulación dinámica del sistema físico a lazo abierto}
 
 
+
+\section*{Discretización del Perfil de Obstáculos}
+
+\begin{equation}
+    N_{x_t} = \text{floor}\left( \frac{x_{t_{max}} - x_{t_{min}}}{W_c} \right)+1
+\end{equation}
+
+\begin{equation}
+    i = 1, 2, 3, \ldots, 33
+\end{equation}
+
+\begin{equation}
+    x_{33} = -30\,\text{m} + (33-1) \cdot 2.44\,\text{m} = 48.08\,\text{m}
+\end{equation}
+
+\begin{equation}
+    i = \text{floor}\left( \frac{(x_t(t)+3\,\text{m}) - x_{t_{min}}}{W_c} \right)
+\end{equation}
+
+\section*{Subsistema del Carro (Trolley)}
+
+\begin{equation}
+    M_t \, \frac{d \, v_t(t)}{dt} = F_{tw}(t) - b_t \, v_t(t) + F_{coupling}(t)
+\end{equation}
+
+\begin{equation}
+    F_{tw}(t) = K_{tw} \, (x_{td}(t) - x_t(t)) + b_{tw} \, (v_{td}(t) - v_t(t))
+\end{equation}
+
+\begin{equation}
+    J_{td} \, \frac{d \, \omega_{td}(t)}{dt} = T_{td}(t) - b_{td} \, \omega_{td}(t) - T_{tdl}(t)
+\end{equation}
+
+\begin{equation}
+    J_{tm+tb} \, \frac{d \, \omega_{tm}(t)}{dt} = T_{tm}(t) + T_{tb}(t,\textcolor{cyan}{BRK_t}) - b_{tm} \, \omega_{tm}(t) - T_{tml}(t)
+\end{equation}
+
+\begin{equation}
+    T_{tb}(t,\textcolor{cyan}{BRK_t}) = 
+    \begin{cases} 
+        0 & \text{si } \textcolor{cyan}{BRK_t} = 1 \text{ (Abierto/Energizado)} \\
+        -T_{tb\_Max} \, \tanh(b_{tb} \, \omega_{tm}(t)) & \text{si } \textcolor{cyan}{BRK_t} = 0 \text{ (Cerrado/Frenado)}
+    \end{cases}
+\end{equation}
+
+\begin{align}
+    \text{Velocidades:} & \quad \omega_{td}(t) = \frac{\omega_{tm}(t)}{i_t} \implies \frac{d \, \omega_{td}(t)}{dt} = \frac{1}{i_t}\frac{d\omega_{tm}(t)}{dt} \\
+    \text{Torques:} & \quad T_{td}(t) = T_{tml}(t) \, i_t
+\end{align}
+
+\begin{equation}
+    J_{td} \, \left( \frac{1}{i_t} \frac{d \, \omega_{tm}(t)}{dt} \right) = (T_{tml}(t) \, i_t) - b_{td} \, \left( \frac{\omega_{tm}(t)}{i_t} \right) - T_{tdl}(t)
+\end{equation}
+
+\begin{equation}
+    \frac{J_{td}}{i_t^2}\, \frac{d \, \omega_{tm}(t)}{dt} = T_{tml}(t) - \frac{b_{td}}{i_t^2} \, \omega_{tm}(t) - \frac{T_{tdl}(t)}{i_t}
+\end{equation}
+
+\begin{equation}
+    \left( J_{tm+tb} + \frac{J_{td}}{i_t^2} \right) \frac{d \, \omega_{tm}(t)}{dt} = T_{tm}(t) + T_{tb}(t,\textcolor{cyan}{BRK_t}) - \left( b_{tm} + \frac{b_{td}}{i_t^2} \right) \omega_{tm}(t) - \frac{T_{tdl}(t)}{i_t}
+\end{equation}
+
+\begin{equation}
+    J_{eq,t} = J_{tm+tb} + \frac{J_{td}}{i_t^2} \quad ; \quad 
+    b_{eq,t} = b_{tm} + \frac{b_{td}}{i_t^2}
+\end{equation}
+
+\begin{equation}
+    \frac{d\,\omega_{tm}(t)}{dt}
+    = \frac{1}{J_{eq,t}}
+    \left[
+        T_{tm}(t)
+        + T_{tb}(t,\textcolor{cyan}{BRK_t})
+        - b_{eq,t}\,\omega_{tm}(t)
+        - \frac{r_{td}}{i_t}\,F_{tw}(t)
+    \right]
+\end{equation}
+
+\begin{equation}
+    \frac{d\,v_t(t)}{dt}
+    = \frac{1}{M_t}
+    \left[
+        F_{tw}(t)
+        - b_t\,v_t(t)
+        + F_{coupling}(t)
+    \right]
+\end{equation}
+
+\begin{equation}
+    \frac{d\,x_t(t)}{dt} = v_t(t)
+\end{equation}
+
+\begin{equation}
+    F_{tw}(t)
+    = K_{tw}\bigl(x_{td}(t) - x_t(t)\bigr)
+    + b_{tw}\bigl(v_{td}(t) - v_t(t)\bigr)
+\end{equation}
+
+\section*{Subsistema de Izaje (Hoist)}
+
+\begin{equation}
+    m_l(\textcolor{cyan}{TLK}) = 
+    \begin{cases} 
+        M_s & \text{si } \textcolor{cyan}{TLK} = \text{Off (solo spreader)} \\
+        M_s + M_{cX} & \text{si } \textcolor{cyan}{TLK} = \text{On (spreader + contenedor)}
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+    h_c(\textcolor{cyan}{TLK}) = 
+    \begin{cases} 
+        0 & \text{si } \textcolor{cyan}{TLK} = \text{Off} \\
+        H_c & \text{si } \textcolor{cyan}{TLK} = \text{On}
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+    m_l(\textcolor{cyan}{TLK}) \, \frac{d \, v_{lx}(t)}{dt} = -2 F_{hw}(t) \, \sin\theta_l(t) + F_{cx}(t)
+\end{equation}
+
+\begin{equation}
+    m_l(\textcolor{cyan}{TLK}) \, \frac{d \, v_{ly}(t)}{dt} = 2 F_{hw}(t) \, \cos\theta_l(t) - m_l(\textcolor{cyan}{TLK}) \, g + F_{cy}(t)
+\end{equation}
+
+\begin{equation}
+    \delta_y(t) = y_{c0}(x_l,t) - (y_l(t) - h_c(\textcolor{cyan}{TLK}))
+\end{equation}
+
+\begin{equation}
+    F_{cy}(t) = 
+    \begin{cases} 
+        K_{cy} \, \delta_y(t) - b_{cy} \, v_{ly}(t) & \text{si } \delta_y(t) \ge 0 \text{ (Apoyado)} \\
+        0 & \text{si } \delta_y(t) < 0 \text{ (Suspendido)}
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+    F_{cx}(t) = 
+    \begin{cases} 
+        -b_{cx} \, v_{lx}(t) & \text{si } \delta_y(t) \ge 0 \\
+        0 & \text{si } \delta_y(t) < 0
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+    K_{hw}(l_h) = \frac{k_{hwu}}{2 l_h(t) + L_{h0}} \quad ; \quad b_{hw}(l_h) = b_{hwu}\,(2 l_h(t) + L_{h0})
+\end{equation}
+
+\begin{equation}
+    F_{hw}(t) = 
+    \begin{cases} 
+        K_{hw}(l_h) \, \Delta L + b_{hw}(l_h) \, \Delta V & \text{si } l(t) \ge l_h(t) \text{ (Tenso)} \\
+        0 & \text{si } l(t) < l_h(t) \text{ (Flojo/Slack)}
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+    J_{hd+hEb} \, \frac{d \, \omega_{hd}(t)}{dt} = T_{hd}(t) + T_{hEb}(\textcolor{cyan}{BRK_{hE}}) - b_{hd} \, \omega_{hd}(t) - T_{hdl}(t)
+\end{equation}
+
+\begin{equation}
+    J_{hm+hb} \, \frac{d \, \omega_{hm}(t)}{dt} = T_{hm}(t) + T_{hb}(\textcolor{cyan}{BRK_{h}}) - b_{hm} \, \omega_{hm}(t) - T_{hml}(t)
+\end{equation}
+
+\begin{equation}
+    v_h(t) = \frac{r_{hd} \, \omega_{hd}(t)}{2} = -\frac{d \, l_h(t)}{dt}
+\end{equation}
+
+\begin{equation}
+    T_{hb}(t,\textcolor{cyan}{BRK_{h}}) = 
+    \begin{cases} 
+        0 & \text{si } \textcolor{cyan}{BRK_h} = 1 \text{ (Energizado/Abierto)} \\
+        -T_{hb\_Max} \, \tanh(b_{hb} \, \omega_{hm}(t)) & \text{si } \textcolor{cyan}{BRK_h} = 0 \text{ (Desenergizado/Cerrado)}
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+    T_{hEb}(t,\textcolor{cyan}{BRK_{h}}) = 
+    \begin{cases} 
+        0 & \text{si } \textcolor{cyan}{BRK_{hE}} = 1 \text{ (Energizado/Abierto)} \\
+        -T_{hEb\_Max} \, \tanh(b_{hEb} \, \omega_{hd}(t)) & \text{si } \textcolor{cyan}{BRK_{hE}} = 0 \text{ (Desenergizado/Cerrado)}
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+    J_{eq,h} = J_{hm+hb} + \frac{J_{hd+hEb}}{i_h^2}  \quad ; \quad
+    b_{eq,h} = b_{hm} + \frac{b_{hd}}{i_h^2}  \quad ; \quad
+    T_{hEb,ref} = \frac{T_{hEb}}{i_h}
+\end{equation}
+
+\begin{equation}
+    \frac{d\,\omega_{hm}(t)}{dt}
+    = \frac{1}{J_{eq,h}}
+    \left[
+        T_{hm}(t)
+        + T_{hb}(t,\textcolor{cyan}{BRK_h})
+        + \frac{T_{hEb}(t,\textcolor{cyan}{BRK_{hE}})}{i_h}
+        - b_{eq,h}\,\omega_{hm}(t)
+        - \frac{r_{hd}}{i_h} \, F_{hw}(t)
+    \right]
+\end{equation}
+
+\begin{equation}
+    \frac{d\,v_{ly}(t)}{dt}
+    = \frac{1}{m_l(\textcolor{cyan}{TLK})}
+    \left[
+        2\,F_{hw}(t)\cos\theta_l
+        - m_l(\textcolor{cyan}{TLK})\,g
+        + F_{cy}(t)
+    \right]
+\end{equation}
+
+\begin{equation}
+    \frac{d\,v_{lx}(t)}{dt}
+    = \frac{1}{m_l(\textcolor{cyan}{TLK})}\left[-2 F_{hw}(t) \, \sin\theta_l(t) + F_{cx}(t)\right]
+\end{equation}
+
+\begin{equation}
+    \frac{d\,y_l(t)}{dt} = v_{ly}(t)
+\end{equation}
+
+\begin{equation}
+    F_{hw}(t) =
+    \begin{cases}
+        2 K_{hw}(l_h) \, \left( l(t) - l_h(t) \right)
+        + 2 b_{hw}(l_h) \, \left( \frac{d \, l(t)}{dt} - \frac{d \, l_h(t)}{dt} \right),
+        & \text{si } l \ge l_h \text{ (Tenso)} \\[6pt]
+        0, & \text{si } l < l_h \text{ (Flojo)}
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+    \frac{d\,l_h(t)}{dt}
+    = -\,\frac{r_{hd}}{2\,i_h}\,\omega_{hm}(t)
+\end{equation}
+
+\section*{Sensores de Posición}
+
+\begin{equation}
+    x_{enc}(t) = \theta_{tm}(t) \, \frac{r_{td}}{i_t}
+\end{equation}
+
+\begin{equation}
+    y_{enc}(t) = \theta_{hm}(t) \, \left( \frac{r_{hd}}{2 \, i_h} \right)
+\end{equation}
+
+\begin{equation}
+    FC_{t,\,\text{derecha}} = 
+    \begin{cases} 
+        0 & \text{si } x_t(t) < x_{t,max}  \\
+        1 & \text{si } x_t(t) \ge x_{t,max} \quad (\text{Operativo}) \\
+        1 & \text{si } x_t(t) \ge x_{t,max} + 0.5 \text{m} \quad (\text{Emergencia})
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+    FC_{h,\,\text{superior}} = 
+    \begin{cases}
+        0 & \text{si } y_{enc}(t) < y_{h,max} \quad (\text{Operativo}) \\
+        1 & \text{si } y_{enc}(t) \ge y_{h,max} \quad (\text{Operativo}) \\
+        1 & \text{si } y_{enc}(t) \ge y_{h,max} + 0.5 \text{m} \quad (\text{Emergencia})
+    \end{cases}
+\end{equation}
+
+
 \textbf{Restricción geométrica}
 \begin{align}
 l(t) &= +\sqrt{\left(x_l(t)-x_t(t)\right)^2 + \left(Y_{t0}-y_l(t)\right)^2}
