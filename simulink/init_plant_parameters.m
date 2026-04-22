@@ -87,125 +87,16 @@ bcx = 1.0e6;                % Fricción de arrastre horizontal [N/(m/s)] [cite: 
 Mc_X=25000;
 
 %% Perfil de obstaculos (Entorno)
-% N=ceil(80/Wc);
-% dmax=ceil(Yt0/2); %Altura maxima de apilado (Asumida)
-% step = Hc; %Paso de apilado
-% valores = 0:step:dmax; %Posibles valores de 0 a dmax, con paso step
-% y0 = valores(randi(numel(valores),1,N)); %Vector de perfil de obstaculos
-% y0(15)=0; %Setea en cero la altura correspondiente al borde entre el agua y el muelle
+N_xt = floor((xt_max-xt_min)/Wc)+1;                         % Cantidad de índices programados en el eje X
+is_scanned_vec_inicial = [ones(1,12), zeros(1,N_xt-12)];    % Vector de índices escaneados (1 = escaneado, 0 = no escaneado)
+alt_borde = 2.8;                                            % [m] Altura del borde del muelle 
 
-% Generacion de perfil de obstaculos para apilamiento de containers
-% Muelle a la izquierda (contenores aislados, llegada por camiones)
-% Barco a la derecha (apilamiento por bloques / mesetas)
+h_vec_inicial = [ 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, alt_borde,... 
+                  3, 5, 6, 3, 5, 9, 8, 4, 1, -1, -4, -5, -2, -1, 2, 6, 8, 8, 5,...
+                  alt_borde] * Hc;                          % Vector inicial del perfil de obstáculos
 
-N = ceil(80/Wc);
-dmax = ceil(Yt0/2);
-step = Hc;
-
-% Indice del borde agua–muelle
-idx_borde = ceil(30/Wc);
-
-% Definicion de zonas
-quay_idx = 1:(idx_borde-1);      % muelle (izquierda)
-ship_idx = (idx_borde+1):N;      % barco (derecha)
-
-% Alturas maximas por zona (en niveles discretos)
-maxShip = max(2, floor(0.90*dmax/step));
-maxQuay = max(1, floor(0.60*dmax/step));
-
-% Parametros de correlacion espacial
-Lship = 4;   % bloques mas largos en barco
-Lquay = 2;   % menor correlacion en muelle
-
-% Señal correlacionada simple
-corrSignal = @(n,L) filter(ones(1,max(1,L))/max(1,L), 1, randn(1,n));
-
-% Normalizacion suave a [0,1] para evitar extremos
-to01 = @(z) max(0, min(1, 0.5 + 0.20*z));
-
-% ----- BARCO: apilamiento por bloques -----
-zShip = corrSignal(numel(ship_idx), Lship);
-uShip = to01(zShip);
-
-gammaShip = 1.6;    % controla sesgo hacia alturas medias
-lvlShip = round((uShip.^(1/gammaShip)) * maxShip);
-
-% Suavizado adicional para generar mesetas
-lvlShip = round(filter([1 2 3 2 1]/9, 1, lvlShip));
-lvlShip = max(0, min(maxShip, lvlShip));
-
-% ----- MUELLE: contenedores aislados -----
-zQuay = corrSignal(numel(quay_idx), Lquay);
-uQuay = to01(zQuay);
-
-gammaQuay = 2.4;    % mayor sesgo a alturas bajas
-lvlQuay = round((uQuay.^(1/gammaQuay)) * maxQuay);
-lvlQuay = max(0, min(maxQuay, lvlQuay));
-
-% Pequeña irregularidad vertical
-jitterProb = 0.10;
-jitter = (rand(size(lvlQuay)) < jitterProb) .* (randi(3, size(lvlQuay)) - 2);
-lvlQuay = max(0, min(maxQuay, lvlQuay + jitter));
-
-% Mascara de ocupacion para generar stacks aislados
-p_single = 0.12;    % stacks individuales
-p_pair   = 0.03;    % pares ocasionales
-
-nq = numel(lvlQuay);
-mask = false(1, nq);
-
-i = 1;
-while i <= nq
-    r = rand;
-    if r < p_pair && i < nq
-        mask(i) = true;
-        mask(i+1) = true;
-        i = i + 3;      % dejo un hueco para evitar bloques largos
-    elseif r < (p_pair + p_single)
-        mask(i) = true;
-        i = i + 2;      % dejo un hueco
-    else
-        i = i + 1;
-    end
-end
-
-lvlQuay(~mask) = 0;
-
-% Evito triples consecutivos dejando solo el central
-for k = 2:(nq-1)
-    if lvlQuay(k)>0 && lvlQuay(k-1)>0 && lvlQuay(k+1)>0
-        lvlQuay(k-1) = 0;
-        lvlQuay(k+1) = 0;
-    end
-end
-
-% ----- Construccion del perfil final -----
-y0 = zeros(1, N);
-y0(quay_idx) = lvlQuay * step;
-y0(ship_idx) = lvlShip * step;
-
-% Altura cero en el borde agua–muelle
-y0(idx_borde) = 0;
-
-% Limite al salto maximo entre columnas para evitar picos no realistas
-maxStepJump = 2*step;
-for k = 2:N
-    if y0(k) > y0(k-1) + maxStepJump
-        y0(k) = y0(k-1) + maxStepJump;
-    elseif y0(k) < y0(k-1) - maxStepJump
-        y0(k) = y0(k-1) - maxStepJump;
-    end
-end
-
-y0(idx_borde) = 0;
-
-ml_total = Ms + Mc_X;          % 40000 kg
-f_contact = (1/(2*pi)) * sqrt(Kcy / ml_total);
-dt_required = 1 / (20 * f_contact);
-
-fprintf('Frecuencia natural contacto: %.1f Hz\n', f_contact);
-fprintf('Paso máximo requerido:       %.2e s\n', dt_required);
-fprintf('Min step actual (1e-10):     %s\n', string(dt_required > 1e-10));
+y0 = h_vec_inicial;  % Perfil inicial efectivamente medido (zona aún no escaneada = 0)
+x_LIDAR = 3;                                                % [m] Offset del sensor lidar respecto al carro hacia +xt
 
 %% CN2 - Controlador de movimiento - Carro
 Kf = it/rtd;                                        % Ganancia de conversión torque motor a fuerza lineal en el carro
@@ -231,7 +122,7 @@ Ki_i = (wn_h^2)*Jh_eq;                              % Ganancia integral lazo vel
 %Jt_eq_eq = Jt_eq * rtd / it^2;
 %bt_eq_eq = bt_eq * rtd / it^2;
 
-polos_obs_c = 10*20*-bt_eq/Jt_eq;
+polos_obs_c = 20*-bt_eq/Jt_eq;
 
 k_tita_c = 3 * abs(polos_obs_c);   % Ganancia del observador de estado para el carro
 k_omega_c = 3 * abs(polos_obs_c)^2;  % Ganancia del observador de estado para el carro
@@ -244,7 +135,7 @@ polo_veloz_h = min(eig(A_aug_h));
 
 %bh_eq_eq = bh_eq * rhd / (2*ih);
 
-polos_obs_h = 10*20*-bh_eq/Jh_eq;
+polos_obs_h = 20*-bh_eq/Jh_eq;
 
 k_tita_h = 3 * abs(polos_obs_h)-bh_eq/Jh_eq;   % Ganancia del observador de estado para el izaje
 k_omega_h = 3 * abs(polos_obs_h)^2-k_tita_h*bh_eq/Jh_eq;  % Ganancia del observador de estado para el izaje
