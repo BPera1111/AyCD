@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1776783712.62973 "c:/Users/lauta/OneDrive/Documentos/Automatas/AyCD/informe/informe.tex" "informe.pdf" "informe" 1776783714.54093 0
+["pdflatex"] 1776871454.32823 "c:/Users/lauta/OneDrive/Documentos/Automatas/AyCD/informe/informe.tex" "informe.pdf" "informe" 1776871455.99541 0
   "C:/Users/lauta/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1768310832 82686 2381c3433487640bf26aa76a10db7eb2 ""
   "C:/Users/lauta/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1747084979 13157641 7b8c64f5b8af0bf815d8488e79a632c1 ""
   "C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1233951848 1004 54797486969f23fa377b128694d548df ""
@@ -100,11 +100,11 @@
   "C:/Users/lauta/AppData/Local/Programs/MiKTeX/tex/latex/rerunfilecheck/rerunfilecheck.sty" 1751104012 9684 a33a14b82ce60d6e77cb9be689d79ee6 ""
   "C:/Users/lauta/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/lauta/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
-  "c:/Users/lauta/OneDrive/Documentos/Automatas/AyCD/informe/informe.tex" 1776783710 24578 e8892e599edeb71a5cf5ebc00a7e7216 ""
-  "informe.aux" 1776783714 4093 6ab3d151f2a4355620e0d5d45b8f4aaa "pdflatex"
-  "informe.out" 1776783714 3761 4de575d4445458c0227861516551eca7 "pdflatex"
-  "informe.tex" 1776783710 24578 e8892e599edeb71a5cf5ebc00a7e7216 ""
-  "informe.toc" 1776783714 1545 a36cf32ede3669eedf72cd0219b42050 "pdflatex"
+  "c:/Users/lauta/OneDrive/Documentos/Automatas/AyCD/informe/informe.tex" 1776871453 24864 124e6f27bc81b0a0a067b61e822ec8fe ""
+  "informe.aux" 1776871455 4093 6ab3d151f2a4355620e0d5d45b8f4aaa "pdflatex"
+  "informe.out" 1776871455 3761 4de575d4445458c0227861516551eca7 "pdflatex"
+  "informe.tex" 1776871453 24864 124e6f27bc81b0a0a067b61e822ec8fe ""
+  "informe.toc" 1776871455 1545 a36cf32ede3669eedf72cd0219b42050 "pdflatex"
   (generated)
   "informe.aux"
   "informe.log"

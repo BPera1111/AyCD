@@ -32,6 +32,7 @@
   right=1.32cm
 ]{geometry}
 
+\definecolor{signalcolor}{RGB}{0,115,195}
 
 % Configuración de encabezados y pies de página
 \pagestyle{fancy}
@@ -167,7 +168,7 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 \section*{Subsistema del Carro (Trolley)}
 
 \begin{equation}
-    M_t \, \frac{d \, v_t(t)}{dt} = F_{tw}(t) - b_t \, v_t(t) + F_{coupling}(t)
+    M_t \, \frac{d \, v_t(t)}{dt} = F_{tw}(t) - b_t \, v_t(t) + 2 F_{hw}(t, l(t)-l_h(t))\sin\theta_l(t)
 \end{equation}
 
 \begin{equation}
@@ -179,20 +180,20 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 \end{equation}
 
 \begin{equation}
-    J_{tm+tb} \, \frac{d \, \omega_{tm}(t)}{dt} = T_{tm}(t) + T_{tb}(t,\textcolor{cyan}{BRK_t}) - b_{tm} \, \omega_{tm}(t) - T_{tml}(t)
+    J_{tm+tb} \, \frac{d \, \omega_{tm}(t)}{dt} = T_{tm}(t) + T_{tb}(t,\textcolor{signalcolor}{BRK_t}) - b_{tm} \, \omega_{tm}(t) - T_{tml}(t)
 \end{equation}
 
 \begin{equation}
-    T_{tb}(t,\textcolor{cyan}{BRK_t}) = 
+    T_{tb}(t,\textcolor{signalcolor}{BRK_t}) = 
     \begin{cases} 
-        0 & \text{si } \textcolor{cyan}{BRK_t} = 1 \text{ (Abierto/Energizado)} \\
-        -T_{tb\_Max} \, \tanh(b_{tb} \, \omega_{tm}(t)) & \text{si } \textcolor{cyan}{BRK_t} = 0 \text{ (Cerrado/Frenado)}
+        0 & \text{si } \textcolor{signalcolor}{BRK_t} = 1 \text{ (Abierto/Energizado)} \\
+        -T_{tb\_Max} \, \tanh(b_{tb} \, \omega_{tm}(t)) & \text{si } \textcolor{signalcolor}{BRK_t} = 0 \text{ (Cerrado/Frenado)}
     \end{cases}
 \end{equation}
 
 \begin{align}
-    \text{Velocidades:} & \quad \omega_{td}(t) = \frac{\omega_{tm}(t)}{i_t} \implies \frac{d \, \omega_{td}(t)}{dt} = \frac{1}{i_t}\frac{d\omega_{tm}(t)}{dt} \\
-    \text{Torques:} & \quad T_{td}(t) = T_{tml}(t) \, i_t
+    \text{Velocidades:} & \quad \omega_{td}(t) \, i_t = \omega_{tm}(t)\implies \frac{d \, \omega_{td}(t)}{dt} \, i_t = \frac{d \, \omega_{tm}(t)}{dt} \\
+    \text{Torques:} & \quad T_{td}(t) = i_t \, T_{tml}(t)
 \end{align}
 
 \begin{equation}
@@ -204,21 +205,21 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 \end{equation}
 
 \begin{equation}
-    \left( J_{tm+tb} + \frac{J_{td}}{i_t^2} \right) \frac{d \, \omega_{tm}(t)}{dt} = T_{tm}(t) + T_{tb}(t,\textcolor{cyan}{BRK_t}) - \left( b_{tm} + \frac{b_{td}}{i_t^2} \right) \omega_{tm}(t) - \frac{T_{tdl}(t)}{i_t}
+    \left( J_{tm+tb} + \frac{J_{td}}{i_t^2} \right) \frac{d \, \omega_{tm}(t)}{dt} = T_{tm}(t) + T_{tb}(t,\textcolor{signalcolor}{BRK_t}) - \left( b_{tm} + \frac{b_{td}}{i_t^2} \right) \omega_{tm}(t) - \frac{T_{tdl}(t)}{i_t}
 \end{equation}
 
 \begin{equation}
-    J_{eq,t} = J_{tm+tb} + \frac{J_{td}}{i_t^2} \quad ; \quad 
-    b_{eq,t} = b_{tm} + \frac{b_{td}}{i_t^2}
+    J_{t,eq} = J_{tm+tb} + \frac{J_{td}}{i_t^2} \quad ; \quad 
+    b_{t,eq} = b_{tm} + \frac{b_{td}}{i_t^2}
 \end{equation}
 
 \begin{equation}
     \frac{d\,\omega_{tm}(t)}{dt}
-    = \frac{1}{J_{eq,t}}
+    = \frac{1}{J_{t,eq}}
     \left[
         T_{tm}(t)
-        + T_{tb}(t,\textcolor{cyan}{BRK_t})
-        - b_{eq,t}\,\omega_{tm}(t)
+        + T_{tb}(t,\textcolor{signalcolor}{BRK_t})
+        - b_{t,eq}\,\omega_{tm}(t)
         - \frac{r_{td}}{i_t}\,F_{tw}(t)
     \right]
 \end{equation}
@@ -229,7 +230,7 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
     \left[
         F_{tw}(t)
         - b_t\,v_t(t)
-        + F_{coupling}(t)
+        + 2 F_{hw}(t, l(t)-l_h(t))\sin\theta_l(t)
     \right]
 \end{equation}
 
@@ -246,31 +247,31 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 \section*{Subsistema de Izaje (Hoist)}
 
 \begin{equation}
-    m_l(\textcolor{cyan}{TLK}) = 
+    m_l(\textcolor{signalcolor}{TLK}) = 
     \begin{cases} 
-        M_s & \text{si } \textcolor{cyan}{TLK} = \text{Off (solo spreader)} \\
-        M_s + M_{cX} & \text{si } \textcolor{cyan}{TLK} = \text{On (spreader + contenedor)}
+        M_s & \text{si } \textcolor{signalcolor}{TLK} = \text{Off (solo spreader)} \\
+        M_s + M_{cX} & \text{si } \textcolor{signalcolor}{TLK} = \text{On (spreader + contenedor)}
     \end{cases}
 \end{equation}
 
 \begin{equation}
-    h_c(\textcolor{cyan}{TLK}) = 
+    h_c(\textcolor{signalcolor}{TLK}) = 
     \begin{cases} 
-        0 & \text{si } \textcolor{cyan}{TLK} = \text{Off} \\
-        H_c & \text{si } \textcolor{cyan}{TLK} = \text{On}
+        0 & \text{si } \textcolor{signalcolor}{TLK} = \text{Off} \\
+        H_c & \text{si } \textcolor{signalcolor}{TLK} = \text{On}
     \end{cases}
 \end{equation}
 
 \begin{equation}
-    m_l(\textcolor{cyan}{TLK}) \, \frac{d \, v_{lx}(t)}{dt} = -2 F_{hw}(t) \, \sin\theta_l(t) + F_{cx}(t)
+    m_l(\textcolor{signalcolor}{TLK}) \, \frac{d \, v_{lx}(t)}{dt} = -2 F_{hw}(t) \, \sin\theta_l(t) + F_{cx}(t)
 \end{equation}
 
 \begin{equation}
-    m_l(\textcolor{cyan}{TLK}) \, \frac{d \, v_{ly}(t)}{dt} = 2 F_{hw}(t) \, \cos\theta_l(t) - m_l(\textcolor{cyan}{TLK}) \, g + F_{cy}(t)
+    m_l(\textcolor{signalcolor}{TLK}) \, \frac{d \, v_{ly}(t)}{dt} = 2 F_{hw}(t) \, \cos\theta_l(t) - m_l(\textcolor{signalcolor}{TLK}) \, g + F_{cy}(t)
 \end{equation}
 
 \begin{equation}
-    \delta_y(t) = y_{c0}(x_l,t) - (y_l(t) - h_c(\textcolor{cyan}{TLK}))
+    \delta_y(t) = y_{c0}(x_l,t) - (y_l(t) - h_c(\textcolor{signalcolor}{TLK}))
 \end{equation}
 
 \begin{equation}
@@ -302,11 +303,11 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 \end{equation}
 
 \begin{equation}
-    J_{hd+hEb} \, \frac{d \, \omega_{hd}(t)}{dt} = T_{hd}(t) + T_{hEb}(\textcolor{cyan}{BRK_{hE}}) - b_{hd} \, \omega_{hd}(t) - T_{hdl}(t)
+    J_{hd+hEb} \, \frac{d \, \omega_{hd}(t)}{dt} = T_{hd}(t) + T_{hEb}(\textcolor{signalcolor}{BRK_{hE}}) - b_{hd} \, \omega_{hd}(t) - T_{hdl}(t)
 \end{equation}
 
 \begin{equation}
-    J_{hm+hb} \, \frac{d \, \omega_{hm}(t)}{dt} = T_{hm}(t) + T_{hb}(\textcolor{cyan}{BRK_{h}}) - b_{hm} \, \omega_{hm}(t) - T_{hml}(t)
+    J_{hm+hb} \, \frac{d \, \omega_{hm}(t)}{dt} = T_{hm}(t) + T_{hb}(\textcolor{signalcolor}{BRK_{h}}) - b_{hm} \, \omega_{hm}(t) - T_{hml}(t)
 \end{equation}
 
 \begin{equation}
@@ -314,18 +315,18 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 \end{equation}
 
 \begin{equation}
-    T_{hb}(t,\textcolor{cyan}{BRK_{h}}) = 
+    T_{hb}(t,\textcolor{signalcolor}{BRK_{h}}) = 
     \begin{cases} 
-        0 & \text{si } \textcolor{cyan}{BRK_h} = 1 \text{ (Energizado/Abierto)} \\
-        -T_{hb\_Max} \, \tanh(b_{hb} \, \omega_{hm}(t)) & \text{si } \textcolor{cyan}{BRK_h} = 0 \text{ (Desenergizado/Cerrado)}
+        0 & \text{si } \textcolor{signalcolor}{BRK_h} = 1 \text{ (Energizado/Abierto)} \\
+        -T_{hb\_Max} \, \tanh(b_{hb} \, \omega_{hm}(t)) & \text{si } \textcolor{signalcolor}{BRK_h} = 0 \text{ (Desenergizado/Cerrado)}
     \end{cases}
 \end{equation}
 
 \begin{equation}
-    T_{hEb}(t,\textcolor{cyan}{BRK_{h}}) = 
+    T_{hEb}(t,\textcolor{signalcolor}{BRK_{h}}) = 
     \begin{cases} 
-        0 & \text{si } \textcolor{cyan}{BRK_{hE}} = 1 \text{ (Energizado/Abierto)} \\
-        -T_{hEb\_Max} \, \tanh(b_{hEb} \, \omega_{hd}(t)) & \text{si } \textcolor{cyan}{BRK_{hE}} = 0 \text{ (Desenergizado/Cerrado)}
+        0 & \text{si } \textcolor{signalcolor}{BRK_{hE}} = 1 \text{ (Energizado/Abierto)} \\
+        -T_{hEb\_Max} \, \tanh(b_{hEb} \, \omega_{hd}(t)) & \text{si } \textcolor{signalcolor}{BRK_{hE}} = 0 \text{ (Desenergizado/Cerrado)}
     \end{cases}
 \end{equation}
 
@@ -340,8 +341,8 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
     = \frac{1}{J_{eq,h}}
     \left[
         T_{hm}(t)
-        + T_{hb}(t,\textcolor{cyan}{BRK_h})
-        + \frac{T_{hEb}(t,\textcolor{cyan}{BRK_{hE}})}{i_h}
+        + T_{hb}(t,\textcolor{signalcolor}{BRK_h})
+        + \frac{T_{hEb}(t,\textcolor{signalcolor}{BRK_{hE}})}{i_h}
         - b_{eq,h}\,\omega_{hm}(t)
         - \frac{r_{hd}}{i_h} \, F_{hw}(t)
     \right]
@@ -349,17 +350,17 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 
 \begin{equation}
     \frac{d\,v_{ly}(t)}{dt}
-    = \frac{1}{m_l(\textcolor{cyan}{TLK})}
+    = \frac{1}{m_l(\textcolor{signalcolor}{TLK})}
     \left[
         2\,F_{hw}(t)\cos\theta_l
-        - m_l(\textcolor{cyan}{TLK})\,g
+        - m_l(\textcolor{signalcolor}{TLK})\,g
         + F_{cy}(t)
     \right]
 \end{equation}
 
 \begin{equation}
     \frac{d\,v_{lx}(t)}{dt}
-    = \frac{1}{m_l(\textcolor{cyan}{TLK})}\left[-2 F_{hw}(t) \, \sin\theta_l(t) + F_{cx}(t)\right]
+    = \frac{1}{m_l(\textcolor{signalcolor}{TLK})}\left[-2 F_{hw}(t) \, \sin\theta_l(t) + F_{cx}(t)\right]
 \end{equation}
 
 \begin{equation}
