@@ -92,10 +92,10 @@ is_scanned_vec_inicial = [ones(1,12), zeros(1,N_xt-12)];    % Vector de índices
 alt_borde = 2.8;                                            % [m] Altura del borde del muelle 
 
 h_vec_inicial = [ 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, alt_borde,... 
-                  3, 5, 6, 3, 5, 9, 8, 4, 1, -1, -4, -5, -2, -1, 2, 6, 8, 8, 5,...
+                  3, 5, 6, 3, 5, 9, 8, 4, 0, 0, -4, -5, -2, -1, 2, 6, 8, 8, 5,...
                   alt_borde] * Hc;                          % Vector inicial del perfil de obstáculos
 
-y0 = h_vec_inicial;  % Perfil inicial efectivamente medido (zona aún no escaneada = 0)
+y0 = zeros(33);  % Perfil inicial efectivamente medido (zona aún no escaneada = 0)
 x_LIDAR = 3;                                                % [m] Offset del sensor lidar respecto al carro hacia +xt
 
 %% CN2 - Controlador de movimiento - Carro
@@ -177,4 +177,4 @@ Thm_0 = 0;
 
 xtd_0 = xt_0;  
 titatm_0 = xtd_0/(rtd/it); 
-titahm_0 = lh_0/(rhd/(2*ih)); 
+titahm_0 = yl_0/(rhd/(2*ih)); 
