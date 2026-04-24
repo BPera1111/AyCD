@@ -249,65 +249,61 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 \begin{equation}
     m_l(\textcolor{signalcolor}{TLK}) = 
     \begin{cases} 
-        M_s & \text{si } \textcolor{signalcolor}{TLK} = \text{Off (solo spreader)} \\
-        M_s + M_{cX} & \text{si } \textcolor{signalcolor}{TLK} = \text{On (spreader + contenedor)}
+        M_s & \text{si } \textcolor{signalcolor}{TLK} = 1 \text{ (solo spreader)} \\
+        M_s + M_{cX} & \text{si } \textcolor{signalcolor}{TLK} = 0 \text{ (spreader + contenedor)}
     \end{cases}
 \end{equation}
 
 \begin{equation}
     h_c(\textcolor{signalcolor}{TLK}) = 
     \begin{cases} 
-        0 & \text{si } \textcolor{signalcolor}{TLK} = \text{Off} \\
-        H_c & \text{si } \textcolor{signalcolor}{TLK} = \text{On}
+        0 & \text{si } \textcolor{signalcolor}{TLK} = 1 \\
+        H_c & \text{si } \textcolor{signalcolor}{TLK} = 0
     \end{cases}
 \end{equation}
 
 \begin{equation}
-    m_l(\textcolor{signalcolor}{TLK}) \, \frac{d \, v_{lx}(t)}{dt} = -2 F_{hw}(t) \, \sin\theta_l(t) + F_{cx}(t)
+    m_l(\textcolor{signalcolor}{TLK}) \, \frac{d \, v_{lx}(t)}{dt} = -2 F_{hw}(t,l(t)-l_h(t)) \, \sin\theta_l(t) + F_{cx}(t, (y_l(t)-h_c(\textcolor{signalcolor}{TLK})) - y_{c0}(x_l,t))
 \end{equation}
 
 \begin{equation}
-    m_l(\textcolor{signalcolor}{TLK}) \, \frac{d \, v_{ly}(t)}{dt} = 2 F_{hw}(t) \, \cos\theta_l(t) - m_l(\textcolor{signalcolor}{TLK}) \, g + F_{cy}(t)
-\end{equation}
-
-\begin{equation}
-    \delta_y(t) = y_{c0}(x_l,t) - (y_l(t) - h_c(\textcolor{signalcolor}{TLK}))
+    m_l(\textcolor{signalcolor}{TLK}) \, \frac{d \, v_{ly}(t)}{dt} = 2 F_{hw}(t,l(t)-l_h(t)) \, \cos\theta_l(t) - m_l(\textcolor{signalcolor}{TLK}) \, g + F_{cy}(t, (y_l(t)-h_c(\textcolor{signalcolor}{TLK})) - y_{c0}(x_l,t))
 \end{equation}
 
 \begin{equation}
     F_{cy}(t) = 
     \begin{cases} 
-        K_{cy} \, \delta_y(t) - b_{cy} \, v_{ly}(t) & \text{si } \delta_y(t) \ge 0 \text{ (Apoyado)} \\
-        0 & \text{si } \delta_y(t) < 0 \text{ (Suspendido)}
+        K_{cy} \, (y_{c0}(x_l,t) - (y_l(t) - h_c(\textcolor{signalcolor}{TLK}))) - b_{cy} \, v_{ly}(t) & \text{si } (y_l(t) - h_c(\textcolor{signalcolor}{TLK})) \le y_{c0}(x_l,t) \text{ (Apoyado)} \\
+        0 & \text{si } (y_l(t) - h_c(\textcolor{signalcolor}{TLK})) > y_{c0}(x_l,t) \text{ (Suspendido)}
     \end{cases}
 \end{equation}
 
 \begin{equation}
     F_{cx}(t) = 
     \begin{cases} 
-        -b_{cx} \, v_{lx}(t) & \text{si } \delta_y(t) \ge 0 \\
-        0 & \text{si } \delta_y(t) < 0
+        -b_{cx} \, v_{lx}(t) & \text{si } (y_l(t) - h_c(\textcolor{signalcolor}{TLK})) \le y_{c0}(x_l,t) \\
+        0 & \text{si } (y_l(t) - h_c(\textcolor{signalcolor}{TLK})) > y_{c0}(x_l,t)
     \end{cases}
 \end{equation}
 
 \begin{equation}
-    K_{hw}(l_h) = \frac{k_{hwu}}{2 l_h(t) + L_{h0}} \quad ; \quad b_{hw}(l_h) = b_{hwu}\,(2 l_h(t) + L_{h0})
+    K_{hw}(l_h) \equiv \frac{k_{hwu}}{2 l_h(t) + L_{h0}} \quad ; \quad b_{hw}(l_h) \equiv b_{hwu}\,(2 l_h(t) + L_{h0})
 \end{equation}
 
 \begin{equation}
     F_{hw}(t) = 
     \begin{cases} 
-        K_{hw}(l_h) \, \Delta L + b_{hw}(l_h) \, \Delta V & \text{si } l(t) \ge l_h(t) \text{ (Tenso)} \\
-        0 & \text{si } l(t) < l_h(t) \text{ (Flojo/Slack)}
+        K_{hw}(l_h) \, 2 \, (l(t) - l_h(t)) + b_{hw}(l_h(t)) \, 2 \left( \frac{d \, l(t)}{dt} - \frac{d \, l_h(t)}{dt} \right), & \text{si } l(t) \ge l_h(t) \text{ (Tenso)} \\[6pt]
+        0, & \text{si } l(t) < l_h(t) \text{ (Flojo/Slack)}
     \end{cases}
 \end{equation}
 
 \begin{equation}
-    J_{hd+hEb} \, \frac{d \, \omega_{hd}(t)}{dt} = T_{hd}(t) + T_{hEb}(\textcolor{signalcolor}{BRK_{hE}}) - b_{hd} \, \omega_{hd}(t) - T_{hdl}(t)
+    J_{hd+hEb} \, \frac{d \, \omega_{hd}(t)}{dt} = T_{hd}(t) + T_{hEb}(t,\textcolor{signalcolor}{BRK_{hE}}) - b_{hd} \, \omega_{hd}(t) - T_{hdl}(t)
 \end{equation}
 
 \begin{equation}
-    J_{hm+hb} \, \frac{d \, \omega_{hm}(t)}{dt} = T_{hm}(t) + T_{hb}(\textcolor{signalcolor}{BRK_{h}}) - b_{hm} \, \omega_{hm}(t) - T_{hml}(t)
+    J_{hm+hb} \, \frac{d \, \omega_{hm}(t)}{dt} = T_{hm}(t) + T_{hb}(t,\textcolor{signalcolor}{BRK_{h}}) - b_{hm} \, \omega_{hm}(t) - T_{hml}(t)
 \end{equation}
 
 \begin{equation}
@@ -323,7 +319,7 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 \end{equation}
 
 \begin{equation}
-    T_{hEb}(t,\textcolor{signalcolor}{BRK_{h}}) = 
+    T_{hEb}(t,\textcolor{signalcolor}{BRK_{hE}}) = 
     \begin{cases} 
         0 & \text{si } \textcolor{signalcolor}{BRK_{hE}} = 1 \text{ (Energizado/Abierto)} \\
         -T_{hEb\_Max} \, \tanh(b_{hEb} \, \omega_{hd}(t)) & \text{si } \textcolor{signalcolor}{BRK_{hE}} = 0 \text{ (Desenergizado/Cerrado)}
@@ -331,19 +327,18 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 \end{equation}
 
 \begin{equation}
-    J_{eq,h} = J_{hm+hb} + \frac{J_{hd+hEb}}{i_h^2}  \quad ; \quad
-    b_{eq,h} = b_{hm} + \frac{b_{hd}}{i_h^2}  \quad ; \quad
-    T_{hEb,ref} = \frac{T_{hEb}}{i_h}
+    J_{h,eq} = J_{hm+hb} + \frac{J_{hd+hEb}}{i_h^2}  \quad ; \quad
+    b_{h,eq} = b_{hm} + \frac{b_{hd}}{i_h^2}
 \end{equation}
 
 \begin{equation}
     \frac{d\,\omega_{hm}(t)}{dt}
-    = \frac{1}{J_{eq,h}}
+    = \frac{1}{J_{h,eq}}
     \left[
         T_{hm}(t)
         + T_{hb}(t,\textcolor{signalcolor}{BRK_h})
         + \frac{T_{hEb}(t,\textcolor{signalcolor}{BRK_{hE}})}{i_h}
-        - b_{eq,h}\,\omega_{hm}(t)
+        - b_{h,eq}\,\omega_{hm}(t)
         - \frac{r_{hd}}{i_h} \, F_{hw}(t)
     \right]
 \end{equation}
@@ -370,10 +365,26 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 \begin{equation}
     F_{hw}(t) =
     \begin{cases}
-        2 K_{hw}(l_h) \, \left( l(t) - l_h(t) \right)
-        + 2 b_{hw}(l_h) \, \left( \frac{d \, l(t)}{dt} - \frac{d \, l_h(t)}{dt} \right),
-        & \text{si } l \ge l_h \text{ (Tenso)} \\[6pt]
-        0, & \text{si } l < l_h \text{ (Flojo)}
+        2 K_{hw}(l_h(t)) \, \left( l(t) - l_h(t) \right)
+        + 2 b_{hw}(l_h(t)) \, \left( \frac{d \, l(t)}{dt} - \frac{d \, l_h(t)}{dt} \right),
+        & \text{si } l(t) \ge l_h(t) \text{ (Tenso)} \\[6pt]
+        0, & \text{si } l(t) < l_h(t) \text{ (Flojo)}
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+    F_{cy}(t) = 
+    \begin{cases} 
+        K_{cy} \, (y_{c0}(x_l,t) - (y_l(t) - h_c(\textcolor{signalcolor}{TLK}))) - b_{cy} \, v_{ly}(t) & \text{si } (y_l(t) - h_c(\textcolor{signalcolor}{TLK})) \le y_{c0}(x_l,t) \text{ (Apoyado)} \\
+        0 & \text{si } (y_l(t) - h_c(\textcolor{signalcolor}{TLK})) > y_{c0}(x_l,t) \text{ (Suspendido)}
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+    F_{cx}(t) = 
+    \begin{cases} 
+        -b_{cx} \, v_{lx}(t) & \text{si } (y_l(t) - h_c(\textcolor{signalcolor}{TLK})) \le y_{c0}(x_l,t) \\
+        0 & \text{si } (y_l(t) - h_c(\textcolor{signalcolor}{TLK})) > y_{c0}(x_l,t)
     \end{cases}
 \end{equation}
 
@@ -381,6 +392,17 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
     \frac{d\,l_h(t)}{dt}
     = -\,\frac{r_{hd}}{2\,i_h}\,\omega_{hm}(t)
 \end{equation}
+
+\textbf{Variables auxiliares:}
+\begin{itemize}
+    \item Rigidez variable: $K_{hw}(l_h) = \frac{k_{hwu}}{2 l_h(t) + L_{h0}}$
+    \item Amortiguamiento variable: $b_{hw}(l_h) = b_{hwu}\,(2 l_h(t) + L_{h0})$
+    \item Longitud geométrica actual (Pitágoras): $l(t) = \sqrt{(x_l(t) - x_t(t))^2 + (Y_{t0} - y_l(t))^2} \quad$ ($Y_{t0}$ es la altura fija de poleas de izaje en el carro)
+    \item Velocidad de cambio de longitud (para el amortiguamiento):
+    \[ \frac{dl(t)}{dt} = \frac{(x_l(t) - x_t(t))(v_{lx}(t) - v_t(t)) - (Y_{t0} - y_l(t))v_{ly}(t)}{l(t)} \]
+    \item Cálculo del ángulo de balanceo:
+    \[ \theta_l = \text{atan2}\left(\frac{x_l(t) - x_t(t)}{Y_{t0} - y_l(t)}\right) \]
+\end{itemize}
 
 \section*{Sensores de Posición}
 
@@ -410,6 +432,7 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
     \end{cases}
 \end{equation}
 
+\newpage
 
 \textbf{Restricción geométrica}
 \begin{align}
@@ -493,7 +516,6 @@ M_t \frac{dv_t(t)}{dt} = F_{tw}(t) - b_t \cdot v_t(t) + 2 \cdot F_{hw}(t, l(t) \
 \left(\frac{J_{td} + J_{tm+tb}\cdot{i}_t^2}{r_{td}}\right)\ddot{x}_{td} = -\left(\frac{b_{tm}\cdot{i}_t^2 + b_{td}}{r_{td}}\right)\dot{x}_{td} + i_t(T_{tm} + T_{tb}) - F_{tw}r_{td}
 \end{equation}
 
-\newpage
 
 \[
 J_{eq}=\frac{J_{hd+hEb}}{i_h}+J_{hm+hb}\cdot{i}_h

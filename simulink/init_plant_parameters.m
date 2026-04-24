@@ -95,7 +95,7 @@ h_vec_inicial = [ 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, alt_borde,...
                   3, 5, 6, 3, 5, 9, 8, 4, 0, 0, -4, -5, -2, -1, 2, 6, 8, 8, 5,...
                   alt_borde] * Hc;                          % Vector inicial del perfil de obstáculos
 
-y0 = zeros(33);  % Perfil inicial efectivamente medido (zona aún no escaneada = 0)
+yc0 = ones(33)*15;  % Perfil inicial efectivamente medido (zona aún no escaneada = 0)
 x_LIDAR = 3;                                                % [m] Offset del sensor lidar respecto al carro hacia +xt
 
 %% CN2 - Controlador de movimiento - Carro
