@@ -37,14 +37,16 @@ khwu = 236e6;               % Rigidez unitaria a tracción [N/m * m] [cite: 299]
 bhwu = 150;                 % Amortiguamiento unitario [(N/m/s)/m] [cite: 299]
 Lh0 = 110;                  % Longitud de despliegue fijo [m] [cite: 299]
 
-vh_nom=1.5;
 
 Jh_eq = Jhm_hb+Jhd_hEb/ih^2;
 bh_eq = bhm+bhd/ih^2;
 
-vh_lim = vh_nom;
+yh_min = -20;
+yh_max = 40;
+vh_max = 3;
+vh_nom= 1.5;
 ah_max = 0.75; 
-vh_0 = 0;
+P_nom = 956150;          % [W] Potencia nominal
 
 %% 4. Parámetros del Carro (Trolley)
 Mt = 30000;                 % Masa equivalente del carro [kg] [cite: 299]
@@ -95,7 +97,7 @@ h_vec_inicial = [ 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, alt_borde,...
                   3, 5, 6, 3, 5, 9, 8, 4, 0, 0, -4, -5, -2, -1, 2, 6, 8, 8, 5,...
                   alt_borde] * Hc;                          % Vector inicial del perfil de obstáculos
 
-yc0 = ones(33)*15;  % Perfil inicial efectivamente medido (zona aún no escaneada = 0)
+yc0_vec_inicial = ones(33)*15;  % Perfil inicial efectivamente medido (zona aún no escaneada = 0)
 x_LIDAR = 3;                                                % [m] Offset del sensor lidar respecto al carro hacia +xt
 
 %% CN2 - Controlador de movimiento - Carro
@@ -169,12 +171,17 @@ fprintf('Parámetros de la planta cargados correctamente.\n');
 vt_0 = 0;    
 xt_0 = 25;
 xl_0 = 25; % integradores carga y perfil de obstaculos 
-yl_0 = 20; % integradores carga y perfil de obstaculos 
-lh_0 = Yt0-yl_0; % Integrador accionamiento de izaje
+yh_0 = 20; % integradores carga y perfil de obstaculos 
+lh_0 = Yt0-yh_0; % Integrador accionamiento de izaje
 Ttm_0 = 0;                                    % [Nm] Torque inicial en el motor del carro
 Thm_0 = 0;
+
+l_0 = (1/2*Ms*g)/(2*khwu/(2*lh_0+Lh0))+lh_0;  % [m] Longitud real estirada del cable por el peso del spreader
+yl_0 = Yt0 - l_0;                             % [m] Posición Y inicial real carga
 
 
 xtd_0 = xt_0;  
 titatm_0 = xtd_0/(rtd/it); 
 titahm_0 = yl_0/(rhd/(2*ih)); 
+
+vh_0 = 0;
