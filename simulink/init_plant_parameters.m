@@ -3,6 +3,11 @@
 
 clear; clc;
 
+%% 0. Frecuencias - Niveles de Control lpm
+Ts0 = 0.02;
+Ts1 = 0.02;
+%Ts2 = 
+
 %% 1. Constantes Universales y Geometría Fija
 g = 9.80665;                % Aceleración gravitatoria [m/s^2] [cite: 291]
 Yt0 = 45.0;                 % Altura fija de poleas en el carro [m] [cite: 104, 285]
@@ -10,7 +15,7 @@ Ysb = 5.0;                  % Despeje mínimo sobre viga testera [m] [cite: 105]
 
 %% 2. Masas y Contenedores
 Ms = 15000;                 % Masa Spreader + Headblock [kg] [cite: 289]
-Mc_max = 50000;             % Masa nominal máxima del container [kg] [cite: 289]
+Mc_max = 50000;             % Masa nominal máxima del container [kg] [cite: 289]    
 Mc_min = 2000;              % Masa container vacío [kg] [cite: 290]
 Hc = 2.59;                  % Altura estándar del container [m] [cite: 287]
 Wc = 2.44;                  % Ancho estándar del container [m] [cite: 287]
@@ -150,6 +155,7 @@ yh_0 = 20; % integradores carga y perfil de obstaculos
 lh_0 = Yt0-yh_0; % Integrador accionamiento de izaje
 Ttm_0 = 0;                                    % [Nm] Torque inicial en el motor del carro
 Thm_0 = 0;
+
 
 l_0 = (1/2*Ms*g)/(2*khwu/(2*lh_0+Lh0))+lh_0;  % [m] Longitud real estirada del cable por el peso del spreader
 yl_0 = Yt0 - l_0;                             % [m] Posición Y inicial real carga
