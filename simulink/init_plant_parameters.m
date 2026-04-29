@@ -64,7 +64,6 @@ btm = 6.0;                  % Fricción viscosa eje rápido [N.m/(rad/s)] [cite:
 btb = 5.0e6;                % Fricción viscosa freno operación cerrado [N.m/(rad/s)] [cite: 310]
 Ttb_Max = 5.0e3;            % Torque máximo freno operación [N.m] [cite: 311]
 tau_tm = 0.001;             % Constante de tiempo modulador torque [s] [cite: 314]
-%tau_tm = 1;
 Ttm_Max = 4.0e3;            % Torque máximo motor carro [N.m] [cite: 314]
 
 xt_min = -30.0;      % [m] Límite mínimo posición carro
@@ -85,7 +84,6 @@ bcx = 1.0e6;                % Fricción de arrastre horizontal [N/(m/s)] [cite: 
 %Kcy = 2e6;      % N/m  - misma frecuencia natural pero tratable
 %bcy = 2*sqrt(Kcy * 40000) * 0.7;  % amortiguamiento critico 70%
 %% Asignacion aleatoria de la masa del carro (Entorno)
-%Mc_Xvect=
 Mc_X=25000;
 
 %% Perfil de obstaculos (Entorno)
@@ -106,23 +104,18 @@ Kf = it/rtd;                                        % Ganancia de conversión to
 zitta_t = 1.4;                                      % (orig 1.1)
 wn_t = 0.8;                                         % (orig 0.95)
 
-
 Kp_c = (2*zitta_t*wn_t*Mt)/Kf;                      % Ganancia proporcional lazo velocidad carro
 Ki_c = (wn_t^2*Mt)/Kf; 
-
 
 %% CN2 - Controlador de movimiento - Izaje
 zitta_h = 2;                                      % Puede tomar valores entre 0.707 y 2
 wn_h = 8;                                        % [rad/s] Puede tomar valores entre 0.5 y 10 rad/s
 
-%Jh_eq_eq=Jh_eq* rhd/(2*ih^2);
-
 Kp_i = 2*zitta_h*wn_h*Jh_eq;                        % Ganancia proporcional lazo velocidad izaje
 Ki_i = (wn_h^2)*Jh_eq;                              % Ganancia integral lazo velocidad izaje
 
 %% CN2 - Observador de estado - Carro
-%Jt_eq_eq = Jt_eq * rtd / it^2;
-%bt_eq_eq = bt_eq * rtd / it^2;
+
 
 polos_obs_c = 20*-bt_eq/Jt_eq;
 
@@ -134,8 +127,6 @@ k_i_c = abs(polos_obs_c)^3;     % Ganancia del observador de estado para el carr
 A_aug_h = [0, 1, 0; 0, -bh_eq/Jh_eq, 1/Jh_eq; 0, 0, 0];   
 C_aug_h = [1, 0, 0];
 polo_veloz_h = min(eig(A_aug_h));   
-
-%bh_eq_eq = bh_eq * rhd / (2*ih);
 
 polos_obs_h = 20*-bh_eq/Jh_eq;
 
@@ -151,23 +142,7 @@ Lh = place(A_aug_h', C_aug_h', polos_obs_h)';       % Cálculo de ganancias
 fprintf('Parámetros de la planta cargados correctamente.\n');
 
 
-% %% Condiciones iniciales consistentes
-% % Spreader suspendido, detenido, centrado, a altura y_h_ini sobre el muelle
-
-% y_h_ini  = 10.0;          % altura inicial del spreader [m] (sobre muelle)
-% x_t_ini  = 0.0;           % posicion inicial del carro [m]
-% x_l_ini  = 0.0;           % carga centrada bajo el carro
-% lh_ini   = Yt0 - y_h_ini; % longitud cable tambor = 45 - 10 = 35 m
-% l_ini    = lh_ini;         % cable sin elongacion inicial (equilibrio)
-
-% % Velocidades todas cero
-% vt_ini   = 0;
-% vlx_ini  = 0;
-% vly_ini  = 0;
-% whd_ini  = 0;
-% whm_ini  = 0;
-% wtd_ini  = 0;
-% wtm_ini  = 0;
+%% Condiciones iniciales
 vt_0 = 0;    
 xt_0 = 25;
 xl_0 = 25; % integradores carga y perfil de obstaculos 
