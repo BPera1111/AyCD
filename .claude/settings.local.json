@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat)",
+      "Bash(python3 /tmp/analyze_slx.py)",
+      "Bash(python3)",
+      "Bash(awk '/<transition/,/<\\\\/transition>/ {print NR\": \"$0}' /tmp/slx_extract/simulink/stateflow/chart_1366.xml)",
+      "Read(//tmp/**)"
+    ]
+  }
+}

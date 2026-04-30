@@ -143,6 +143,10 @@ k_i_h = abs(polos_obs_h)^3;     % Ganancia del observador de estado para el izaj
 wh_obs = 20 * polo_veloz_h;                         % 20 veces la frecuencia del polo más rápido
 polos_obs_h = [wh_obs, wh_obs*1.01, wh_obs*1.02];   % Separamos polos ligeramente (1-2%) para evitar problemas con 'place'
 Lh = place(A_aug_h', C_aug_h', polos_obs_h)';       % Cálculo de ganancias
+%% Modo Automático
+% Lista de índices de columna válidos para selección (excluye bordes 1, 13, 33)
+i_lista = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32];
+
 %% Fin
 fprintf('Parámetros de la planta cargados correctamente.\n');
 

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modo Automático 100% (Full Auto) — Chart Control Nivel 1</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --blue: #388bfd;
+    --blue-dim: #1f3a5c;
+    --green: #3fb950;
+    --green-dim: #1a3a24;
+    --purple: #8957e5;
+    --purple-dim: #2d1f5c;
+    --red: #f85149;
+    --red-dim: #3a1a1a;
+    --orange: #d29922;
+    --orange-dim: #3a2a0a;
+    --cyan: #58a6ff;
+    --cyan-dim: #1f3050;
+    --gray-dim: #1e2530;
+    --yellow: #e3b341;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 32px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 40px;
+    font-family: 'Consolas', 'Monaco', monospace;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 40px 0 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h2::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 20px;
+    background: var(--blue);
+    border-radius: 2px;
+  }
+
+  /* ── DIAGRAMA MERMAID ── */
+  .diagram-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    overflow-x: auto;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  /* ── CARDS DE ESTADOS ── */
+  .states-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .state-card {
+    border-radius: 10px;
+    border: 1px solid;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .state-card.blue   { border-color: var(--blue);   background: var(--blue-dim); }
+  .state-card.green  { border-color: var(--green);  background: var(--green-dim); }
+  .state-card.cyan   { border-color: var(--cyan);   background: var(--cyan-dim); }
+  .state-card.purple { border-color: var(--purple); background: var(--purple-dim); }
+  .state-card.red    { border-color: var(--red);    background: var(--red-dim); }
+  .state-card.gray   { border-color: var(--border); background: var(--gray-dim); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+  }
+
+  .state-card.blue   .card-header { border-color: var(--blue);   color: var(--blue); }
+  .state-card.green  .card-header { border-color: var(--green);  color: var(--green); }
+  .state-card.cyan   .card-header { border-color: var(--cyan);   color: var(--cyan); }
+  .state-card.purple .card-header { border-color: var(--purple); color: var(--purple); }
+  .state-card.red    .card-header { border-color: var(--red);    color: var(--red); }
+  .state-card.gray   .card-header { border-color: var(--border); color: var(--text-muted); }
+
+  .state-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .state-card.blue   .state-dot { background: var(--blue); }
+  .state-card.green  .state-dot { background: var(--green); }
+  .state-card.cyan   .state-dot { background: var(--cyan); }
+  .state-card.purple .state-dot { background: var(--purple); }
+  .state-card.red    .state-dot { background: var(--red); }
+  .state-card.gray   .state-dot { background: var(--text-muted); }
+
+  .card-tag {
+    margin-left: auto;
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.1);
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+  }
+
+  .card-body { padding: 16px; flex-grow: 1; }
+
+  .action-block {
+    background: rgba(0,0,0,0.3);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+  }
+
+  .action-block:last-child { margin-bottom: 0; }
+
+  .action-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    color: var(--text-muted);
+  }
+
+  .state-card.blue   .action-label { color: var(--blue); }
+  .state-card.green  .action-label { color: var(--green); }
+  .state-card.cyan   .action-label { color: var(--cyan); }
+  .state-card.purple .action-label { color: var(--purple); }
+  .state-card.red    .action-label { color: var(--red); }
+  .state-card.gray   .action-label { color: var(--text-muted); }
+
+  pre {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: var(--text);
+    white-space: pre-wrap;
+    line-height: 1.5;
+  }
+
+  /* ── TABLAS ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    background: var(--surface);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  thead tr { background: var(--surface2); }
+
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid rgba(48,54,61,0.6);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  code {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.82em;
+    background: rgba(0,0,0,0.3);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--cyan);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .badge-param   { background: var(--orange-dim); color: var(--orange); border: 1px solid var(--orange); }
+  .badge-input   { background: var(--blue-dim);   color: var(--blue);   border: 1px solid var(--blue); }
+  .badge-local   { background: var(--gray-dim);   color: var(--text-muted); border: 1px solid var(--border); }
+  .badge-port    { background: var(--purple-dim); color: var(--purple); border: 1px solid var(--purple); }
+
+  /* ── WARNING BOX ── */
+  .warning-box {
+    background: var(--orange-dim);
+    border: 1px solid var(--orange);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 24px 0;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .warning-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .warning-title {
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+  }
+
+  .warning-body {
+    color: var(--text);
+    font-size: 0.88rem;
+  }
+
+  .warning-body code { color: var(--yellow); }
+
+  /* ── FLOW ── */
+  .flow-list {
+    list-style: none;
+    counter-reset: flow;
+  }
+
+  .flow-list li {
+    counter-increment: flow;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+    font-size: 0.9rem;
+  }
+
+  .flow-list li:last-child { border-bottom: none; }
+
+  .flow-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--blue-dim);
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .flow-text { color: var(--text); line-height: 1.5; }
+  .flow-text strong { color: var(--cyan); }
+
+  /* ── TRANSITIONS TABLE ── */
+  .trans-from { color: var(--text-muted); }
+  .trans-to   { color: var(--text); font-weight: 600; }
+  .trans-cond { color: var(--green); font-family: monospace; font-size: 0.82em; }
+  .trans-order { text-align: center; }
+
+  .order-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+
+  /* ── PARENT CONTAINER ── */
+  .mode-auto-container {
+    border: 1px dashed var(--green);
+    border-radius: 10px;
+    padding: 24px 16px 16px;
+    margin-top: 24px;
+    position: relative;
+    background: rgba(63, 185, 80, 0.02);
+  }
+
+  .mode-auto-container.phase-1 { border-color: var(--blue); background: rgba(56, 139, 253, 0.02); }
+  .mode-auto-container.phase-2 { border-color: var(--cyan); background: rgba(88, 166, 255, 0.02); }
+  .mode-auto-container.phase-3 { border-color: var(--purple); background: rgba(137, 87, 229, 0.02); }
+  .mode-auto-container.phase-4 { border-color: var(--text-muted); background: rgba(139, 148, 158, 0.02); }
+
+  .mode-auto-label {
+    position: absolute;
+    top: -12px;
+    left: 16px;
+    background: var(--bg);
+    padding: 0 8px;
+    color: var(--green);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+  }
+  .phase-1 .mode-auto-label { color: var(--blue); }
+  .phase-2 .mode-auto-label { color: var(--cyan); }
+  .phase-3 .mode-auto-label { color: var(--purple); }
+  .phase-4 .mode-auto-label { color: var(--text-muted); }
+
+</style>
+<!-- Script para Mermaid -->
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ 
+      startOnLoad: true, 
+      theme: 'dark',
+      state: {
+          nodeSpacing: 50,
+          rankSpacing: 50
+      }
+  });
+</script>
+</head>
+<body>
+
+<h1>Modo Automático 100% (Full Auto) — Chart &ldquo;Control Nivel 1&rdquo;</h1>
+<p class="subtitle">simulink/nivel_1.slx &rarr; Chart &rarr; AUTOMATA_PRINCIPAL</p>
+
+<!-- ═══════════════════════════════════════════════════════ DIAGRAMA -->
+<h2>Diagrama de estados</h2>
+<div class="diagram-container">
+  <div class="mermaid">
+stateDiagram-v2
+    direction TB
+
+    state "AUTOMATA_PRINCIPAL (AND)" as AP {
+
+        [*] --> REPOSO
+
+        REPOSO --> SEL_ORIGEN : [BTN_Auto == 1]
+
+        state "SELECCIÓN DE MISIÓN" as MISION {
+            SEL_ORIGEN --> SEL_DESTINO : [BTN_TLK == 1]
+        }
+
+        SEL_DESTINO --> MODO_AUTO_FULL : [BTN_TLK == 1]
+
+        state "MODO_AUTO_FULL" as MAF {
+            [*] --> SUBIR_INICIAL
+            
+            %% Ir a buscar el contenedor
+            SUBIR_INICIAL --> IR_ORIGEN : [yh_enc &gt;= y_segura_origen]
+            IR_ORIGEN --> BAJAR_ORIGEN : [abs(xt_enc - x_origen) &lt; 0.15 &amp;&amp; abs(vt_obs) &lt; 0.1]
+            BAJAR_ORIGEN --> ENGANCHAR : [hay_cont == 1]
+            
+            %% Agarrar y levantar
+            ENGANCHAR --> SUBIR_CARGADO : [TLK == 1]
+            SUBIR_CARGADO --> IR_DESTINO : [yh_enc &gt;= y_segura_destino]
+            
+            %% Trasladar y dejar
+            IR_DESTINO --> BAJAR_DESTINO : [abs(xt_enc - x_destino) &lt; 0.15 &amp;&amp; abs(vt_obs) &lt; 0.1]
+            BAJAR_DESTINO --> DESENGANCHAR : [yh_enc &lt;= altura_apoyo || Fhw &lt; (Ms*g/2*0.8)]
+            
+            %% Soltar y volver
+            DESENGANCHAR --> SUBIR_VACIO : [TLK == 0]
+            SUBIR_VACIO --> VOLVER_INICIO : [yh_enc &gt;= y_segura_inicio]
+            VOLVER_INICIO --> FIN_MISION : [abs(xt_enc - x_inicio) &lt; 0.15]
+        }
+
+        FIN_MISION --> REPOSO : [Automático]
+    }
+
+    note left of AP : BTN_Reset o\nBTN_Manual\ncancelan la misión.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ VARIABLES -->
+<h2>Variables nuevas en el chart</h2>
+<p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">Chart &rarr; Model Explorer &rarr; agregar cada variable:</p>
+<table>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Scope</th>
+      <th>Puerto</th>
+      <th>Valor inicial</th>
+      <th>Propósito</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>i_lista</code></td><td><span class="badge badge-param">PARAMETER</span></td><td>—</td><td>—</td><td>Lista de columnas válidas (desde Workspace)</td></tr>
+    <tr><td><code>BTN_Auto</code></td><td><span class="badge badge-input">INPUT</span></td><td><span class="badge badge-port">#15</span></td><td>—</td><td>Entrada botón auto (desde Joystick port 5)</td></tr>
+    <tr><td><code>i_sel</code></td><td><span class="badge badge-local">LOCAL</span></td><td>—</td><td><code>1</code></td><td>Índice de la lista seleccionando actualmente</td></tr>
+    <tr><td><code>i_origen</code></td><td><span class="badge badge-local">LOCAL</span></td><td>—</td><td><code>1</code></td><td>Columna donde está el contenedor a recoger</td></tr>
+    <tr><td><code>i_destino</code></td><td><span class="badge badge-local">LOCAL</span></td><td>—</td><td><code>1</code></td><td>Columna donde se va a depositar</td></tr>
+    <tr><td><code>x_origen</code></td><td><span class="badge badge-local">LOCAL</span></td><td>—</td><td><code>0</code></td><td>Posición x calculada para ir a recoger</td></tr>
+    <tr><td><code>x_destino</code></td><td><span class="badge badge-local">LOCAL</span></td><td>—</td><td><code>0</code></td><td>Posición x calculada para depositar</td></tr>
+    <tr><td><code>x_inicio</code></td><td><span class="badge badge-local">LOCAL</span></td><td>—</td><td><code>0</code></td><td>Posición x del carro al iniciar la misión (para volver)</td></tr>
+    <tr><td><code>cmd_auto_tlk</code></td><td><span class="badge badge-local">LOCAL</span></td><td>—</td><td><code>0</code></td><td>Comando interno para abrir/cerrar TLK (simula botón)</td></tr>
+    <tr><td><code>y_obj</code></td><td><span class="badge badge-local">LOCAL</span></td><td>—</td><td><code>0</code></td><td>Altura del contenedor a recoger</td></tr>
+    <tr><td><code>altura_apoyo</code></td><td><span class="badge badge-local">LOCAL</span></td><td>—</td><td><code>0</code></td><td>Altura precalculada de la pila destino</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════ ESTADOS -->
+<h2>Acciones de estados por fases</h2>
+
+<!-- FASE 1: SELECCION -->
+<div class="mode-auto-container phase-1">
+  <div class="mode-auto-label">1. Selección de Misión</div>
+  <div class="states-grid">
+    <div class="state-card blue">
+      <div class="card-header"><div class="state-dot"></div>SEL_ORIGEN</div>
+      <div class="card-body">
+        <div class="action-block">
+          <div class="action-label">entry</div>
+          <pre>i_sel = 1; debounce = 0;
+x_inicio = xt_enc;
+x_origen = xt_min + (i_lista(1)-1)*Wc + Wc/2;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">during</div>
+          <pre>debounce = debounce + 1;
+if (debounce > 25)
+  if (Joy_CMD_X > dead_zone)
+    i_sel = mod(i_sel, length(i_lista)) + 1; debounce=0;
+  elseif (Joy_CMD_X &lt; -dead_zone)
+    i_sel = mod(i_sel-2, length(i_lista)) + 1; debounce=0;
+  end
+end
+x_origen = xt_min + (i_lista(i_sel)-1)*Wc + Wc/2;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">exit</div>
+          <pre>i_origen = i_lista(i_sel);</pre>
+        </div>
+      </div>
+    </div>
+    
+    <div class="state-card blue">
+      <div class="card-header"><div class="state-dot"></div>SEL_DESTINO</div>
+      <div class="card-body">
+        <div class="action-block">
+          <div class="action-label">entry</div>
+          <pre>i_sel = 1; debounce = 0;
+x_destino = xt_min + (i_lista(1)-1)*Wc + Wc/2;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">during</div>
+          <pre>% (Misma lógica de debounce y Joy_X)
+x_destino = xt_min + (i_lista(i_sel)-1)*Wc + Wc/2;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">exit</div>
+          <pre>i_destino = i_lista(i_sel);</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FASE 2: IR A BUSCAR -->
+<div class="mode-auto-container phase-2">
+  <div class="mode-auto-label">2. Ir a buscar el contenedor</div>
+  <div class="states-grid">
+    <div class="state-card cyan">
+      <div class="card-header"><div class="state-dot"></div>SUBIR_INICIAL</div>
+      <div class="card-body">
+        <div class="action-block">
+          <div class="action-label">entry</div>
+          <pre>y_max_ruta = 0;
+for k = min(i_carro,i_origen):max(i_carro,i_origen)
+  if yc0_vec(k) > y_max_ruta
+    y_max_ruta = yc0_vec(k);
+  end
+end
+y_segura_origen = min(y_max_ruta + Hc + 1.0, yh_max - 1.0);</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">during</div>
+          <pre>vx_target = 0; vy_target = vh_lim;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">trans. salida &rarr; IR_ORIGEN</div>
+          <pre>[yh_enc >= y_segura_origen]</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-card cyan">
+      <div class="card-header"><div class="state-dot"></div>IR_ORIGEN</div>
+      <div class="card-body">
+        <div class="action-block">
+          <div class="action-label">during</div>
+          <pre>err_x = x_origen - xt_enc;
+vx_target = max(-vt_max, min(vt_max, 3.0*err_x));
+vy_target = 0;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">trans. salida &rarr; BAJAR_ORIGEN</div>
+          <pre>[abs(xt_enc - x_origen) &lt; 0.15 && abs(vt_obs) &lt; 0.1]</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-card cyan">
+      <div class="card-header"><div class="state-dot"></div>BAJAR_ORIGEN</div>
+      <div class="card-body">
+        <div class="action-block">
+          <div class="action-label">entry</div>
+          <pre>y_obj = yc0_vec(i_origen) + 0.5;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">during</div>
+          <pre>err_y = y_obj - yh_enc;
+vy_target = max(-vh_lim, min(vh_lim, 3.0*err_y));
+vx_target = 0;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">trans. salida &rarr; ENGANCHAR</div>
+          <pre>[hay_cont == 1]</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-card green">
+      <div class="card-header"><div class="state-dot"></div>ENGANCHAR</div>
+      <div class="card-body">
+        <div class="action-block">
+          <div class="action-label">entry</div>
+          <pre>vy_target = 0;
+cmd_auto_tlk = 1; % Cierra twistlocks</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">exit</div>
+          <pre>cmd_auto_tlk = 0;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">trans. salida &rarr; SUBIR_CARGADO</div>
+          <pre>[TLK == 1]</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FASE 3: TRASLADAR -->
+<div class="mode-auto-container phase-3">
+  <div class="mode-auto-label">3. Trasladar y dejar</div>
+  <div class="states-grid">
+    <div class="state-card purple">
+      <div class="card-header"><div class="state-dot"></div>SUBIR_CARGADO</div>
+      <div class="card-body">
+        <div class="action-block">
+          <div class="action-label">entry</div>
+          <pre>y_max_ruta = 0;
+for k = min(i_origen,i_destino):max(i_origen,i_destino)
+  if yc0_vec(k) > y_max_ruta
+    y_max_ruta = yc0_vec(k);
+  end
+end
+y_segura_destino = min(y_max_ruta + Hc + 1.0, yh_max - 1.0);</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">during</div>
+          <pre>vx_target = 0; vy_target = vh_lim;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">trans. salida &rarr; IR_DESTINO</div>
+          <pre>[yh_enc >= y_segura_destino]</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-card purple">
+      <div class="card-header"><div class="state-dot"></div>IR_DESTINO</div>
+      <div class="card-body">
+        <div class="action-block">
+          <div class="action-label">during</div>
+          <pre>err_x = x_destino - xt_enc;
+vx_target = max(-vt_max, min(vt_max, 3.0*err_x));
+vy_target = 0;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">trans. salida &rarr; BAJAR_DESTINO</div>
+          <pre>[abs(xt_enc - x_destino) &lt; 0.15 && abs(vt_obs) &lt; 0.1]</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-card purple">
+      <div class="card-header"><div class="state-dot"></div>BAJAR_DESTINO</div>
+      <div class="card-body">
+        <div class="action-block">
+          <div class="action-label">entry</div>
+          <pre>altura_apoyo = yc0_vec(i_destino) + Hc + 0.5;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">during</div>
+          <pre>err_y = altura_apoyo - yh_enc;
+vy_target = max(-vh_lim, min(vh_lim, 3.0*err_y));</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">trans. salida &rarr; DESENGANCHAR</div>
+          <pre>[yh_enc &lt;= altura_apoyo || Fhw &lt; (Ms*g/2 * 0.8)]</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-card green">
+      <div class="card-header"><div class="state-dot"></div>DESENGANCHAR</div>
+      <div class="card-body">
+        <div class="action-block">
+          <div class="action-label">entry</div>
+          <pre>vy_target = 0;
+cmd_auto_tlk = 1; % Abre twistlocks</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">exit</div>
+          <pre>cmd_auto_tlk = 0;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">trans. salida &rarr; SUBIR_VACIO</div>
+          <pre>[TLK == 0]</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FASE 4: VOLVER -->
+<div class="mode-auto-container phase-4">
+  <div class="mode-auto-label">4. Soltar y volver</div>
+  <div class="states-grid">
+    <div class="state-card gray">
+      <div class="card-header"><div class="state-dot"></div>SUBIR_VACIO</div>
+      <div class="card-body">
+        <div class="action-block">
+          <div class="action-label">entry</div>
+          <pre>y_max_ruta = 0;
+for k = min(i_destino,i_carro):max(i_destino,i_carro)
+  if yc0_vec(k) > y_max_ruta
+    y_max_ruta = yc0_vec(k);
+  end
+end
+y_segura_inicio = min(y_max_ruta + Hc + 1.0, yh_max - 1.0);</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">during</div>
+          <pre>vx_target = 0; vy_target = vh_lim;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">trans. salida &rarr; VOLVER_INICIO</div>
+          <pre>[yh_enc >= y_segura_inicio]</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-card gray">
+      <div class="card-header"><div class="state-dot"></div>VOLVER_INICIO</div>
+      <div class="card-body">
+        <div class="action-block">
+          <div class="action-label">during</div>
+          <pre>err_x = x_inicio - xt_enc;
+vx_target = max(-vt_max, min(vt_max, 3.0*err_x));
+vy_target = 0;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">trans. salida &rarr; FIN_MISION</div>
+          <pre>[abs(xt_enc - x_inicio) &lt; 0.15]</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-card gray">
+      <div class="card-header"><div class="state-dot"></div>FIN_MISION</div>
+      <div class="card-body">
+        <div class="action-block">
+          <div class="action-label">entry</div>
+          <pre>vx_target = 0;
+vy_target = 0;</pre>
+        </div>
+        <div class="action-block">
+          <div class="action-label">trans. salida &rarr; REPOSO</div>
+          <pre>(Transición directa por defecto)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ WARNINGS -->
+<div class="warning-box">
+  <div class="warning-icon">&#9888;</div>
+  <div>
+    <div class="warning-title">Modificar transiciones de TWISTLOCKS paralelo</div>
+    <div class="warning-body">
+      <p>El autómata paralelo <code>TWISTLOCKS</code> ahora debe reaccionar a <code>cmd_auto_tlk</code>:</p>
+      <pre style="margin-top:8px; background:rgba(0,0,0,0.3); padding:10px; border-radius:6px; font-size:0.82rem;">
+VACIO &rarr; CERRANDO_TLK
+[(BTN_TLK == 1 || cmd_auto_tlk == 1) &amp;&amp; Fhw &lt; ... &amp;&amp; hay_cont == 1]
+
+CARGADO &rarr; ABRIENDO_TLK
+[(BTN_TLK == 1 || cmd_auto_tlk == 1) &amp;&amp; Fhw &lt; ...]</pre>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:48px; padding-top:16px; border-top:1px solid var(--border); color:var(--text-muted); font-size:0.78rem; text-align:center;">
+  AyCD 2025 &bull; Grua STS &bull; Chart Control Nivel 1 (Full Auto)
+</div>
+
+</body>
+</html>
