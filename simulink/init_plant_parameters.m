@@ -6,7 +6,7 @@ clear; clc;
 %% 0. Frecuencias - Niveles de Control lpm
 Ts0 = 0.02;
 Ts1 = 0.02;
-%Ts2 = 
+Ts2 = 0.001; 
 
 %% 1. Constantes Universales y Geometría Fija
 g = 9.80665;                % Aceleración gravitatoria [m/s^2] [cite: 291]
@@ -34,7 +34,7 @@ Jhm_hb = 30.0;              % Inercia equivalente eje rápido [kg.m^2] [cite: 29
 bhm = 18.0;                 % Fricción viscosa eje rápido [N.m/(rad/s)] [cite: 299]
 bhb = 100e6;                % Fricción viscosa freno operación cerrado [N.m/(rad/s)] [cite: 299]
 Thb_Max = 50e3;             % Torque máximo freno operación [N.m] [cite: 299]
-tau_hm = 0.001;             % Constante de tiempo modulador torque [s] [cite: 235, 299]
+tau_hm = Ts2;             % Constante de tiempo modulador torque [s] [cite: 235, 299]
 Thm_Max = 20e3;             % Torque máximo motor izaje [N.m] [cite: 299]
 
 % Cable de Izaje (Wirerope)
@@ -68,7 +68,7 @@ Jtm_tb = 7.0;               % Inercia equivalente eje rápido [kg.m^2] [cite: 30
 btm = 6.0;                  % Fricción viscosa eje rápido [N.m/(rad/s)] [cite: 309]
 btb = 5.0e6;                % Fricción viscosa freno operación cerrado [N.m/(rad/s)] [cite: 310]
 Ttb_Max = 5.0e3;            % Torque máximo freno operación [N.m] [cite: 311]
-tau_tm = 0.001;             % Constante de tiempo modulador torque [s] [cite: 314]
+tau_tm = Ts2;             % Constante de tiempo modulador torque [s] [cite: 314]
 Ttm_Max = 4.0e3;            % Torque máximo motor carro [N.m] [cite: 314]
 
 xt_min = -30.0;      % [m] Límite mínimo posición carro
@@ -93,14 +93,14 @@ Mc_X=25000;
 
 %% Perfil de obstaculos (Entorno)
 N_xt = floor((xt_max-xt_min)/Wc)+1;                         % Cantidad de índices programados en el eje X
-is_scanned_vec_inicial = [ones(1,12), zeros(1,N_xt-12)];    % Vector de índices escaneados (1 = escaneado, 0 = no escaneado)
+is_scanned_vec = [ones(1,N_xt)];    % Vector de índices escaneados (1 = escaneado, 0 = no escaneado)
 alt_borde = 2.8;                                            % [m] Altura del borde del muelle 
 
 h_vec_inicial = [ 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, alt_borde,... 
                   3, 5, 6, 3, 5, 9, 8, 4, 0, 0, -4, -5, -2, -1, 2, 6, 8, 8, 5,...
                   alt_borde] * Hc;                          % Vector inicial del perfil de obstáculos
 
-yc0_vec_inicial = ones(33)*15;  % Perfil inicial efectivamente medido (zona aún no escaneada = 0)
+yc0_vec_inicial = h_vec_inicial;  % Perfil inicial efectivamente medido (zona aún no escaneada = 0)
 x_LIDAR = 3;                                                % [m] Offset del sensor lidar respecto al carro hacia +xt
 
 %% CN2 - Controlador de movimiento - Carro
@@ -145,7 +145,7 @@ polos_obs_h = [wh_obs, wh_obs*1.01, wh_obs*1.02];   % Separamos polos ligerament
 Lh = place(A_aug_h', C_aug_h', polos_obs_h)';       % Cálculo de ganancias
 %% Modo Automático
 % Lista de índices de columna válidos para selección (excluye bordes 1, 13, 33)
-i_lista = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32];
+%i_lista = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32];
 
 %% Fin
 fprintf('Parámetros de la planta cargados correctamente.\n');

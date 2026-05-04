@@ -147,25 +147,8 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 
 
 
-\section*{Discretización del Perfil de Obstáculos}
 
-\begin{equation}
-    N_{x_t} = \text{floor}\left( \frac{x_{t_{max}} - x_{t_{min}}}{W_c} \right)+1
-\end{equation}
-
-\begin{equation}
-    i = 1, 2, 3, \ldots, 33
-\end{equation}
-
-\begin{equation}
-    x_{33} = -30\,\text{m} + (33-1) \cdot 2.44\,\text{m} = 48.08\,\text{m}
-\end{equation}
-
-\begin{equation}
-    i = \text{floor}\left( \frac{(x_t(t)+3\,\text{m}) - x_{t_{min}}}{W_c} \right)
-\end{equation}
-
-\section*{Subsistema del Carro (Trolley)}
+\subsection{Subsistema del Carro (Trolley)}
 
 \begin{equation}
     M_t \, \frac{d \, v_t(t)}{dt} = F_{tw}(t) - b_t \, v_t(t) + 2 F_{hw}(t, l(t)-l_h(t))\sin\theta_l(t)
@@ -404,6 +387,24 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
     \[ \theta_l = \text{atan2}\left(\frac{x_l(t) - x_t(t)}{Y_{t0} - y_l(t)}\right) \]
 \end{itemize}
 
+\section*{Discretización del Perfil de Obstáculos}
+
+\begin{equation}
+    N_{x_t} = \text{floor}\left( \frac{x_{t\_max} - x_{t\_min}}{W_c} \right)+1
+\end{equation}
+
+\begin{equation}
+    i = 1, 2, 3, \ldots, 33
+\end{equation}
+
+\begin{equation}
+    x_{33} = -30\,\text{m} + (33-1) \cdot 2.44\,\text{m} = 48.08\,\text{m}
+\end{equation}
+
+\begin{equation}
+    i = \text{floor}\left( \frac{(x_t(t)+3\,\text{m}) - x_{t\_min}}{W_c} \right)
+\end{equation}
+
 \section*{Sensores de Posición}
 
 \begin{equation}
@@ -417,20 +418,59 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 \begin{equation}
     FC_{t,\,\text{derecha}} = 
     \begin{cases} 
-        0 & \text{si } x_t(t) < x_{t,max}  \\
-        1 & \text{si } x_t(t) \ge x_{t,max} \quad (\text{Operativo}) \\
-        1 & \text{si } x_t(t) \ge x_{t,max} + 0.5 \text{m} \quad (\text{Emergencia})
+        0 & \text{si } x_t(t) < x_{t\_max}  \\
+        1 & \text{si } x_t(t) \ge x_{t\_max} \quad (\text{Operativo}) \\
+        1 & \text{si } x_t(t) \ge x_{t\_max} + 0.5 \text{m} \quad (\text{Emergencia})
     \end{cases}
 \end{equation}
 
 \begin{equation}
-    FC_{h,\,\text{superior}} = 
-    \begin{cases}
-        0 & \text{si } y_{enc}(t) < y_{h,max} \quad (\text{Operativo}) \\
-        1 & \text{si } y_{enc}(t) \ge y_{h,max} \quad (\text{Operativo}) \\
-        1 & \text{si } y_{enc}(t) \ge y_{h,max} + 0.5 \text{m} \quad (\text{Emergencia})
+    FC_{t,\,\text{izquierda}} = 
+    \begin{cases} 
+        0 & \text{si } x_t(t) > x_{t\_min}  \\
+        1 & \text{si } x_t(t) \le x_{t\_min} \quad (\text{Operativo}) \\
+        1 & \text{si } x_t(t) \le x_{t\_min} + 0.5 \text{m} \quad (\text{Emergencia})
     \end{cases}
 \end{equation}
+
+
+\begin{equation}
+    FC_{h,\,\text{superior}} = 
+    \begin{cases}
+        0 & \text{si } y_{enc}(t) < y_{h\_max} \quad (\text{Operativo}) \\
+        1 & \text{si } y_{enc}(t) \ge y_{h\_max} \quad (\text{Operativo}) \\
+        1 & \text{si } y_{enc}(t) \ge y_{h\_max} + 0.5 \text{m} \quad (\text{Emergencia})
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+    FC_{h,\,\text{inferior}} = 
+    \begin{cases}
+        0 & \text{si } y_{enc}(t) > y_{h\_min} \quad (\text{Operativo}) \\
+        1 & \text{si } y_{enc}(t) \le y_{h\_min} \quad (\text{Operativo}) \\
+        1 & \text{si } y_{enc}(t) \le y_{h\_min} + 0.5 \text{m} \quad (\text{Emergencia})
+    \end{cases}
+\end{equation}
+
+\section*{Moduladores de Torque (Accionamientos)}
+
+\begin{equation}
+\tau \cdot \frac{dT(t)}{dt} = T_{Lim}^*(t) - T(t)
+\end{equation}
+
+\begin{equation}
+T_{tm\_Lim}^*(k \, T_{s2} \leq t < (k+1) \, T_{s2}) = \text{min}\left(+T_{tm\_Max}, \text{max}\left(-T_{tm\_Max}, T_{tm}^*(k \, T_{s2})\right)\right)
+\end{equation}
+
+
+\begin{equation}
+T_{hm\_Lim}^*(k \, T_{s2} \leq t < (k+1) \, T_{s2}) = \text{min}\left(+T_{hm\_Max}(t), \text{max}\left(-T_{hm\_Max}(t), T_{hm}^*(k \, T_{s2})\right)\right)
+\end{equation}
+
+\begin{equation}
+T_{hm\_Max}(t) = T_{hm\_MAX} \cdot \text{min} \left( 1, \left( \frac{\omega_{hm\_RATED}}{\omega_{hm}(t)} \right)^2 \right)
+\end{equation}
+
 
 \newpage
 
