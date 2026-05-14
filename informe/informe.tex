@@ -9,6 +9,7 @@
 \usepackage{fancyhdr} % Para encabezados y pies de página
 %\usepackage{geometry} % Para ajustar márgenes
 \usepackage{caption} % Para usar \captionof fuera de float
+\usepackage{subcaption} % Para subfiguras
 \usepackage{float}
 \usepackage{multirow}
 \usepackage{enumitem}
@@ -31,6 +32,8 @@
   left=1.9cm,
   right=1.32cm
 ]{geometry}
+
+\graphicspath{{./figs/}}
 
 \definecolor{signalcolor}{RGB}{0,115,195}
 
@@ -143,10 +146,88 @@ El proyecto comprende distintas etapas, que incluyen el modelado del sistema fí
 % \end{figure}
 
 \newpage
-\section{Modelado, Análisis y Simulación dinámica del sistema físico a lazo abierto}
 
+\section{Descripción del sistema}
+El sistema físico a controlar y automatizar es una \textit{Grúa Portacontenedores Portuaria de Muelle tipo Pórtico}
+(\textit{STS: Ship-to-Shore Container Gantry Crane}, Fig. \ref{fig:grua}).
 
+Este proyecto considera el control de accionamientos eléctricos y \textit{operación semi-automática coordinada} de los dos movimientos principales continuos y 
+simultáneos de la grúa en un plano vertical (2D): \textit{traslación horizontal del carro (Trolley)} sobre las vigas principal y móvil (paralelo al eje $x$); e 
+\textit{izaje/descenso, o traslación vertical, de la carga (Hoist)} bajo la posición del carro (paralelo al eje $y$), Fig. \ref{fig:vista_lateral}.
 
+\begin{figure}[H]
+    \centering
+    
+    \begin{subfigure}{0.9\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{vista_lateral.jpg}
+        \caption{Vista lateral (\textit{coordenadas globales} $x$: traslación de carro - $y$: altura de izaje en la carga).}
+        \label{fig:vista_lateral}
+    \end{subfigure}
+    
+    \vspace{0.8cm}
+    
+    \begin{subfigure}{0.9\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{vista_frontal.jpg}
+        \caption{Vista frontal, desde un barco, con detalle de \textit{headblock/spreader} y carga suspendida: \textit{container} (indicando altura de izaje $y_l(t)$ a base de spreader; y, si hay carga, alto de container $H_c$ a descontar).}
+        \label{fig:vista_frontal}
+    \end{subfigure}
+    
+    \caption{Grúa Portacontenedores Portuaria de Muelle tipo Pórtico (STS)}
+    \label{fig:grua}
+\end{figure}
+
+Ambos movimientos son impulsados mediante cables de acero (wireropes) desde mecanismos rotativos con tambores, cajas de engranajes, frenos mecánicos y 
+motores eléctricos, ubicados en una Casa de Máquinas (Machinery House) fija(Fig. \ref{fig:mecanismos}), con sus correspondientes accionamientos electrónicos de velocidad variable; 
+dichos movimientos tienen \textit{restricciones} de operación: posiciones límite de recorrido, velocidades máximas y aceleraciones máximas. Están \textit{acoplados 
+entre sí por la carga} (headblock/descender con o sin container, Fig. \ref{fig:vista_frontal}), que se balancea suspendida del carro que la traslada mediante los cables de izaje.
+
+\begin{figure}[H]
+    \centering
+    
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[height=0.21\textheight]{ubicacion_casa_maquinas.jpg}
+        \caption{Ubicación de la Casa de Máquinas en la estructura}
+        \label{fig:casa_ubicacion}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[height=0.21\textheight]{casa_maquinas.jpg}
+        \caption{Casa de Máquinas y mecanismos principales}
+        \label{fig:casa_maquinas}
+    \end{subfigure}
+    
+    \vspace{0.6cm}
+    
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[height=0.15\textheight]{accionamiento_carro.jpg}
+        \caption{Mecanismo de accionamiento de Carro (Trolley Mechanical Drive)}
+        \label{fig:trolley_drive}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[height=0.15\textheight]{accionamiento_izaje.jpg}
+        \caption{Mecanismo de accionamiento de Izaje (Hoist Mechanical Drive)}
+        \label{fig:hoist_drive}
+    \end{subfigure}
+    
+    \caption{Esquemas de Casa de Máquinas y mecanismos de Carro e Izaje}
+    \label{fig:mecanismos}
+\end{figure}
+
+\section{Modelado de la Planta}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{cuerpo_libre.jpg}
+    \caption{Modelo físico simplificado del sistema Carro - Cable - Carga y Perfil de Obstáculos}
+    \label{fig:cuerpo_libre}
+\end{figure}
 
 \subsection{Subsistema del Carro (Trolley)}
 
