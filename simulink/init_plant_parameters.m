@@ -97,7 +97,7 @@ is_scanned_vec = [ones(1,N_xt)];    % Vector de índices escaneados (1 = escanea
 alt_borde = 2.8;                                            % [m] Altura del borde del muelle 
 
 h_vec_inicial = [ 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, alt_borde,... 
-                  3, 5, 6, 3, 5, 9, 8, 4, 0, 0, -4, -5, -2, -1, 2, 6, 8, 8, 5,...
+                  3, 5, 6, 3, 5, 6, 6, 4, 1, 1, -4, -5, -2, -1, 2, 6, 4, 2, 5,...
                   alt_borde] * Hc;                          % Vector inicial del perfil de obstáculos
 
 yc0_vec_inicial = h_vec_inicial;  % Perfil inicial efectivamente medido (zona aún no escaneada = 0)
@@ -170,3 +170,8 @@ titatm_0 = xtd_0/(rtd/it);
 titahm_0 = yl_0/(rhd/(2*ih)); 
 
 vh_0 = 0;
+
+
+periodo_pulsos = 100;               % Pulsos cada 100 ms
+timeout = 300;                      % [ms] Tiempo antes de detectar error
+counter_limit = timeout/(Ts0*1000); % Pulsos a contar antes de detectar error
