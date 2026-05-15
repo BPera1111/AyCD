@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1778774919.30983 "c:/Users/lauta/OneDrive/Documentos/Automatas/AyCD/informe/informe.tex" "informe.pdf" "informe" 1778774921.3631 0
+["pdflatex"] 1778860766.62672 "c:/Users/lauta/OneDrive/Documentos/Automatas/AyCD/informe/informe.tex" "informe.pdf" "informe" 1778860768.4904 0
   "C:/Users/lauta/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1768310832 82686 2381c3433487640bf26aa76a10db7eb2 ""
   "C:/Users/lauta/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1747084979 13157641 7b8c64f5b8af0bf815d8488e79a632c1 ""
   "C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1233951848 1004 54797486969f23fa377b128694d548df ""
@@ -114,7 +114,7 @@
   "C:/Users/lauta/AppData/Local/Programs/MiKTeX/tex/latex/rerunfilecheck/rerunfilecheck.sty" 1751104012 9684 a33a14b82ce60d6e77cb9be689d79ee6 ""
   "C:/Users/lauta/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/lauta/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
-  "c:/Users/lauta/OneDrive/Documentos/Automatas/AyCD/informe/informe.tex" 1778774918 31781 50615b834c14e0d209c38e52c35064f4 ""
+  "c:/Users/lauta/OneDrive/Documentos/Automatas/AyCD/informe/informe.tex" 1778860763 37544 57383887d8fec2d309905e47ce97128d ""
   "figs/accionamiento_carro.jpg" 1778770074 85755 519ad05a97e85332dfb6490a925ded02 ""
   "figs/accionamiento_izaje.jpg" 1778770102 79096 6b14ea2a160ebf740c5715f9cfa9e755 ""
   "figs/casa_maquinas.jpg" 1778770039 127725 17dea027f2e1ac90c8330b8da33edec0 ""
@@ -122,10 +122,10 @@
   "figs/ubicacion_casa_maquinas.jpg" 1778770013 165897 ae6e8f6f152080e1485db46193544f6c ""
   "figs/vista_frontal.jpg" 1778769954 273554 b0d41c6c4149648b5760a124d86b6101 ""
   "figs/vista_lateral.jpg" 1778769884 200746 5bce3126c3b7f4bfe2c60ad145471ff9 ""
-  "informe.aux" 1778774921 7144 fe0157cf8fe0540657a6693f8fb17959 "pdflatex"
-  "informe.out" 1778774921 3854 13366bde057c50b2c0ce7b2aa5735efa "pdflatex"
-  "informe.tex" 1778774918 31781 50615b834c14e0d209c38e52c35064f4 ""
-  "informe.toc" 1778774921 1673 e31fb45f02a7b412724a40d8da55cbe1 "pdflatex"
+  "informe.aux" 1778860768 8255 e1761cec37d4cb05138c3cb1e6b40c87 "pdflatex"
+  "informe.out" 1778860768 5514 cae118f1501e62e08d747c9aeac4b57c "pdflatex"
+  "informe.tex" 1778860763 37544 57383887d8fec2d309905e47ce97128d ""
+  "informe.toc" 1778860768 2456 6f08cd278abed5d7880fb44e825efff8 "pdflatex"
   (generated)
   "informe.aux"
   "informe.log"
