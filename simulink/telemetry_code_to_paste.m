@@ -1,0 +1,9 @@
+function write_telemetry(xt, yh, vt, vh, freno_c, freno_h, estado, modo, tlk, caught)
+%#codegen
+coder.extrinsic('fopen', 'fclose', 'fprintf');
+fid = fopen('C:\Temp\crane_state.json', 'w');
+fprintf(fid, '{"xt":%g,"yh":%g,"vt":%g,"vh":%g,"freno_c":%g,"freno_h":%g,"estado":%g,"modo":%g,"tlk":%g,"caught":%g}', ...
+        double(xt), double(yh), double(vt), double(vh), ...
+        double(freno_c), double(freno_h), double(estado), ...
+        double(modo), double(tlk), double(caught));
+fclose(fid);

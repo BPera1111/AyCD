@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grúa STS — Dashboard</title>
+<link rel="stylesheet" href="/static/style.css">
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- Socket.IO -->
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+<!-- ══ HEADER ══════════════════════════════════════════════════════════════ -->
+<header>
+  <div class="header-left">
+    <span class="logo">⚓ GRÚA STS</span>
+    <span class="subtitle">Dashboard de Simulación</span>
+  </div>
+  <div class="header-right">
+    <div id="connection-badge" class="badge badge-off">SIN DATOS</div>
+    <div id="modo-badge" class="badge badge-mode">REPOSO</div>
+    <div id="fps-counter" class="fps">-- Hz</div>
+  </div>
+</header>
+
+<!-- ══ MAIN GRID ═══════════════════════════════════════════════════════════ -->
+<main class="grid">
+
+  <!-- ── Visualización 2D de la grúa ─────────────────────────────────── -->
+  <section class="card crane-section">
+    <h2>Vista de la Grúa</h2>
+    <canvas id="craneCanvas"></canvas>
+    <div class="crane-info">
+      <span>Carro: <strong id="lbl-xt">---</strong> m</span>
+      <span>Izaje: <strong id="lbl-yh">---</strong> m</span>
+      <span>Vel. Carro: <strong id="lbl-vt">---</strong> m/s</span>
+      <span>Vel. Izaje: <strong id="lbl-vh">---</strong> m/s</span>
+    </div>
+  </section>
+
+  <!-- ── Panel de estado ─────────────────────────────────────────────── -->
+  <aside class="card status-section">
+    <h2>Estado del Sistema</h2>
+
+    <div class="state-display">
+      <div class="state-label">Estado Stateflow</div>
+      <div id="state-name" class="state-value">REPOSO</div>
+    </div>
+
+    <div class="indicators">
+      <div class="indicator" id="ind-freno-c">
+        <div class="ind-dot"></div>
+        <div class="ind-label">Freno Carro</div>
+      </div>
+      <div class="indicator" id="ind-freno-h">
+        <div class="ind-dot"></div>
+        <div class="ind-label">Freno Izaje</div>
+      </div>
+      <div class="indicator" id="ind-tlk">
+        <div class="ind-dot"></div>
+        <div class="ind-label">TwistLock</div>
+      </div>
+      <div class="indicator" id="ind-caught">
+        <div class="ind-dot"></div>
+        <div class="ind-label">Container</div>
+      </div>
+    </div>
+
+    <div class="state-chart-panel">
+      <div class="schart-title">Jerarquía Stateflow</div>
+      <div id="stateflow-tree" class="sf-tree">
+        <div class="sf-level" id="sf-nivel0">
+          <span class="sf-icon">◆</span>
+          <span class="sf-name">NIVEL 0</span>
+          <span class="sf-state" id="sf0-state">Seguridad</span>
+        </div>
+        <div class="sf-level" id="sf-nivel1">
+          <span class="sf-icon">◆</span>
+          <span class="sf-name">NIVEL 1</span>
+          <span class="sf-state" id="sf1-state">---</span>
+        </div>
+        <div class="sf-level sf-indent" id="sf-subestado">
+          <span class="sf-icon">▸</span>
+          <span class="sf-name">Sub-estado</span>
+          <span class="sf-state" id="sf-sub-state">---</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="gamepad-status">
+      <div class="gp-title">Gamepad</div>
+      <div id="gp-status" class="gp-badge gp-off">ViGEm: cargando...</div>
+      <div class="gp-axes">
+        <span>LX: <strong id="gp-lx">0.00</strong></span>
+        <span>RY: <strong id="gp-ry">0.00</strong></span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Gráficos de posición ─────────────────────────────────────────── -->
+  <section class="card chart-section chart-pos">
+    <h2>Posición (m)</h2>
+    <canvas id="chartPos"></canvas>
+  </section>
+
+  <!-- ── Gráficos de velocidad ────────────────────────────────────────── -->
+  <section class="card chart-section chart-vel">
+    <h2>Velocidad (m/s)</h2>
+    <canvas id="chartVel"></canvas>
+  </section>
+
+  <!-- ── Panel de control (joystick virtual + botones) ───────────────── -->
+  <section class="card control-section">
+    <h2>Control</h2>
+    <div class="controls-row">
+
+      <!-- Joystick CARRO (eje X) -->
+      <div class="stick-container">
+        <div class="stick-label">CARRO (LX)</div>
+        <canvas id="stickCarro" class="stick-canvas" width="140" height="140"></canvas>
+        <div class="stick-val" id="val-carro">0.00</div>
+      </div>
+
+      <!-- Botones de control -->
+      <div class="buttons-panel">
+        <button class="ctrl-btn btn-manual" data-name="MANUAL" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
+          <span class="btn-main">MANUAL</span><span class="btn-sub">B</span>
+        </button>
+        <button class="ctrl-btn btn-auto" data-name="AUTO" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
+          <span class="btn-main">AUTO</span><span class="btn-sub">X</span>
+        </button>
+        <button class="ctrl-btn btn-tlk" data-name="TLK" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
+          <span class="btn-main">TLK</span><span class="btn-sub">A</span>
+        </button>
+        <button class="ctrl-btn btn-reset" data-name="RESET" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
+          <span class="btn-main">RESET</span><span class="btn-sub">Y</span>
+        </button>
+        <button class="ctrl-btn btn-emerg" data-name="EMERG" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
+          <span class="btn-main">EMERG</span><span class="btn-sub">Back</span>
+        </button>
+      </div>
+
+      <!-- Joystick IZAJE (eje Y) -->
+      <div class="stick-container">
+        <div class="stick-label">IZAJE (RY)</div>
+        <canvas id="stickIzaje" class="stick-canvas" width="140" height="140"></canvas>
+        <div class="stick-val" id="val-izaje">0.00</div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ══ SCRIPTS ═════════════════════════════════════════════════════════════ -->
+<script src="/static/crane.js"></script>
+<script src="/static/dashboard.js"></script>
+</body>
+</html>
