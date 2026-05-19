@@ -220,7 +220,43 @@ entre sí por la carga} (headblock/descender con o sin container, Fig. \ref{fig:
     \label{fig:mecanismos}
 \end{figure}
 
-\section{Modelado de la Planta}
+\subsection{Hipótesis simplificativas y sensores}
+
+\begin{itemize}
+    \item \textbf{Estructura} esbelta y algo flexible de vigas principal y móvil (main and boom girders) y del pórtico con ruedas sobre rieles de muele. Pero se asume estructura \textit{totalmente rígida}, sin deformación ni vibración.
+    
+    \item \textbf{Carro} soportado por la estructura rígida, con desplazamiento solo horizontal con 4 ruedas libres (no accionadas) sobre rieles en las vigas principal y móvil; el carro es accionado o tirado por cables (rope-towed trolley) desde el mecanismo de carro (tambor, reductor, freno y motor) en la casa de máquinas (Fig. \ref{fig:trolley_drive}) mediante despliegue cerrado de 2 cables de acero en paralelo de carro, uno por cada lado del carro, desde el tambor con poleas de reenvío en los extremos de las vigas y terminando a ambos extremos del carro. Se asume mecanismo con transmisión rígida y \textit{1 cable de acero equivalente} de carro siempre tensado (tracción), con elasticidad longitudinal amortiguada.
+    
+    \item \textbf{Sistema de Izaje} de carga con cables desde el mecanismo de izaje (2 tambores con 2 frenos de emergencia, 1 reductor, 2 frenos y 2 motores acoplados) en la casa de máquina (Fig. \ref{fig:hoist_drive}) mediante despliegue abierto de 4 cables de acero en paralelo de izaje, uno por cada esquina del headblock, desde los tambores con poleas de reenvío en extremo posterior de la viga principal, hacia poleas en el carro móvil y headblock (ida y vuelta, 2 partes) y del carro hasta el extremo frontal de la viga móvil; de modo tal que no varía la posición o altura de izaje al desplazarse el carro y hay relación de transmisión 2:1 en cables. Se asume mecanismo \textit{equivalente} (\textit{1 tambor con 1 freno de emergencia, 1 reductor, 1 motor con 1 freno}) con transmisión rígida y \textit{1 cable de acero equivalente} de izaje con masa propia despreciable, \textit{elástico} solo a tracción (no soporta compresión al apoyar).
+    
+    \item \textbf{Carga} (headblock/spreader con o sin container) asumida como masa concentrada en un punto material (centro de base de spreader), con 2 grados de libertad (g.d.l.) en el plano vertical 2D.
+    
+    \item \textbf{Efectos externos:} sólo se considera \textit{aceleración gravitatoria (vertical) sobre la carga suspendida} e interacción \textit{vertical de contacto o apoyo} por apilado ``suave'' (compresión dentro del límite elástico lineal) del spreader, con o sin container, con el perfil de obstáculos inferior (para tomar o liberar carga). Se desprecia la resistencia aerodinámica frontal al viento de la carga y del carro en movimiento.
+
+    \item \textbf{Sensores de retroalimentación} (operación y emergencia):
+    \begin{enumerate}[label=\alph*.]
+        \item Sistema de Encoder/Homing de posición instantánea en el eje de cada motor (carro e izaje).
+        
+        \item Fines de carrera (limit switches) de operación (límites normales) y de emergencia (límites últimos, separados 0,50 m adicional al límite normal), en cada extremo del carro, fijos en la viga; y para izaje, rotativos en el tambor.
+        
+        \item Detector de sobrevelocidad (O.S. switch) 115\% de velocidad máxima en tambores (izaje y carro).
+        
+        \item Celda de carga en polea de headblock para medir la tensión instantánea del cable de izaje.
+        
+        \item Sensor de ángulo de spreader (cámara CCD en carro y emisor infrarrojo en headblock) para medir el ángulo vertical instantáneo (y velocidad angular) entre la carga y el carro (Ec. ?).
+        
+        \item Sensor LIDAR de obstáculos (laser scanner infrarrojo 1D) en el carro (3 m hacia adelante del spreader) para medir la distancia vertical instantánea desde el carro en movimiento hasta la pila de obstáculos y apoyo abajo, y así relevear el perfil topográfico de obstáculos $y_{c0}(x,t)$, Fig. \ref{fig:cuerpo_libre}.
+    \end{enumerate}
+\end{itemize}
+
+\section{Modelado de la planta}
+
+El modelo de la planta se puede dividir en dos subsistemas principales: el subsistema de traslación del carro (\textit{Trolley}) y el subsistema de izaje (\textit{Hoist}), acoplados entre 
+sí por la carga suspendida (Fig. \ref{fig:cuerpo_libre}). Además, se considera el perfil de obstáculos inferior, el cual interactúa con la carga durante las operaciones 
+de toma y liberación. El modelo también incluye los sensores del sistema y los controladores internos de torque de los accionamientos.
+
+
+A continuación, se presentan las ecuaciones diferenciales que describen la dinámica de cada subsistema, teniendo en cuenta las fuerzas y torques involucrados, así como las interacciones dinámicas entre ellos.
 
 \begin{figure}[H]
     \centering
@@ -229,15 +265,40 @@ entre sí por la carga} (headblock/descender con o sin container, Fig. \ref{fig:
     \label{fig:cuerpo_libre}
 \end{figure}
 
-\subsection{Subsistema del Carro (Trolley)}
+\subsection{Subsistema del Carro}
+
+El sistema de traslación del carro se modela como un sistema electromecánico de dos masas(inercia rotacional del accionamiento y masa traslacional del carro), acopladas
+mediante un elemento flexible (cable de acero).
+
+\subsubsection{Dinámica del carro}
+Aplicando la segunda ley de Newton al movimiento horizontal del carro se tiene:
 
 \begin{equation}
     M_t \, \frac{d \, v_t(t)}{dt} = F_{tw}(t) - b_t \, v_t(t) + 2 F_{hw}(t, l(t)-l_h(t))\sin\theta_l(t)
 \end{equation}
+Donde:
+\begin{itemize}
+    \item $M_t$: Masa del carro.
+
+    \item $F_{tw}(t)$: Fuerza de tracción ejercida por el cable.
+    
+    \item $b_t$: Coeficiente de fricción viscosa del carro sobre los rieles.
+    
+    \item $2F_{hw}\sin\theta_t$: Fuerza horizontal perturbadora debida al balanceo de la carga.
+\end{itemize}
+
+\subsubsection{Acoplamiento elástico del cable}
+
+El cable transmite la fuerza entre el tambor y el carro. Se modela como un resorte con rigidez $K_{tw}$ y un amortiguación $b_{tw}$:
+
 
 \begin{equation}
     F_{tw}(t) = K_{tw} \, (x_{td}(t) - x_t(t)) + b_{tw} \, (v_{td}(t) - v_t(t))
 \end{equation}
+
+Donde $x_{td}(t)$ y $v_{td}(t)$ son la posición y velocidad lineal equivalente del cable en la superficie del tambor.
+
+\subsubsection{Dinámica del accionamiento}
 
 \begin{equation}
     J_{td} \, \frac{d \, \omega_{td}(t)}{dt} = T_{td}(t) - b_{td} \, \omega_{td}(t) - T_{tdl}(t)
@@ -308,7 +369,7 @@ entre sí por la carga} (headblock/descender con o sin container, Fig. \ref{fig:
     + b_{tw}\bigl(v_{td}(t) - v_t(t)\bigr)
 \end{equation}
 
-\section*{Subsistema de Izaje (Hoist)}
+\subsection{Subsistema de Izaje}
 
 \begin{equation}
     m_l(\textcolor{signalcolor}{TLK}) = 
@@ -468,7 +529,7 @@ entre sí por la carga} (headblock/descender con o sin container, Fig. \ref{fig:
     \[ \theta_l = \text{atan2}\left(\frac{x_l(t) - x_t(t)}{Y_{t0} - y_l(t)}\right) \]
 \end{itemize}
 
-\section*{Discretización del Perfil de Obstáculos}
+\subsection{Discretización del Perfil de Obstáculos}
 
 \begin{equation}
     N_{x_t} = \text{floor}\left( \frac{x_{t\_max} - x_{t\_min}}{W_c} \right)+1
@@ -486,7 +547,7 @@ entre sí por la carga} (headblock/descender con o sin container, Fig. \ref{fig:
     i = \text{floor}\left( \frac{(x_t(t)+3\,\text{m}) - x_{t\_min}}{W_c} \right)
 \end{equation}
 
-\section*{Sensores de Posición}
+\subsection{Sensores de Posición}
 
 \begin{equation}
     x_{enc}(t) = \theta_{tm}(t) \, \frac{r_{td}}{i_t}
@@ -533,7 +594,7 @@ entre sí por la carga} (headblock/descender con o sin container, Fig. \ref{fig:
     \end{cases}
 \end{equation}
 
-\section*{Moduladores de Torque (Accionamientos)}
+\subsection{Moduladores de Torque (Accionamientos)}
 
 \begin{equation}
 \tau \cdot \frac{dT(t)}{dt} = T_{Lim}^*(t) - T(t)

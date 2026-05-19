@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.5.12)  14 MAY 2026 13:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.5.12)  15 MAY 2026 12:59
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -456,11 +456,11 @@ Package hyperref Info: Link coloring ON on input line 61.
 {C:/Users/lauta/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (informe.toc
 LaTeX Info: Redefining \. on input line 1.
 LaTeX Info: Redefining \% on input line 1.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 6.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 5.
  (C:\Users\lauta\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 6.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 5.
  (C:\Users\lauta\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ))
@@ -479,12 +479,12 @@ l.86 \newpage
 [2]
 
 [3]
-<./figs/vista_lateral.jpg, id=112, 299.9205pt x 225.0006pt>
+<./figs/vista_lateral.jpg, id=152, 299.9205pt x 225.0006pt>
 File: ./figs/vista_lateral.jpg Graphic file (type jpg)
 <use ./figs/vista_lateral.jpg>
 Package pdftex.def Info: ./figs/vista_lateral.jpg  used on input line 163.
 (pdftex.def)             Requested size: 318.70712pt x 239.10373pt.
-<./figs/vista_frontal.jpg, id=113, 297.0297pt x 199.2243pt>
+<./figs/vista_frontal.jpg, id=153, 297.0297pt x 199.2243pt>
 File: ./figs/vista_frontal.jpg Graphic file (type jpg)
 <use ./figs/vista_frontal.jpg>
 Package pdftex.def Info: ./figs/vista_frontal.jpg  used on input line 172.
@@ -492,34 +492,35 @@ Package pdftex.def Info: ./figs/vista_frontal.jpg  used on input line 172.
 
 
 [4 <./figs/vista_lateral.jpg> <./figs/vista_frontal.jpg>]
-<./figs/ubicacion_casa_maquinas.jpg, id=128, 239.9364pt x 145.0218pt>
+<./figs/ubicacion_casa_maquinas.jpg, id=168, 239.9364pt x 145.0218pt>
 File: ./figs/ubicacion_casa_maquinas.jpg Graphic file (type jpg)
 <use ./figs/ubicacion_casa_maquinas.jpg>
 Package pdftex.def Info: ./figs/ubicacion_casa_maquinas.jpg  used on input line 191.
 (pdftex.def)             Requested size: 238.55556pt x 144.1833pt.
-<./figs/casa_maquinas.jpg, id=129, 207.4149pt x 144.7809pt>
+<./figs/casa_maquinas.jpg, id=169, 207.4149pt x 144.7809pt>
 File: ./figs/casa_maquinas.jpg Graphic file (type jpg)
 <use ./figs/casa_maquinas.jpg>
 Package pdftex.def Info: ./figs/casa_maquinas.jpg  used on input line 198.
 (pdftex.def)             Requested size: 206.57884pt x 144.1833pt.
-<./figs/accionamiento_carro.jpg, id=130, 239.6955pt x 102.3825pt>
+<./figs/accionamiento_carro.jpg, id=170, 239.6955pt x 102.3825pt>
 File: ./figs/accionamiento_carro.jpg Graphic file (type jpg)
 <use ./figs/accionamiento_carro.jpg>
 Package pdftex.def Info: ./figs/accionamiento_carro.jpg  used on input line 207.
 (pdftex.def)             Requested size: 241.11032pt x 102.98059pt.
-<./figs/accionamiento_izaje.jpg, id=131, 209.8239pt x 103.1052pt>
+<./figs/accionamiento_izaje.jpg, id=171, 209.8239pt x 103.1052pt>
 File: ./figs/accionamiento_izaje.jpg Graphic file (type jpg)
 <use ./figs/accionamiento_izaje.jpg>
 Package pdftex.def Info: ./figs/accionamiento_izaje.jpg  used on input line 214.
 (pdftex.def)             Requested size: 209.57684pt x 102.98059pt.
-<./figs/cuerpo_libre.jpg, id=132, 269.0853pt x 203.8014pt>
-File: ./figs/cuerpo_libre.jpg Graphic file (type jpg)
-<use ./figs/cuerpo_libre.jpg>
-Package pdftex.def Info: ./figs/cuerpo_libre.jpg  used on input line 227.
-(pdftex.def)             Requested size: 303.53706pt x 229.9135pt.
 
 
 [5 <./figs/ubicacion_casa_maquinas.jpg> <./figs/casa_maquinas.jpg> <./figs/accionamiento_carro.jpg> <./figs/accionamiento_izaje.jpg>]
+<./figs/cuerpo_libre.jpg, id=182, 269.0853pt x 203.8014pt>
+File: ./figs/cuerpo_libre.jpg Graphic file (type jpg)
+<use ./figs/cuerpo_libre.jpg>
+Package pdftex.def Info: ./figs/cuerpo_libre.jpg  used on input line 263.
+(pdftex.def)             Requested size: 303.53706pt x 229.9135pt.
+
 
 [6 <./figs/cuerpo_libre.jpg>]
 
@@ -535,7 +536,9 @@ Package pdftex.def Info: ./figs/cuerpo_libre.jpg  used on input line 227.
 
 [12]
 
-[13] 
+[13]
+
+[14] 
 enddocument/afterlastpage (AED): lastpage setting LastPage.
 (informe.aux
 LaTeX Info: Redefining \. on input line 11.
@@ -546,20 +549,20 @@ LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-04-14>
  ***********
 Package rerunfilecheck Info: File `informe.out' has not changed.
-(rerunfilecheck)             Checksum: 13366BDE057C50B2C0CE7B2AA5735EFA;3854.
+(rerunfilecheck)             Checksum: CAE118F1501E62E08D747C9AEAC4B57C;5514.
  ) 
 Here is how much of TeX's memory you used:
- 14653 strings out of 469941
- 236744 string characters out of 5469430
- 662730 words of memory out of 5000000
- 41154 multiletter control sequences out of 15000+600000
+ 14677 strings out of 469941
+ 237153 string characters out of 5469430
+ 663730 words of memory out of 5000000
+ 41167 multiletter control sequences out of 15000+600000
  634145 words of font info for 68 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,13n,79p,683b,601s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,13n,79p,1059b,612s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx7.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi5.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on informe.pdf (14 pages, 1330988 bytes).
+Output written on informe.pdf (15 pages, 1344824 bytes).
 PDF statistics:
- 393 PDF objects out of 1000 (max. 8388607)
- 125 named destinations out of 1000 (max. 500000)
- 164 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 446 PDF objects out of 1000 (max. 8388607)
+ 136 named destinations out of 1000 (max. 500000)
+ 228 words of extra memory for PDF output out of 10000 (max. 10000000)
 
