@@ -1,0 +1,320 @@
+===== AUDIT CODESYS — 21-May-2026 22:48:39 =====
+
+[OK] init_plant_parameters cargado
+
+========== PARTE 1: planta.slx — Stateflow data ==========
+Charts encontrados: 2
+
+--- Chart: planta/Nivel 0 ---
+Input data:
+  [ 1] BTN_Emerg                 size=-1 dtype=Inherit: Same as Simulink
+  [ 2] BTN_Reset                 size=-1 dtype=Inherit: Same as Simulink
+  [ 3] FCE_der                   size=-1 dtype=Inherit: Same as Simulink
+  [ 4] FCE_inf                   size=-1 dtype=Inherit: Same as Simulink
+  [ 5] FCE_izq                   size=-1 dtype=Inherit: Same as Simulink
+  [ 6] FCE_sup                   size=-1 dtype=Inherit: Same as Simulink
+  [ 7] recup_ok                  size=-1 dtype=Inherit: Same as Simulink
+  [ 8] vh_obs                    size=-1 dtype=Inherit: Same as Simulink
+  [ 9] vt_obs                    size=-1 dtype=Inherit: Same as Simulink
+  [10] modo_muerto               size=-1 dtype=Inherit: Same as Simulink
+  [11] heartbeat                 size=-1 dtype=Inherit: Same as Simulink
+  [12] m_cont                    size=-1 dtype=Inherit: Same as Simulink
+Output data:
+  [ 1] BRK_hE_N0                 size=-1 dtype=Inherit: Same as Simulink
+  [ 2] BRK_t_N0                  size=-1 dtype=Inherit: Same as Simulink
+  [ 3] FALLA_CARRO_DER           size=-1 dtype=Inherit: Same as Simulink
+  [ 4] FALLA_CARRO_IZQ           size=-1 dtype=Inherit: Same as Simulink
+  [ 5] FALLA_IZAJE_INF           size=-1 dtype=Inherit: Same as Simulink
+  [ 6] FALLA_IZAJE_SUP           size=-1 dtype=Inherit: Same as Simulink
+  [ 7] FALLA_IZAJE_SV            size=-1 dtype=Inherit: Same as Simulink
+  [ 8] FALLA_MAN                 size=-1 dtype=Inherit: Same as Simulink
+  [ 9] FALLA_WD                  size=-1 dtype=Inherit: Same as Simulink
+  [10] FALLA_CARRO_SV            size=-1 dtype=Inherit: Same as Simulink
+
+--- Chart: planta/Nivel 1 ---
+Input data:
+  [ 1] BTN_ON_OFF                size=-1 dtype=Inherit: Same as Simulink
+  [ 2] Joy_XY                    size=-1 dtype=Inherit: Same as Simulink
+  [ 3] theta_l                   size=-1 dtype=Inherit: Same as Simulink
+  [ 4] theta_l_dot               size=-1 dtype=Inherit: Same as Simulink
+  [ 5] vh_obs                    size=-1 dtype=Inherit: Same as Simulink
+  [ 6] vt_obs                    size=-1 dtype=Inherit: Same as Simulink
+  [ 7] Fhw                       size=-1 dtype=Inherit: Same as Simulink
+  [ 8] yh_enc                    size=-1 dtype=Inherit: Same as Simulink
+  [ 9] BTN_TLK                   size=-1 dtype=Inherit: Same as Simulink
+  [10] xt_enc                    size=-1 dtype=Inherit: Same as Simulink
+  [11] BTN_Reset                 size=-1 dtype=Inherit: Same as Simulink
+  [12] FC_der                    size=-1 dtype=Inherit: Same as Simulink
+  [13] FC_inf                    size=-1 dtype=Inherit: Same as Simulink
+  [14] FC_izq                    size=-1 dtype=Inherit: Same as Simulink
+  [15] FC_sup                    size=-1 dtype=Inherit: Same as Simulink
+  [16] BTN_Auto                  size=-1 dtype=Inherit: Same as Simulink
+  [17] FALLA_MAN                 size=-1 dtype=Inherit: Same as Simulink
+  [18] FALLA_WD                  size=-1 dtype=Inherit: Same as Simulink
+  [19] FALLA_SV                  size=-1 dtype=Inherit: Same as Simulink
+  [20] T_hm                      size=-1 dtype=Inherit: Same as Simulink
+  [21] T_tm                      size=-1 dtype=Inherit: Same as Simulink
+  [22] i_pos                     size=-1 dtype=Inherit: From definition in chart
+  [23] y0_vec                    size=-1 dtype=Inherit: From definition in chart
+  [24] x_real                    size=-1 dtype=Inherit: From definition in chart
+  [25] y_real                    size=-1 dtype=Inherit: From definition in chart
+  [26] vx_carro                  size=-1 dtype=Inherit: From definition in chart
+  [27] vy_izaje                  size=-1 dtype=Inherit: From definition in chart
+  [28] i_ref                     size=-1 dtype=Inherit: From definition in chart
+  [29] envolvente_vec            size=-1 dtype=Inherit: From definition in chart
+  [30] twistlock                 size=-1 dtype=Inherit: From definition in chart
+  [31] tita_l                    size=-1 dtype=Inherit: From definition in chart
+  [32] vh_limit                  size=-1 dtype=Inherit: From definition in chart
+  [33] perfil_escaneado_vec      size=-1 dtype=Inherit: From definition in chart
+  [34] v_target                  size=-1 dtype=Inherit: From definition in chart
+  [35] v_act                     size=-1 dtype=Inherit: From definition in chart
+  [36] a_act                     size=-1 dtype=Inherit: From definition in chart
+  [37] A_MAX                     size=-1 dtype=Inherit: From definition in chart
+  [38] J_MAX                     size=-1 dtype=Inherit: From definition in chart
+Output data:
+  [ 1] BRK_h_N1                  size=1 dtype=Inherit: Same as Simulink
+  [ 2] BRK_t_N1                  size=1 dtype=Inherit: Same as Simulink
+  [ 3] TLK                       size=1 dtype=Inherit: Same as Simulink
+  [ 4] yc0_vec                   size=[1 33] dtype=Inherit: Same as Simulink
+  [ 5] i_sel                     size=-1 dtype=Inherit: Same as Simulink
+  [ 6] vx_suave                  size=1 dtype=Inherit: Same as Simulink
+  [ 7] vy_suave                  size=1 dtype=Inherit: Same as Simulink
+  [ 8] recuperacion              size=1 dtype=Inherit: Same as Simulink
+  [ 9] modo_muerto               size=1 dtype=Inherit: Same as Simulink
+  [10] heartbeat                 size=1 dtype=Inherit: Same as Simulink
+  [11] m_container               size=1 dtype=Inherit: Same as Simulink
+  [12] hay_container             size=-1 dtype=Inherit: From definition in chart
+  [13] vx_ref                    size=-1 dtype=Inherit: From definition in chart
+  [14] vy_ref                    size=-1 dtype=Inherit: From definition in chart
+  [15] listo                     size=-1 dtype=Inherit: From definition in chart
+  [16] envolvente_f              size=-1 dtype=Inherit: From definition in chart
+  [17] v_out                     size=-1 dtype=Inherit: From definition in chart
+  [18] a_out                     size=-1 dtype=Inherit: From definition in chart
+
+
+========== PARTE 2: planta_codesys.slx ==========
+
+--- UDP Blocks ---
+Block: planta_codesys/UDP Read
+  MaskType: UDP Read | BlockType: SubSystem
+  SignalDataType = double
+  SampleTime = Ts1
+  sampletime = Ts1
+  localPort = 25001
+  remotePort = -1
+  [dialog] localURL = '0.0.0.0'
+  [dialog] localPort = 25001
+  [dialog] remoteURL = '0.0.0.0'
+  [dialog] remotePort = -1
+  [dialog] recvBufferSize = 8192
+  [dialog] dims = 104
+  [dialog] signalDatatype = double
+  [dialog] isVarSize = off
+  [dialog] showBlockingTime = on
+  [dialog] blockingTime = 0
+  [dialog] sampletime = Ts1
+  [dialog] blockPlatform = HOST
+  [dialog] hoistedMaskSrc = UDP Read/UDP Read Sim/UDP Read
+Block: planta_codesys/UDP Read/UDP Read
+  MaskType:  | BlockType: SubSystem
+  [dialog] ShowPortLabels = FromPortIcon
+  [dialog] Permissions = ReadWrite
+  [dialog] PermitHierarchicalResolution = All
+  [dialog] TreatAsAtomicUnit = off
+  [dialog] ShowSubsystemReinitializePorts = off
+  [dialog] MinAlgLoopOccurrences = off
+  [dialog] ScheduleAs = Sample time
+  [dialog] SystemSampleTime = -1
+  [dialog] SetExecutionDomain = off
+  [dialog] ExecutionDomainType = Deduce
+  [dialog] RTWSystemCode = Auto
+  [dialog] RTWFcnNameOpts = Auto
+  [dialog] RTWFileNameOpts = Auto
+  [dialog] FunctionInterfaceSpec = void_void
+  [dialog] FunctionWithSeparateData = off
+  [dialog] RTWMemSecFuncInitTerm = Inherit from model
+  [dialog] RTWMemSecFuncExecute = Inherit from model
+  [dialog] RTWMemSecDataConstants = Inherit from model
+  [dialog] RTWMemSecDataInternal = Inherit from model
+  [dialog] RTWMemSecDataParameters = Inherit from model
+  [dialog] IsSubsystemVirtual = on
+  [dialog] Variant = on
+  [dialog] VariantControlMode = sim codegen switching
+  [dialog] VariantActivationTime = update diagram
+  [dialog] EmptyChoice = off
+  [dialog] PassThrough = off
+  [dialog] PropagateVariantConditions = off
+  [dialog] AllowFlexibleInterface = on
+  [dialog] TreatAsGroupedWhenPropagatingVariantConditions = on
+  [dialog] Latency = 0
+  [dialog] AutoFrameSizeCalculation = off
+Block: planta_codesys/UDP Read/UDP Read/UDP Read Sim
+  MaskType:  | BlockType: SubSystem
+  [dialog] ShowPortLabels = FromPortIcon
+  [dialog] Permissions = ReadWrite
+  [dialog] PermitHierarchicalResolution = All
+  [dialog] TreatAsAtomicUnit = off
+  [dialog] ShowSubsystemReinitializePorts = off
+  [dialog] MinAlgLoopOccurrences = off
+  [dialog] ScheduleAs = Sample time
+  [dialog] SystemSampleTime = -1
+  [dialog] SetExecutionDomain = off
+  [dialog] ExecutionDomainType = Deduce
+  [dialog] RTWSystemCode = Auto
+  [dialog] RTWFcnNameOpts = Auto
+  [dialog] RTWFileNameOpts = Auto
+  [dialog] FunctionInterfaceSpec = void_void
+  [dialog] FunctionWithSeparateData = off
+  [dialog] RTWMemSecFuncInitTerm = Inherit from model
+  [dialog] RTWMemSecFuncExecute = Inherit from model
+  [dialog] RTWMemSecDataConstants = Inherit from model
+  [dialog] RTWMemSecDataInternal = Inherit from model
+  [dialog] RTWMemSecDataParameters = Inherit from model
+  [dialog] IsSubsystemVirtual = on
+  [dialog] Variant = off
+  [dialog] VariantControlMode = expression
+  [dialog] VariantControl = (sim)
+  [dialog] VariantActivationTime = update diagram
+  [dialog] EmptyChoice = off
+  [dialog] PassThrough = off
+  [dialog] PropagateVariantConditions = off
+  [dialog] AllowFlexibleInterface = on
+  [dialog] TreatAsGroupedWhenPropagatingVariantConditions = on
+  [dialog] Latency = 0
+  [dialog] AutoFrameSizeCalculation = off
+Block: planta_codesys/UDP Read/UDP Read/UDP Read Sim/UDP Read
+  MaskType: UDP Read | BlockType: S-Function
+  SignalDataType = double
+  SampleTime = sampletime
+  sampletime = sampletime
+  localPort = localPort
+  remotePort = remotePort
+  [dialog] localURL = localURL
+  [dialog] localPort = localPort
+  [dialog] remoteURL = remoteURL
+  [dialog] remotePort = remotePort
+  [dialog] recvBufferSize = recvBufferSize
+  [dialog] dims = dims
+  [dialog] signalDatatype = double
+  [dialog] isVarSize = off
+  [dialog] showBlockingTime = on
+  [dialog] blockingTime = blockingTime
+  [dialog] sampletime = sampletime
+  [dialog] blockPlatform = HOST
+Block: planta_codesys/UDP Send2
+  MaskType: UDP Send | BlockType: S-Function
+  SampleTime = -1
+  sampletime = -1
+  localPort = -1
+  remotePort = 25000
+  [dialog] remoteURL = '127.0.0.1'
+  [dialog] remotePort = 25000
+  [dialog] localURL = '0.0.0.0'
+  [dialog] localPortSource = Automatically determine
+  [dialog] localPort = -1
+  [dialog] sendBufferSize = 8192
+  [dialog] sampletime = -1
+  [dialog] blockPlatform = HOST
+  [dialog] separateLengthPort = 0
+
+--- Demux blocks (con GotoTag de destino) ---
+
+Demux: planta_codesys/Control Joystick /Demux
+  Outputs: 10
+  out[ 1] -> Scope (Scope)
+  out[ 2] -> MATLAB Function (SubSystem)
+  out[ 3] -> BTN_AUTO (Outport)
+  out[ 4] -> BTN_RESET (Outport)
+  out[ 5] -> Terminator1 (Terminator)
+  out[ 6] -> Terminator2 (Terminator)
+  out[ 7] -> BTN_EMERG (Outport)
+  out[ 8] -> Terminator3 (Terminator)
+  out[ 9] -> Terminator4 (Terminator)
+  out[10] -> Terminator5 (Terminator)
+
+Demux: planta_codesys/Control Joystick /Demux1
+  Outputs: 2
+  out[ 1] -> Mux (Mux)
+  out[ 2] -> Gain (Gain)
+
+Demux: planta_codesys/Demux
+  Outputs: 21
+  out[ 1] -> Goto[BRK_h_N1]
+  out[ 2] -> Goto[BRK_t_N1]
+  out[ 3] -> Goto[TLK]
+  out[ 4] -> Goto[yc0_vec]
+  out[ 5] -> Goto[i_sel]
+  out[ 6] -> Goto[vx_suave]
+  out[ 7] -> Goto[vy_suave]
+  out[ 8] -> Goto[recuperacion]
+  out[ 9] -> Goto[modo_muerto]
+  out[10] -> Goto[heartbeat]
+  out[11] -> Goto[m_container]
+  out[12] -> Goto[BRK_hE_N0]
+  out[13] -> Goto[BRK_t_N0]
+  out[14] -> Goto[FALLA_IZAJE_SV]
+  out[15] -> Goto[FALLA_MAN]
+  out[16] -> Goto[FALLA_WD]
+  out[17] -> Goto[FALLA_CARRO_DER]
+  out[18] -> Goto[FALLA_CARRO_IZQ]
+  out[19] -> Goto[FALLA_IZAJE_INF]
+  out[20] -> Goto[FALLA_IZAJE_SUP]
+  out[21] -> Goto[FALLA_CARRO_SV]
+
+--- Mux blocks (con rastreo hacia atrás) ---
+
+Mux: planta_codesys/Control Joystick /Mux
+  Inputs: 2
+  in[ 1] <- line[LeftStick_X]
+  in[ 2] <- line[RightStick_Y]
+
+Mux: planta_codesys/Mux
+  Inputs: 30
+  in[ 1] <- From[BTN_EMERG]
+  in[ 2] <- From[BTN_RESET]
+  in[ 3] <- From[FCE_DER]
+  in[ 4] <- From[FCE_INF]
+  in[ 5] <- From[FCE_IZQ]
+  in[ 6] <- From[FCE_SUP]
+  in[ 7] <- line[recuperacion]
+  in[ 8] <- line[yh]
+  in[ 9] <- line[modo_muerto]
+  in[10] <- line[heartbeat]
+  in[11] <- line[m_container]
+  in[12] <- From[BTN_ON_OFF]
+  in[13] <- From[Joy_XY]
+  in[14] <- From[tita_l]
+  in[15] <- line[w_l]
+  in[16] <- From[vh_obs]
+  in[17] <- From[vt_obs]
+  in[18] <- From[F_hw]
+  in[19] <- From[BTN_TLK]
+  in[20] <- line[xt]
+  in[21] <- From[FC_DER]
+  in[22] <- From[FC_INF]
+  in[23] <- From[FC_IZQ]
+  in[24] <- From[FC_SUP]
+  in[25] <- From[BTN_AUTO]
+  in[26] <- From[FALLA_MAN]
+  in[27] <- From[FALLA_WD]
+  in[28] <- From[FALLA_IZAJE_SV]
+  in[29] <- line[T_hm*]
+  in[30] <- line[T_tm*]
+
+Mux: planta_codesys/Mux2
+  Inputs: 2
+  in[ 1] <- Gain4(Gain) <- From[tita_tm]
+  in[ 2] <- line[xt]
+
+Mux: planta_codesys/Mux3
+  Inputs: 2
+  in[ 1] <- line[yh]
+  in[ 2] <- line[yl]
+
+--- Gain blocks (planta_codesys raíz) ---
+  Gain3: Gain = rhd/(2*ih)
+  Gain4: Gain = rtd/it
+  Gain5: Gain = rhd/(2*ih)
+  Gain7: Gain = rtd/it
+
+===== FIN AUDIT =====
