@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Grúa STS — Dashboard</title>
 <link rel="stylesheet" href="/static/style.css">
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<!-- Socket.IO -->
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
@@ -43,11 +41,22 @@
   <aside class="card status-section">
     <h2>Estado del Sistema</h2>
 
-    <div class="state-display">
-      <div class="state-label">Estado Stateflow</div>
-      <div id="state-name" class="state-value">REPOSO</div>
+    <!-- Modo activo -->
+    <div class="modo-panel">
+      <div class="panel-label">MODO ACTIVO</div>
+      <div id="modo-activo-badge" class="modo-badge-large">REPOSO</div>
+      <div class="flags-grid">
+        <div class="flag-item" id="flag-reposo">   <div class="fd"></div><span>REPOSO</span>     </div>
+        <div class="flag-item" id="flag-manual">   <div class="fd"></div><span>MANUAL</span>     </div>
+        <div class="flag-item" id="flag-auto">     <div class="fd"></div><span>AUTO FULL</span>  </div>
+        <div class="flag-item" id="flag-man-auto"> <div class="fd"></div><span>MAN→AUTO</span>   </div>
+        <div class="flag-item" id="flag-recup">    <div class="fd"></div><span>RECUPER.</span>   </div>
+        <div class="flag-item" id="flag-muerto">   <div class="fd"></div><span>M.MUERTO</span>   </div>
+      </div>
     </div>
 
+    <!-- Actuadores -->
+    <div class="panel-label" style="margin-top:0.7rem">ACTUADORES</div>
     <div class="indicators">
       <div class="indicator" id="ind-freno-c">
         <div class="ind-dot"></div>
@@ -61,33 +70,40 @@
         <div class="ind-dot"></div>
         <div class="ind-label">TwistLock</div>
       </div>
-      <div class="indicator" id="ind-caught">
+      <div class="indicator" id="ind-container">
         <div class="ind-dot"></div>
         <div class="ind-label">Container</div>
       </div>
     </div>
 
-    <div class="state-chart-panel">
-      <div class="schart-title">Jerarquía Stateflow</div>
-      <div id="stateflow-tree" class="sf-tree">
-        <div class="sf-level" id="sf-nivel0">
-          <span class="sf-icon">◆</span>
-          <span class="sf-name">NIVEL 0</span>
-          <span class="sf-state" id="sf0-state">Seguridad</span>
-        </div>
-        <div class="sf-level" id="sf-nivel1">
-          <span class="sf-icon">◆</span>
-          <span class="sf-name">NIVEL 1</span>
-          <span class="sf-state" id="sf1-state">---</span>
-        </div>
-        <div class="sf-level sf-indent" id="sf-subestado">
-          <span class="sf-icon">▸</span>
-          <span class="sf-name">Sub-estado</span>
-          <span class="sf-state" id="sf-sub-state">---</span>
-        </div>
+    <!-- Fallas -->
+    <div class="fallas-panel">
+      <div class="panel-label">FALLAS</div>
+      <div id="any-falla-banner" class="falla-banner hidden">&#9888; FALLA ACTIVA</div>
+      <div class="falla-grid">
+        <div class="falla-item" id="ind-falla_man">       MAN</div>
+        <div class="falla-item" id="ind-falla_wd">        WD</div>
+        <div class="falla-item" id="ind-falla_carro_der"> CARRO DER</div>
+        <div class="falla-item" id="ind-falla_carro_izq"> CARRO IZQ</div>
+        <div class="falla-item" id="ind-falla_izaje_inf"> IZAJE INF</div>
+        <div class="falla-item" id="ind-falla_izaje_sup"> IZAJE SUP</div>
+        <div class="falla-item" id="ind-falla_izaje_sv">  IZAJE SV</div>
+        <div class="falla-item" id="ind-falla_carro_sv">  CARRO SV</div>
       </div>
     </div>
 
+    <!-- Fines de carrera -->
+    <div class="fc-panel">
+      <div class="panel-label">FINES DE CARRERA</div>
+      <div class="fc-grid">
+        <div class="fc-item" id="ind-fc_der"> FC DER</div>
+        <div class="fc-item" id="ind-fc_izq"> FC IZQ</div>
+        <div class="fc-item" id="ind-fc_sup"> FC SUP</div>
+        <div class="fc-item" id="ind-fc_inf"> FC INF</div>
+      </div>
+    </div>
+
+    <!-- Gamepad -->
     <div class="gamepad-status">
       <div class="gp-title">Gamepad</div>
       <div id="gp-status" class="gp-badge gp-off">ViGEm: cargando...</div>
@@ -115,14 +131,12 @@
     <h2>Control</h2>
     <div class="controls-row">
 
-      <!-- Joystick CARRO (eje X) -->
       <div class="stick-container">
         <div class="stick-label">CARRO (LX)</div>
         <canvas id="stickCarro" class="stick-canvas" width="140" height="140"></canvas>
         <div class="stick-val" id="val-carro">0.00</div>
       </div>
 
-      <!-- Botones de control -->
       <div class="buttons-panel">
         <button class="ctrl-btn btn-manual" data-name="MANUAL" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
           <span class="btn-main">MANUAL</span><span class="btn-sub">B</span>
@@ -141,7 +155,6 @@
         </button>
       </div>
 
-      <!-- Joystick IZAJE (eje Y) -->
       <div class="stick-container">
         <div class="stick-label">IZAJE (RY)</div>
         <canvas id="stickIzaje" class="stick-canvas" width="140" height="140"></canvas>
@@ -153,7 +166,6 @@
 
 </main>
 
-<!-- ══ SCRIPTS ═════════════════════════════════════════════════════════════ -->
 <script src="/static/crane.js"></script>
 <script src="/static/dashboard.js"></script>
 </body>

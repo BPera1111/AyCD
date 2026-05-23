@@ -44,8 +44,7 @@ socket.on('telemetry', (data) => {
     fpsAccum.push(dt);
     if (fpsAccum.length > 30) fpsAccum.shift();
     const avgDt = fpsAccum.reduce((a, b) => a + b, 0) / fpsAccum.length;
-    const fps = 1 / avgDt;
-    document.getElementById('fps-counter').textContent = `${fps.toFixed(1)} Hz`;
+    document.getElementById('fps-counter').textContent = `${(1 / avgDt).toFixed(1)} Hz`;
   }
   lastTelemetryTime = now;
 
@@ -56,31 +55,98 @@ socket.on('telemetry', (data) => {
 
 // ── Actualizar UI de estado ───────────────────────────────────────────────────
 function updateUI(data) {
-  // Labels numéricos
-  setLabel('lbl-xt', data.xt,  2, 'm');
-  setLabel('lbl-yh', data.yh,  2, 'm');
-  setLabel('lbl-vt', data.vt,  2, 'm/s');
-  setLabel('lbl-vh', data.vh,  2, 'm/s');
+  setLabel('lbl-xt', data.xt, 2, 'm');
+  setLabel('lbl-yh', data.yh, 2, 'm');
+  setLabel('lbl-vt', data.vt, 2, 'm/s');
+  setLabel('lbl-vh', data.vh, 2, 'm/s');
 
-  // Badge conexión y modo
   updateConnectionBadge(data.connected);
+
+  // Badge de modo en header
   const modoBadge = document.getElementById('modo-badge');
   if (modoBadge) modoBadge.textContent = data.modo_nombre || 'REPOSO';
 
-  // Estado Stateflow
-  const stateEl = document.getElementById('state-name');
-  if (stateEl) stateEl.textContent = data.estado_nombre || '---';
-
-  // Árbol Stateflow
-  updateStateflowTree(data);
-
-  // Indicadores
-  setIndicator('ind-freno-c', data.freno_c, 'warning');
-  setIndicator('ind-freno-h', data.freno_h, 'warning');
-  setIndicator('ind-tlk',     data.tlk,     'active');
-  setIndicator('ind-caught',  data.caught,  'active');
+  updateModeFlags(data);
+  updateActuadores(data);
+  updateFaults(data);
+  updateFCs(data);
 }
 
+// ── Modo activo + flags booleanos ─────────────────────────────────────────────
+function updateModeFlags(data) {
+  const modoActivo = document.getElementById('modo-activo-badge');
+  if (modoActivo) {
+    modoActivo.textContent = data.modo_nombre || 'REPOSO';
+    // Color según modo
+    modoActivo.className = 'modo-badge-large';
+    if (data.modo_muerto)         modoActivo.classList.add('modo-muerto');
+    else if (data.recuperacion)   modoActivo.classList.add('modo-recuperacion');
+    else if (data.modo_auto || data.modo_manual_auto) modoActivo.classList.add('modo-auto');
+    else if (data.modo_manual)    modoActivo.classList.add('modo-manual');
+  }
+
+  const flagMap = {
+    'flag-reposo':   data.modo_reposo,
+    'flag-manual':   data.modo_manual,
+    'flag-auto':     data.modo_auto,
+    'flag-man-auto': data.modo_manual_auto,
+    'flag-recup':    data.recuperacion,
+    'flag-muerto':   data.modo_muerto,
+  };
+  for (const [id, val] of Object.entries(flagMap)) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    el.className = 'flag-item' + (val ? ' flag-on' : '');
+    if (val && id === 'flag-muerto') el.classList.add('flag-danger');
+    if (val && id === 'flag-recup')  el.classList.add('flag-warn');
+  }
+}
+
+// ── Actuadores ────────────────────────────────────────────────────────────────
+function updateActuadores(data) {
+  setIndicator('ind-freno-c',   data.freno_c,       'warning');
+  setIndicator('ind-freno-h',   data.freno_h,       'warning');
+  setIndicator('ind-tlk',       data.tlk,           'active');
+  setIndicator('ind-container', data.hay_container, 'active');
+}
+
+// ── Fallas ────────────────────────────────────────────────────────────────────
+const FALLA_MAP = {
+  'ind-falla_man':       'FALLA_MAN',
+  'ind-falla_wd':        'FALLA_WD',
+  'ind-falla_carro_der': 'FALLA_CARRO_DER',
+  'ind-falla_carro_izq': 'FALLA_CARRO_IZQ',
+  'ind-falla_izaje_inf': 'FALLA_IZAJE_INF',
+  'ind-falla_izaje_sup': 'FALLA_IZAJE_SUP',
+  'ind-falla_izaje_sv':  'FALLA_IZAJE_SV',
+  'ind-falla_carro_sv':  'FALLA_CARRO_SV',
+};
+
+function updateFaults(data) {
+  for (const [id, key] of Object.entries(FALLA_MAP)) {
+    const el = document.getElementById(id);
+    if (el) el.className = 'falla-item' + (data[key] ? ' falla-on' : '');
+  }
+  const banner = document.getElementById('any-falla-banner');
+  if (banner) banner.className = 'falla-banner' + (data.any_falla ? '' : ' hidden');
+}
+
+// ── Fines de carrera ──────────────────────────────────────────────────────────
+const FC_MAP = {
+  'ind-fc_der': 'FC_der',
+  'ind-fc_izq': 'FC_izq',
+  'ind-fc_sup': 'FC_sup',
+  'ind-fc_inf': 'FC_inf',
+};
+
+function updateFCs(data) {
+  for (const [id, key] of Object.entries(FC_MAP)) {
+    const el = document.getElementById(id);
+    if (el) el.className = 'fc-item' + (data[key] ? ' fc-on' : '');
+  }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function setLabel(id, val, dec, unit) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -106,38 +172,6 @@ function setIndicator(id, value, cls) {
   el.className = 'indicator' + (value ? ` ${cls}` : '');
 }
 
-// Mapeo estado → nivel y sub-estado
-const ESTADO_TREE = {
-  0:  { n1: 'REPOSO',       sub: null },
-  1:  { n1: 'MANUAL',       sub: null },
-  2:  { n1: 'MODO_AUTO',    sub: 'Esperando' },
-  3:  { n1: 'MODO_AUTO_FULL', sub: null },
-  4:  { n1: 'RECUPERACION', sub: null },
-  5:  { n1: 'ERROR',        sub: null },
-  6:  { n1: 'MODO_AUTO_FULL', sub: 'SUBIR_INICIAL' },
-  7:  { n1: 'MODO_AUTO_FULL', sub: 'IR_ORIGEN' },
-  8:  { n1: 'MODO_AUTO_FULL', sub: 'BAJAR_ORIGEN' },
-  9:  { n1: 'MODO_AUTO_FULL', sub: 'ENGANCHAR' },
-  10: { n1: 'MODO_AUTO_FULL', sub: 'SUBIR_CARGADO' },
-  11: { n1: 'MODO_AUTO_FULL', sub: 'IR_DESTINO' },
-  12: { n1: 'MODO_AUTO_FULL', sub: 'BAJAR_DESTINO' },
-  13: { n1: 'MODO_AUTO_FULL', sub: 'DESENGANCHAR' },
-  14: { n1: 'MODO_AUTO_FULL', sub: 'FIN_MISION' },
-};
-
-function updateStateflowTree(data) {
-  const estado = parseInt(data.estado || 0);
-  const tree = ESTADO_TREE[estado] || { n1: `Estado ${estado}`, sub: null };
-
-  const sf1  = document.getElementById('sf1-state');
-  const sfSub = document.getElementById('sf-sub-state');
-  const sfSubRow = document.getElementById('sf-subestado');
-
-  if (sf1)  sf1.textContent = tree.n1;
-  if (sfSub) sfSub.textContent = tree.sub || '---';
-  if (sfSubRow) sfSubRow.style.opacity = tree.sub ? '1' : '0.4';
-}
-
 // ── Charts Chart.js ───────────────────────────────────────────────────────────
 function makeChart(canvasId, label1, label2, color1, color2, yMin, yMax) {
   const canvas = document.getElementById(canvasId);
@@ -147,24 +181,10 @@ function makeChart(canvasId, label1, label2, color1, color2, yMin, yMax) {
     data: {
       labels: [],
       datasets: [
-        {
-          label: label1,
-          data: [],
-          borderColor: color1,
-          backgroundColor: color1 + '22',
-          borderWidth: 1.5,
-          pointRadius: 0,
-          tension: 0.3,
-        },
-        {
-          label: label2,
-          data: [],
-          borderColor: color2,
-          backgroundColor: color2 + '22',
-          borderWidth: 1.5,
-          pointRadius: 0,
-          tension: 0.3,
-        },
+        { label: label1, data: [], borderColor: color1, backgroundColor: color1 + '22',
+          borderWidth: 1.5, pointRadius: 0, tension: 0.3 },
+        { label: label2, data: [], borderColor: color2, backgroundColor: color2 + '22',
+          borderWidth: 1.5, pointRadius: 0, tension: 0.3 },
       ],
     },
     options: {
@@ -172,22 +192,10 @@ function makeChart(canvasId, label1, label2, color1, color2, yMin, yMax) {
       responsive: true,
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: {
-          labels: { color: '#7a8aaa', font: { size: 10 }, boxWidth: 12 },
-        },
-      },
+      plugins: { legend: { labels: { color: '#7a8aaa', font: { size: 10 }, boxWidth: 12 } } },
       scales: {
-        x: {
-          ticks: { color: '#4a5570', maxTicksLimit: 6, font: { size: 9 } },
-          grid: { color: '#1a2230' },
-        },
-        y: {
-          min: yMin,
-          max: yMax,
-          ticks: { color: '#4a5570', maxTicksLimit: 5, font: { size: 9 } },
-          grid: { color: '#1a2230' },
-        },
+        x: { ticks: { color: '#4a5570', maxTicksLimit: 6, font: { size: 9 } }, grid: { color: '#1a2230' } },
+        y: { min: yMin, max: yMax, ticks: { color: '#4a5570', maxTicksLimit: 5, font: { size: 9 } }, grid: { color: '#1a2230' } },
       },
     },
   });
@@ -195,7 +203,6 @@ function makeChart(canvasId, label1, label2, color1, color2, yMin, yMax) {
 
 const chartPos = makeChart('chartPos', 'xt (m)', 'yh (m)', COLORS.xt, COLORS.yh, -25, 55);
 const chartVel = makeChart('chartVel', 'vt (m/s)', 'vh (m/s)', COLORS.vt, COLORS.vh, -5, 5);
-
 let t_start = null;
 
 function updateCharts(data) {
@@ -210,8 +217,7 @@ function updateCharts(data) {
     chart.data.datasets[1].data.push(parseFloat(v2) || 0);
     if (chart.data.labels.length > MAX_POINTS) {
       chart.data.labels.shift();
-      chart.data.datasets[0].data.shift();
-      chart.data.datasets[1].data.shift();
+      chart.data.datasets.forEach(ds => ds.data.shift());
     }
     chart.update('none');
   }
@@ -229,41 +235,24 @@ function initStick(canvasId, stickKey, axis) {
   const R = c.width / 2 - 4;
 
   function drawStick() {
-    const cx = c.width / 2;
-    const cy = c.height / 2;
+    const cx = c.width / 2, cy = c.height / 2;
     ctx.clearRect(0, 0, c.width, c.height);
-
-    // Fondo
-    ctx.beginPath();
-    ctx.arc(cx, cy, R, 0, Math.PI * 2);
-    ctx.fillStyle = STICK_BG;
-    ctx.fill();
-    ctx.strokeStyle = STICK_RING;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Cruces
-    ctx.strokeStyle = CROSS_CLR;
-    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.fillStyle = STICK_BG; ctx.fill();
+    ctx.strokeStyle = STICK_RING; ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = CROSS_CLR; ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy);
     ctx.moveTo(cx, cy - R); ctx.lineTo(cx, cy + R);
     ctx.stroke();
-
-    // Pulgar
     const tx = cx + (axis === 'x' ? s.ax : 0) * R;
     const ty = cy + (axis === 'y' ? s.ay : 0) * R;
     const tr = 14;
     const grad = ctx.createRadialGradient(tx - 2, ty - 2, 1, tx, ty, tr);
-    grad.addColorStop(0, '#80c0ff');
-    grad.addColorStop(1, '#3060c0');
-    ctx.beginPath();
-    ctx.arc(tx, ty, tr, 0, Math.PI * 2);
-    ctx.fillStyle = grad;
-    ctx.fill();
-    ctx.strokeStyle = '#60a0ff';
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    grad.addColorStop(0, '#80c0ff'); grad.addColorStop(1, '#3060c0');
+    ctx.beginPath(); ctx.arc(tx, ty, tr, 0, Math.PI * 2);
+    ctx.fillStyle = grad; ctx.fill();
+    ctx.strokeStyle = '#60a0ff'; ctx.lineWidth = 2; ctx.stroke();
   }
 
   function getVal(e) {
@@ -271,46 +260,38 @@ function initStick(canvasId, stickKey, axis) {
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     const cx = c.width / 2, cy = c.height / 2;
-    const rx = (clientX - rect.left) - cx;
-    const ry = (clientY - rect.top) - cy;
     return {
-      ax: Math.max(-1, Math.min(1, rx / R)),
-      ay: Math.max(-1, Math.min(1, ry / R)),
+      ax: Math.max(-1, Math.min(1, (clientX - rect.left - cx) / R)),
+      ay: Math.max(-1, Math.min(1, (clientY - rect.top  - cy) / R)),
     };
   }
 
-  c.addEventListener('mousedown', (e) => { s.dragging = true; const v = getVal(e); s.ax = v.ax; s.ay = v.ay; emitJoystick(); });
-  c.addEventListener('touchstart', (e) => { e.preventDefault(); s.dragging = true; const v = getVal(e); s.ax = v.ax; s.ay = v.ay; emitJoystick(); }, { passive: false });
-  window.addEventListener('mousemove', (e) => { if (!s.dragging) return; const v = getVal(e); s.ax = v.ax; s.ay = v.ay; emitJoystick(); });
-  window.addEventListener('touchmove', (e) => { if (!s.dragging) return; const v = getVal(e); s.ax = v.ax; s.ay = v.ay; emitJoystick(); }, { passive: false });
-  window.addEventListener('mouseup',   () => { s.dragging = false; });
-  window.addEventListener('touchend',  () => { s.dragging = false; });
+  c.addEventListener('mousedown', (e) => { s.dragging = true; Object.assign(s, getVal(e)); emitJoystick(); });
+  c.addEventListener('touchstart', (e) => { e.preventDefault(); s.dragging = true; Object.assign(s, getVal(e)); emitJoystick(); }, { passive: false });
+  window.addEventListener('mousemove', (e) => { if (!s.dragging) return; Object.assign(s, getVal(e)); emitJoystick(); });
+  window.addEventListener('touchmove', (e) => { if (!s.dragging) return; Object.assign(s, getVal(e)); emitJoystick(); }, { passive: false });
+  window.addEventListener('mouseup',  () => { s.dragging = false; });
+  window.addEventListener('touchend', () => { s.dragging = false; });
 
-  // Return animation
   setInterval(() => {
     if (!s.dragging) {
       let changed = false;
-      if (Math.abs(s.ax) > RETURN_STEP) { s.ax -= Math.sign(s.ax) * RETURN_STEP; changed = true; }
-      else if (s.ax !== 0) { s.ax = 0; changed = true; }
-      if (Math.abs(s.ay) > RETURN_STEP) { s.ay -= Math.sign(s.ay) * RETURN_STEP; changed = true; }
-      else if (s.ay !== 0) { s.ay = 0; changed = true; }
+      ['ax', 'ay'].forEach(k => {
+        if (Math.abs(s[k]) > RETURN_STEP) { s[k] -= Math.sign(s[k]) * RETURN_STEP; changed = true; }
+        else if (s[k] !== 0)              { s[k] = 0; changed = true; }
+      });
       if (changed) emitJoystick();
     }
     drawStick();
-    // Update labels
     const valEl = document.getElementById(stickKey === 'carro' ? 'val-carro' : 'val-izaje');
     if (valEl) valEl.textContent = (axis === 'x' ? s.ax : s.ay).toFixed(2);
-    // Update gamepad display
     document.getElementById('gp-lx').textContent = stickState.carro.ax.toFixed(2);
     document.getElementById('gp-ry').textContent = stickState.izaje.ay.toFixed(2);
   }, 16);
 }
 
 function emitJoystick() {
-  socket.emit('joystick', {
-    lx: stickState.carro.ax,
-    ry: stickState.izaje.ay,
-  });
+  socket.emit('joystick', { lx: stickState.carro.ax, ry: stickState.izaje.ay });
 }
 
 // ── Botones de control ────────────────────────────────────────────────────────
@@ -323,20 +304,15 @@ function btnUp(el) {
   socket.emit('button', { name: el.dataset.name, pressed: false });
 }
 
-// ── Verificar gamepad status desde API ───────────────────────────────────────
+// ── Verificar gamepad status ──────────────────────────────────────────────────
 async function checkGamepadStatus() {
   try {
     const res = await fetch('/api/gamepad');
     const data = await res.json();
     const el = document.getElementById('gp-status');
     if (el) {
-      if (data.ok) {
-        el.textContent = 'ViGEm: OK';
-        el.className = 'gp-badge gp-ok';
-      } else {
-        el.textContent = 'ViGEm: no disponible';
-        el.className = 'gp-badge gp-off';
-      }
+      el.textContent = data.ok ? 'ViGEm: OK' : 'ViGEm: no disponible';
+      el.className   = 'gp-badge ' + (data.ok ? 'gp-ok' : 'gp-off');
     }
   } catch (e) {
     console.warn('[API] gamepad status error:', e);
@@ -346,10 +322,8 @@ async function checkGamepadStatus() {
 // ── Inicialización ────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   CraneViz.init();
-
   initStick('stickCarro', 'carro', 'x');
   initStick('stickIzaje', 'izaje', 'y');
-
   checkGamepadStatus();
   setInterval(checkGamepadStatus, 10000);
 });

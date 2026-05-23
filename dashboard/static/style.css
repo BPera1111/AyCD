@@ -158,24 +158,111 @@ main.grid {
 .indicator.warning .ind-dot  { background: var(--warn);   border-color: var(--warn);  box-shadow: 0 0 6px var(--warn); }
 .indicator.danger .ind-dot   { background: var(--danger); border-color: var(--danger); }
 
-/* ── Stateflow tree ───────────────────────────────────────────────────── */
-.state-chart-panel { margin-bottom: 0.8rem; }
-.schart-title { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
-.sf-tree { display: flex; flex-direction: column; gap: 0.3rem; }
-.sf-level {
+/* ── Modo activo panel ────────────────────────────────────────────────── */
+.panel-label {
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.3rem;
+}
+.modo-panel { margin-bottom: 0.7rem; }
+.modo-badge-large {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--surface2);
+  border-radius: 6px;
+  padding: 0.45rem 0.6rem;
+  text-align: center;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.06em;
+  transition: color 0.2s, background 0.2s;
+}
+.modo-badge-large.modo-muerto     { color: #ff6060; background: #2a0e0e; }
+.modo-badge-large.modo-recuperacion { color: var(--warn); background: #1e1500; }
+.modo-badge-large.modo-auto       { color: #a060ff; background: #1a0f2a; }
+.modo-badge-large.modo-manual     { color: var(--accent2); background: #0d1f1a; }
+
+.flags-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+}
+.flag-item {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  background: var(--surface2);
+  gap: 5px;
+  padding: 3px 6px;
   border-radius: 4px;
-  padding: 0.35rem 0.6rem;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
+  color: #3a4560;
+  background: #0f1520;
+  transition: color 0.15s, background 0.15s;
 }
-.sf-indent { margin-left: 1rem; }
-.sf-icon { color: var(--text-dim); font-size: 0.6rem; }
-.sf-name { color: var(--text-dim); flex: 1; }
-.sf-state { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); font-weight: 600; }
-#sf-nivel1.active .sf-state, #sf-subestado.active .sf-state { color: var(--accent2); }
+.flag-item .fd {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #1e2a3e;
+  border: 1px solid #2e3e5e;
+  flex-shrink: 0;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.flag-item.flag-on          { color: #c5d8ff; background: #0f1a2e; }
+.flag-item.flag-on .fd      { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 5px var(--accent); }
+.flag-item.flag-danger      { color: #ffaaaa !important; }
+.flag-item.flag-danger .fd  { background: var(--danger) !important; border-color: var(--danger) !important; box-shadow: 0 0 6px var(--danger) !important; }
+.flag-item.flag-warn        { color: #ffd080 !important; }
+.flag-item.flag-warn .fd    { background: var(--warn) !important; border-color: var(--warn) !important; box-shadow: 0 0 5px var(--warn) !important; }
+
+/* ── Fallas ────────────────────────────────────────────────────────────── */
+.fallas-panel { margin-top: 0.7rem; margin-bottom: 0.5rem; }
+.falla-banner {
+  padding: 5px 8px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #ff4040;
+  background: #2a0808;
+  border: 1px solid #ff4040;
+  margin: 0.3rem 0;
+}
+.falla-banner.hidden { display: none; }
+.falla-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  margin-top: 0.3rem;
+}
+.falla-item {
+  font-size: 0.66rem;
+  padding: 3px 5px;
+  border-radius: 3px;
+  color: #3a4560;
+  background: #0f1520;
+  transition: color 0.15s, background 0.15s;
+}
+.falla-item.falla-on { color: #ff8080; background: #2a1010; font-weight: 600; }
+
+/* ── Fines de carrera ──────────────────────────────────────────────────── */
+.fc-panel { margin-bottom: 0.7rem; }
+.fc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  margin-top: 0.3rem;
+}
+.fc-item {
+  font-size: 0.68rem;
+  padding: 3px 6px;
+  border-radius: 3px;
+  color: #3a4560;
+  background: #0f1520;
+  transition: color 0.15s, background 0.15s;
+}
+.fc-item.fc-on { color: #ffd080; background: #1e1800; font-weight: 600; }
 
 /* ── Gamepad status ───────────────────────────────────────────────────── */
 .gamepad-status { background: var(--surface2); border-radius: 6px; padding: 0.5rem 0.7rem; }
