@@ -23,8 +23,8 @@ const CraneViz = (() => {
     alt_borde: 2.8,               // altura borde muelle [m]
     // Perfil de containers (h_vec * Hc), 33 columnas de xt_min a xt_max
     // Corresponde a h_vec_inicial en init_plant_parameters.m
-    h_vec: [0,0,1,0,0,1,0,0,0,0,0,0,2.8/2.59,
-            3,5,6,3,5,6,6,4,1,1,-4,-5,-2,-1,2,6,4,2,5,2.8/2.59],
+    h_vec: [0,0,1,0,0,1,0,0,0,0,0,0,0,   // [0-12] muelle (índice 12=muro, se dibuja aparte)
+            3,5,6,3,5,6,6,4,1,1,-4,-5,-2,-1,2,6,4,2,5,0],  // [13-32] barco (índice 32=muro, aparte)
   };
 
   // ── Estado interno del canvas ────────────────────────────────────────────
@@ -35,7 +35,8 @@ const CraneViz = (() => {
     yh: PHYS.yh_0,
     vt: 0,
     vh: 0,
-    caught: 0,
+    tita_l: 0,
+    hay_container: 0,
     tlk: 0,
     estado: 0,
   };
@@ -130,13 +131,13 @@ const CraneViz = (() => {
     }
   }
 
-  // ── Dibujar dock (muelle, xt < ~0) ─────────────────────────────────────
+  // ── Dibujar dock (muelle, xt < 0) ───────────────────────────────────────
+  // El muelle termina en x=0 (índice 12 del h_vec = alt_borde)
   function drawDock() {
-    const y_dock_top = toCanvasY(0);            // nivel del suelo (y=0)
-    const x_dock_r   = toCanvasX(PHYS.xt_min + 14); // borde derecho del muelle
+    const y_dock_top = toCanvasY(0);
+    const x_dock_r   = toCanvasX(0);   // borde derecho del muelle = x=0m
     const x_dock_l   = 0;
 
-    // Superficie del muelle
     ctx.fillStyle = C.dock;
     ctx.fillRect(x_dock_l, y_dock_top, x_dock_r - x_dock_l, H - y_dock_top);
     ctx.strokeStyle = C.dockEdge;
@@ -146,32 +147,30 @@ const CraneViz = (() => {
     ctx.lineTo(x_dock_l, y_dock_top);
     ctx.stroke();
 
-    // Borde del muelle (muro al agua)
+    // Muro vertical del muelle (borde al agua)
     ctx.fillStyle = C.dockEdge;
     ctx.fillRect(x_dock_r - 4, toCanvasY(PHYS.alt_borde), 4, H);
 
-    // Etiqueta
     ctx.fillStyle = C.text;
     ctx.font = `${Math.max(9, mToPx(2))}px Consolas`;
     ctx.fillText('MUELLE', x_dock_l + 4, y_dock_top - 5);
 
-    // Containers en el muelle (xt_min a xt_min+12)
-    drawContainerStack(PHYS.xt_min, PHYS.xt_min + 14, C.containerDock);
+    drawContainerStack(PHYS.xt_min, -0.1, C.containerDock);  // excluye x=0 (muro)
   }
 
-  // ── Dibujar barco (xt > ~20) ─────────────────────────────────────────────
+  // ── Dibujar barco (xt > 0) ───────────────────────────────────────────────
+  // El barco empieza en x≈2.5m (índice 13 del h_vec), pegado al muelle
   function drawShip() {
-    const x_ship_l = toCanvasX(20);
+    const x_ship_l = toCanvasX(1);
     const x_ship_r = toCanvasX(PHYS.xt_max + 3);
-    const y_deck   = toCanvasY(-2);        // cubierta
-    const y_hull_b = toCanvasY(-10);       // fondo del casco
-    const y_water  = toCanvasY(-5);
+    const y_deck   = toCanvasY(-2);
+    const y_hull_b = toCanvasY(-10);
 
     // Casco
     ctx.fillStyle = C.ship_hull;
     ctx.beginPath();
     ctx.moveTo(x_ship_l, y_deck);
-    ctx.lineTo(x_ship_l - mToPx(2), y_hull_b);
+    ctx.lineTo(x_ship_l, y_hull_b);           // lado izquierdo vertical recto
     ctx.lineTo(x_ship_r + mToPx(2), y_hull_b);
     ctx.lineTo(x_ship_r, y_deck);
     ctx.closePath();
@@ -191,14 +190,22 @@ const CraneViz = (() => {
     ctx.font = `${Math.max(9, mToPx(2))}px Consolas`;
     ctx.fillText('BARCO', x_ship_l + 4, y_deck - 5);
 
-    // Containers en el barco (xt 25 a 47)
-    drawContainerStack(22, PHYS.xt_max - 1, C.containerShip);
+    // Borde izquierdo grueso del barco (lado muelle)
+    ctx.fillStyle = C.shipEdge;
+    ctx.fillRect(x_ship_l - 4, toCanvasY(PHYS.alt_borde), 4, y_hull_b - toCanvasY(PHYS.alt_borde));
+
+    // Muro lateral del barco (x=50m, borde fijo)
+    const x_ship_wall = toCanvasX(PHYS.xt_max);
+    ctx.fillStyle = C.shipEdge;
+    ctx.fillRect(x_ship_wall - 2, toCanvasY(PHYS.alt_borde), 5, H);
+
+    drawContainerStack(1, PHYS.xt_max - 0.1, C.containerShip);  // excluye x=50 (muro)
   }
 
   // ── Dibujar stacks de containers en el muelle o barco ───────────────────
   function drawContainerStack(x_start, x_end, color) {
     const Wc_px = mToPx(PHYS.Wc);
-    const Hc_px = mToPx(PHYS.Hc);
+    const Hc_px = toCanvasY(0) - toCanvasY(PHYS.Hc);  // escala Y correcta
     const N = PHYS.h_vec.length;
     const x_range = PHYS.xt_max - PHYS.xt_min;
 
@@ -269,62 +276,63 @@ const CraneViz = (() => {
   }
 
   // ── Dibujar carro, cable y spreader ──────────────────────────────────────
-  function drawTrolleyAndHoist(xt, yh, caught) {
+  function drawTrolleyAndHoist(xt, yh, caught, tita_l) {
     const cx      = toCanvasX(xt);
     const y_rail  = toCanvasY(PHYS.Yt0);
     const tw      = Math.max(12, mToPx(1.5));   // ancho carro px
     const th      = Math.max(6,  mToPx(0.6));   // alto carro px
 
-    // Posición spreader
-    // yh es la posición vertical del spreader: 0 = nivel de referencia
-    // El cable va desde el carro hacia abajo hasta el spreader
+    // Péndulo: offset horizontal del spreader por ángulo tita_l
+    const L = PHYS.Yt0 - yh;                         // longitud cable [m]
+    const x_spread_m = xt + L * Math.sin(tita_l);    // posición real spreader [m]
+    const cx_spread  = toCanvasX(x_spread_m);
     const y_spreader = toCanvasY(yh);
     const Wc_px = mToPx(PHYS.Wc);
-    const Hc_px = mToPx(PHYS.Hc);
+    const Hc_px = toCanvasY(0) - toCanvasY(PHYS.Hc);  // escala Y correcta
     const sw = Math.max(16, Wc_px * 0.85);   // ancho spreader
     const sh = Math.max(4,  mToPx(0.3));     // alto spreader
 
-    // Cable
+    // Cable en ángulo
     ctx.strokeStyle = C.cable;
     ctx.lineWidth = Math.max(1, mToPx(0.05));
     ctx.beginPath();
     ctx.moveTo(cx, y_rail + th / 2);
-    ctx.lineTo(cx, y_spreader - sh / 2);
+    ctx.lineTo(cx_spread, y_spreader - sh / 2);
     ctx.stroke();
 
     // Container enganchado (debajo del spreader)
     if (caught) {
       ctx.fillStyle = C.container;
-      ctx.fillRect(cx - Wc_px / 2, y_spreader + sh / 2 + 1, Wc_px, Hc_px);
+      ctx.fillRect(cx_spread - Wc_px / 2, y_spreader + sh / 2 + 1, Wc_px, Hc_px);
       ctx.strokeStyle = C.containerEdge;
       ctx.lineWidth = 1.5;
-      ctx.strokeRect(cx - Wc_px / 2, y_spreader + sh / 2 + 1, Wc_px, Hc_px);
+      ctx.strokeRect(cx_spread - Wc_px / 2, y_spreader + sh / 2 + 1, Wc_px, Hc_px);
       // Stripes en el container
       ctx.strokeStyle = '#2a5a3a';
       ctx.lineWidth = 0.5;
       for (let xi = 0.25; xi < 1; xi += 0.25) {
         ctx.beginPath();
-        ctx.moveTo(cx - Wc_px / 2 + Wc_px * xi, y_spreader + sh / 2 + 1);
-        ctx.lineTo(cx - Wc_px / 2 + Wc_px * xi, y_spreader + sh / 2 + Hc_px);
+        ctx.moveTo(cx_spread - Wc_px / 2 + Wc_px * xi, y_spreader + sh / 2 + 1);
+        ctx.lineTo(cx_spread - Wc_px / 2 + Wc_px * xi, y_spreader + sh / 2 + Hc_px);
         ctx.stroke();
       }
     }
 
     // Spreader
-    const sp_grad = ctx.createLinearGradient(cx - sw / 2, y_spreader - sh / 2, cx + sw / 2, y_spreader + sh / 2);
+    const sp_grad = ctx.createLinearGradient(cx_spread - sw / 2, y_spreader - sh / 2, cx_spread + sw / 2, y_spreader + sh / 2);
     sp_grad.addColorStop(0, '#c05a10');
     sp_grad.addColorStop(1, '#e07010');
     ctx.fillStyle = sp_grad;
-    ctx.fillRect(cx - sw / 2, y_spreader - sh / 2, sw, sh);
+    ctx.fillRect(cx_spread - sw / 2, y_spreader - sh / 2, sw, sh);
     ctx.strokeStyle = C.spreaderEdge;
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(cx - sw / 2, y_spreader - sh / 2, sw, sh);
+    ctx.strokeRect(cx_spread - sw / 2, y_spreader - sh / 2, sw, sh);
 
     // Puntos de enganche (esquinas del spreader)
     const tlk_color = caught ? '#40ff80' : '#808090';
     [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([dx, dy]) => {
       ctx.beginPath();
-      ctx.arc(cx + dx * sw * 0.42, y_spreader + dy * sh * 0.1, 2, 0, Math.PI * 2);
+      ctx.arc(cx_spread + dx * sw * 0.42, y_spreader + dy * sh * 0.1, 2, 0, Math.PI * 2);
       ctx.fillStyle = tlk_color;
       ctx.fill();
     });
@@ -357,12 +365,16 @@ const CraneViz = (() => {
       ctx.stroke();
     });
 
-    // Etiqueta con posición
+    // Etiquetas
     ctx.fillStyle = '#8090b0';
     ctx.font = '9px Consolas';
     ctx.textAlign = 'center';
     ctx.fillText(`xt=${xt.toFixed(1)}m`, cx, y_rail - th - 3);
-    ctx.fillText(`yh=${yh.toFixed(1)}m`, cx, y_spreader - sh - 8);
+    ctx.fillText(`yh=${yh.toFixed(1)}m`, cx_spread, y_spreader - sh - 8);
+    if (Math.abs(tita_l) > 0.001) {
+      ctx.fillStyle = '#e0a040';
+      ctx.fillText(`θ=${(tita_l * 180 / Math.PI).toFixed(1)}°`, cx_spread, y_spreader + sh / 2 + 14);
+    }
     ctx.textAlign = 'left';
   }
 
@@ -427,7 +439,7 @@ const CraneViz = (() => {
     drawDock();
     drawShip();
     drawCraneStructure();
-    drawTrolleyAndHoist(state.xt, state.yh, state.caught);
+    drawTrolleyAndHoist(state.xt, state.yh, state.hay_container, state.tita_l);
     drawVelocityBars(state.vt, state.vh);
   }
 
@@ -463,9 +475,16 @@ const CraneViz = (() => {
     if (data.yh    !== undefined) state.yh     = parseFloat(data.yh);
     if (data.vt    !== undefined) state.vt     = parseFloat(data.vt);
     if (data.vh    !== undefined) state.vh     = parseFloat(data.vh);
-    if (data.caught !== undefined) state.caught = parseInt(data.caught);
-    if (data.tlk   !== undefined) state.tlk    = parseInt(data.tlk);
+    if (data.tita_l       !== undefined) state.tita_l       = parseFloat(data.tita_l);
+    if (data.hay_container !== undefined) state.hay_container = parseInt(data.hay_container);
+    if (data.tlk          !== undefined) state.tlk          = parseInt(data.tlk);
     if (data.estado !== undefined) state.estado = parseInt(data.estado);
+    // yc0_vec viene en metros → convertir a stack count dividiendo por Hc
+    if (Array.isArray(data.yc0_vec) && data.yc0_vec.length === 33) {
+      PHYS.h_vec = data.yc0_vec.map(v => v / PHYS.Hc);
+      PHYS.h_vec[12] = 0;   // muro del muelle — se dibuja como estructura, no container
+      PHYS.h_vec[32] = 0;   // muro del barco — idem
+    }
   }
 
   return { init, update };

@@ -59,6 +59,7 @@ function updateUI(data) {
   setLabel('lbl-yh', data.yh, 2, 'm');
   setLabel('lbl-vt', data.vt, 2, 'm/s');
   setLabel('lbl-vh', data.vh, 2, 'm/s');
+  setLabel('lbl-tita', data.tita_l, 4, 'rad');
 
   updateConnectionBadge(data.connected);
 

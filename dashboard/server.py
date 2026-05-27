@@ -58,12 +58,13 @@ UDP_SIGNAL_MAP = [
     'modo_manual',     # [24] in[25]
     'modo_manual_auto',# [25] in[26]
     'modo_reposo',     # [26] in[27]
+    'tita_l',          # [27] in[28] ángulo péndulo cable [rad]
 ]
 
 # ── Estado global compartido ─────────────────────────────────────────────────
 crane_state = {
     # Físicas
-    'xt': 5.0, 'yh': 20.0, 'vt': 0.0, 'vh': 0.0,
+    'xt': 5.0, 'yh': 20.0, 'vt': 0.0, 'vh': 0.0, 'tita_l': 0.0,
     # Modos
     'modo_reposo': 1, 'modo_manual': 0, 'modo_auto': 0,
     'modo_manual_auto': 0, 'recuperacion': 0, 'modo_muerto': 0,
@@ -75,6 +76,9 @@ crane_state = {
     'FALLA_IZAJE_INF': 0, 'FALLA_IZAJE_SUP': 0, 'FALLA_IZAJE_SV': 0, 'FALLA_CARRO_SV': 0,
     # Fines de carrera
     'FC_der': 0, 'FC_izq': 0, 'FC_sup': 0, 'FC_inf': 0,
+    # Perfil de obstáculos (metros, 33 columnas de xt_min a xt_max)
+    'yc0_vec': [0.0] * 33,
+    '_udp_n': 0,   # debug: cantidad de doubles en último paquete UDP
     # Derivados
     'modo_nombre': 'REPOSO',
     'any_falla': False,
@@ -152,9 +156,14 @@ def _udp_receiver():
                 values = struct.unpack(f'{N}d', raw[:N * 8])
                 _udp_last_rx[0] = time.time()
                 with crane_lock:
+                    crane_state['_udp_n'] = N
                     for i, name in enumerate(UDP_SIGNAL_MAP):
                         if i < N:
                             crane_state[name] = float(values[i])
+                    # yc0_vec: 33 doubles a continuación de UDP_SIGNAL_MAP
+                    yc0_start = len(UDP_SIGNAL_MAP)
+                    if N >= yc0_start + 33:
+                        crane_state['yc0_vec'] = [float(values[yc0_start + j]) for j in range(33)]
                     crane_state['connected'] = True
                     _derive_mode_state()
             except socket.timeout:
