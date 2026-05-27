@@ -63,17 +63,30 @@ def _sim_test_loop(json_file: Path):
     while True:
         t += 0.02
         estado_idx = int(t / 5) % len(estados)
+        fase_modo = int(t / 10) % 5
         data = {
-            "xt":      10.0 * math.sin(t * 0.3) + 5.0,
-            "yh":      15.0 + 10.0 * math.sin(t * 0.2),
-            "vt":       4.0 * math.cos(t * 0.3),
-            "vh":       3.0 * math.cos(t * 0.2),
-            "freno_c": 1 if abs(math.cos(t * 0.3)) < 0.1 else 0,
-            "freno_h": 1 if abs(math.cos(t * 0.2)) < 0.1 else 0,
-            "estado":  estados[estado_idx],
-            "modo":    min(3, int(t / 15) % 4),
-            "tlk":     1 if math.sin(t) > 0.8 else 0,
-            "caught":  1 if math.sin(t * 0.5) > 0.5 else 0,
+            "connected":       True,
+            "xt":              10.0 * math.sin(t * 0.3) + 5.0,
+            "yh":              15.0 + 10.0 * math.sin(t * 0.2),
+            "vt":               4.0 * math.cos(t * 0.3),
+            "vh":               3.0 * math.cos(t * 0.2),
+            "tita_l":           0.08 * math.sin(t * 1.1),
+            "freno_c":         1 if abs(math.cos(t * 0.3)) < 0.15 else 0,
+            "freno_h":         1 if abs(math.cos(t * 0.2)) < 0.15 else 0,
+            "tlk":             1 if math.sin(t) > 0.8 else 0,
+            "m_container":     5000.0 if math.sin(t * 0.5) > 0.5 else 0.0,
+            "modo_reposo":     1 if fase_modo == 0 else 0,
+            "modo_manual":     1 if fase_modo == 1 else 0,
+            "modo_auto":       1 if fase_modo == 2 else 0,
+            "modo_manual_auto":1 if fase_modo == 3 else 0,
+            "recuperacion":    1 if fase_modo == 4 else 0,
+            "modo_muerto":     0,
+            "FALLA_MAN":       0,
+            "FALLA_WD":        0,
+            "FC_der":          1 if t % 20 < 2 else 0,
+            "FC_izq":          0,
+            "FC_sup":          1 if t % 30 < 2 else 0,
+            "FC_inf":          0,
         }
         try:
             # Escritura atómica: escribir a .tmp y renombrar

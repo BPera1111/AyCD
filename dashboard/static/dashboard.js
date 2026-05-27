@@ -202,8 +202,8 @@ function makeChart(canvasId, label1, label2, color1, color2, yMin, yMax) {
   });
 }
 
-const chartPos = makeChart('chartPos', 'xt (m)', 'yh (m)', COLORS.xt, COLORS.yh, -25, 55);
-const chartVel = makeChart('chartVel', 'vt (m/s)', 'vh (m/s)', COLORS.vt, COLORS.vh, -5, 5);
+let chartPos = null;
+let chartVel = null;
 let t_start = null;
 
 function updateCharts(data) {
@@ -320,11 +320,100 @@ async function checkGamepadStatus() {
   }
 }
 
+// ── GoldenLayout ──────────────────────────────────────────────────────────────
+const GL_KEY = 'craneGL';
+
+const GL_DEFAULT = {
+  root: {
+    type: 'row',
+    content: [
+      {
+        type: 'column',
+        width: 75,
+        content: [
+          {
+            type: 'row',
+            height: 80,
+            content: [
+              {
+                type: 'column',
+                width: 67,
+                content: [
+                  { type: 'component', componentType: 'crane',     title: 'Vista Grúa',     height: 65 },
+                  { type: 'row', height: 35, content: [
+                    { type: 'component', componentType: 'chart-pos', title: 'Posición (m)',    width: 50 },
+                    { type: 'component', componentType: 'chart-vel', title: 'Velocidad (m/s)', width: 50 },
+                  ]},
+                ],
+              },
+            ],
+          },
+          { type: 'component', componentType: 'control', title: 'Control', height: 20 },
+        ],
+      },
+      { type: 'component', componentType: 'status', title: 'Estado del Sistema', width: 25 },
+    ],
+  },
+};
+
+function cloneTpl(id) {
+  return document.getElementById(id).content.cloneNode(true);
+}
+
+async function initGoldenLayout() {
+  const ws = document.getElementById('workspace');
+
+  let GoldenLayout;
+  try {
+    const mod = await import('https://esm.sh/golden-layout@2.6.0');
+    GoldenLayout = mod.GoldenLayout;
+  } catch (e) {
+    ws.innerHTML = `<div style="color:#ff6060;padding:2rem;font-family:monospace;font-size:1.2rem">ERROR: GoldenLayout no cargó.<br>${e.message}</div>`;
+    return;
+  }
+  const layout = new GoldenLayout(ws);
+
+  layout.registerComponentConstructor('crane',     class { constructor(c) { c.element.appendChild(cloneTpl('tpl-crane'));     } });
+  layout.registerComponentConstructor('status',    class { constructor(c) { c.element.appendChild(cloneTpl('tpl-status'));    } });
+  layout.registerComponentConstructor('chart-pos', class { constructor(c) { c.element.appendChild(cloneTpl('tpl-chart-pos')); } });
+  layout.registerComponentConstructor('chart-vel', class { constructor(c) { c.element.appendChild(cloneTpl('tpl-chart-vel')); } });
+  layout.registerComponentConstructor('control',   class { constructor(c) { c.element.appendChild(cloneTpl('tpl-control'));   } });
+
+  // loadLayout es síncrono — cuando retorna, todos los elementos YA están en el DOM
+  const saved = localStorage.getItem(GL_KEY);
+  requestAnimationFrame(() => {
+    let loaded = false;
+    if (saved) {
+      try { layout.loadLayout(JSON.parse(saved)); loaded = true; } catch (_) {}
+    }
+    if (!loaded) {
+      try { layout.loadLayout(GL_DEFAULT); } catch (e2) {
+        ws.innerHTML = `<div style="color:#ff6060;padding:2rem;font-family:monospace">GL Error: ${e2.message}</div>`;
+        return;
+      }
+    }
+    // Ahora sí: inicializar componentes (elementos ya en el DOM)
+    if (document.getElementById('craneCanvas'))  CraneViz.init();
+    if (document.getElementById('chartPos'))     chartPos = makeChart('chartPos', 'xt (m)',   'yh (m)',   COLORS.xt, COLORS.yh, -25, 55);
+    if (document.getElementById('chartVel'))     chartVel = makeChart('chartVel', 'vt (m/s)', 'vh (m/s)', COLORS.vt, COLORS.vh, -5,  5);
+    if (document.getElementById('stickCarro')) { initStick('stickCarro', 'carro', 'x'); initStick('stickIzaje', 'izaje', 'y'); }
+  });
+
+  // Guardar layout en cada cambio
+  layout.on('stateChanged', () => {
+    try { localStorage.setItem(GL_KEY, JSON.stringify(layout.saveLayout())); } catch (_) {}
+  });
+
+  // Reset layout
+  document.getElementById('btn-reset-layout')?.addEventListener('click', () => {
+    localStorage.removeItem(GL_KEY);
+    location.reload();
+  });
+}
+
 // ── Inicialización ────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  CraneViz.init();
-  initStick('stickCarro', 'carro', 'x');
-  initStick('stickIzaje', 'izaje', 'y');
+  initGoldenLayout();
   checkGamepadStatus();
   setInterval(checkGamepadStatus, 10000);
 });

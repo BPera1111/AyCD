@@ -18,14 +18,16 @@
   --font-mono: 'Consolas', 'Courier New', monospace;
 }
 
+html { height: 100%; overflow: hidden; }
+
 body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font);
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
 }
 
 /* ── Header ──────────────────────────────────────────────────────────── */
@@ -57,43 +59,48 @@ header {
 .badge-on   { background: #153a20; color: var(--green);  border: 1px solid var(--green); }
 .badge-mode { background: #1a2540; color: var(--accent);  border: 1px solid var(--accent); }
 
-/* ── Layout principal ─────────────────────────────────────────────────── */
-main.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 280px;
-  grid-template-rows: auto auto auto;
-  grid-template-areas:
-    "crane  crane  status"
-    "chartP chartV status"
-    "ctrl   ctrl   ctrl";
-  gap: 0.7rem;
-  padding: 0.7rem;
+/* ── GoldenLayout workspace ───────────────────────────────────────────── */
+#workspace {
   flex: 1;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: 0;
 }
 
-/* ── Cards ───────────────────────────────────────────────────────────── */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.8rem 1rem;
+/* ── GoldenLayout overrides — colores del tema oscuro ────────────────── */
+.lm_goldenlayout                    { background: var(--bg); }
+.lm_header                          { background: var(--surface); border-bottom: 1px solid var(--border); }
+.lm_tab                             { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border) !important; }
+.lm_tab.lm_active                   { background: var(--surface); color: var(--text); border-bottom-color: var(--surface) !important; }
+.lm_tab:hover                       { color: var(--text); }
+.lm_tab .lm_title                   { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.lm_content                         { background: var(--surface); border: 1px solid var(--border); }
+.lm_splitter                        { background: var(--bg); }
+.lm_splitter:hover, .lm_splitter.lm_dragging { background: var(--accent); }
+.lm_controls span                   { color: var(--text-dim); }
+.lm_controls span:hover             { color: var(--accent); }
+
+/* ── Paneles GL — contenido dentro de cada componente ────────────────── */
+.gl-panel {
+  width: 100%;
+  height: 100%;
+  padding: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
 }
-.card h2 {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.6rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--border);
-}
+
+.gl-status  { overflow-y: auto; }
+.gl-control { justify-content: center; align-items: center; }
+.chart-panel { padding: 0.4rem; }
 
 /* ── Crane section ───────────────────────────────────────────────────── */
-.crane-section { grid-area: crane; }
 #craneCanvas {
   width: 100%;
-  height: 320px;
+  flex: 1;
+  min-height: 0;
   display: block;
   background: #0a1020;
   border-radius: 4px;
@@ -107,11 +114,12 @@ main.grid {
   font-size: 0.8rem;
   color: var(--text-dim);
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 .crane-info strong { color: var(--accent2); }
 
 /* ── Status section ──────────────────────────────────────────────────── */
-.status-section { grid-area: status; }
+.status-section { overflow-y: auto; }
 
 .state-display {
   background: var(--surface2);
@@ -274,13 +282,10 @@ main.grid {
 .gp-axes strong { color: var(--accent); }
 
 /* ── Charts section ───────────────────────────────────────────────────── */
-.chart-section { min-height: 160px; }
-.chart-section canvas { max-height: 140px; }
-.chart-pos { grid-area: chartP; }
-.chart-vel { grid-area: chartV; }
+.chart-section { min-height: 120px; }
+.chart-section canvas { flex: 1; min-height: 0; }
 
 /* ── Control section ──────────────────────────────────────────────────── */
-.control-section { grid-area: ctrl; }
 .controls-row {
   display: flex;
   align-items: center;
@@ -334,15 +339,16 @@ main.grid {
 .btn-emerg.pressed, .btn-emerg:active { background: #4a1515; border-color: #ff5050; box-shadow: 0 0 8px var(--danger); }
 .btn-emerg        { grid-column: span 2; }
 
-/* ── Responsive ───────────────────────────────────────────────────────── */
-@media (max-width: 900px) {
-  main.grid {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "crane"
-      "status"
-      "chartP"
-      "chartV"
-      "ctrl";
-  }
+/* Botón reset layout en header */
+#btn-reset-layout {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
+#btn-reset-layout:hover { color: var(--accent); border-color: var(--accent); }

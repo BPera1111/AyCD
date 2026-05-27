@@ -191,7 +191,7 @@ def _parse_and_update_json(text: str) -> bool:
             return False
         with crane_lock:
             for k, v in data.items():
-                if k in crane_state and k not in ('connected', 'any_falla', 'modo_nombre'):
+                if k in crane_state and k not in ('any_falla', 'modo_nombre'):
                     crane_state[k] = v
             _derive_mode_state()
         return True
