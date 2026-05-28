@@ -188,6 +188,7 @@ header {
   letter-spacing: 0.06em;
   transition: color 0.2s, background 0.2s;
 }
+.modo-badge-large.modo-error      { color: #ff4040; background: #2a0808; border: 1px solid #ff4040; }
 .modo-badge-large.modo-muerto     { color: #ff6060; background: #2a0e0e; }
 .modo-badge-large.modo-recuperacion { color: var(--warn); background: #1e1500; }
 .modo-badge-large.modo-auto       { color: #a060ff; background: #1a0f2a; }

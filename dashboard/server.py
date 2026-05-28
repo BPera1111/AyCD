@@ -67,13 +67,14 @@ crane_state = {
     'xt': 5.0, 'yh': 20.0, 'vt': 0.0, 'vh': 0.0, 'tita_l': 0.0,
     # Modos
     'modo_reposo': 1, 'modo_manual': 0, 'modo_auto': 0,
-    'modo_manual_auto': 0, 'recuperacion': 0, 'modo_muerto': 0,
+    'modo_manual_auto': 0, 'recuperacion': 0, 'modo_muerto': 0, 'modo_error': 0,
     # Actuadores / frenos
     'freno_c': 1, 'freno_c_n0': 1, 'freno_h': 1,
-    'tlk': 0, 'hay_container': 0, 'm_container': 0.0, 'i_sel': 0,
+    'tlk': 0, 'hay_container': 0, 'm_container': 0.0, 'm_container_est': 0.0, 'i_sel': 0,
     # Fallas
     'FALLA_MAN': 0, 'FALLA_WD': 0, 'FALLA_CARRO_DER': 0, 'FALLA_CARRO_IZQ': 0,
     'FALLA_IZAJE_INF': 0, 'FALLA_IZAJE_SUP': 0, 'FALLA_IZAJE_SV': 0, 'FALLA_CARRO_SV': 0,
+    'FALLA_SOBRECARGA': 0,
     # Fines de carrera
     'FC_der': 0, 'FC_izq': 0, 'FC_sup': 0, 'FC_inf': 0,
     # Perfil de obstáculos (metros, 33 columnas de xt_min a xt_max)
@@ -90,6 +91,7 @@ _udp_last_rx = [0.0]   # [0] = time.time() de último paquete recibido (servidor
 _FALLA_KEYS = [
     'FALLA_MAN', 'FALLA_WD', 'FALLA_CARRO_DER', 'FALLA_CARRO_IZQ',
     'FALLA_IZAJE_INF', 'FALLA_IZAJE_SUP', 'FALLA_IZAJE_SV', 'FALLA_CARRO_SV',
+    'FALLA_SOBRECARGA',
 ]
 
 
@@ -100,6 +102,8 @@ def _derive_mode_state():
         crane_state['modo_nombre'] = 'MODO MUERTO'
     elif crane_state['recuperacion']:
         crane_state['modo_nombre'] = 'RECUPERACION'
+    elif crane_state['modo_error']:
+        crane_state['modo_nombre'] = 'ERROR'
     elif crane_state['modo_manual_auto']:
         crane_state['modo_nombre'] = 'MANUAL→AUTO'
     elif crane_state['modo_auto']:
@@ -164,6 +168,18 @@ def _udp_receiver():
                     yc0_start = len(UDP_SIGNAL_MAP)
                     if N >= yc0_start + 33:
                         crane_state['yc0_vec'] = [float(values[yc0_start + j]) for j in range(33)]
+                    # modo_error: Mux input 30, después de yc0_vec (índice 61)
+                    modo_error_idx = yc0_start + 33
+                    if N > modo_error_idx:
+                        crane_state['modo_error'] = float(values[modo_error_idx])
+                    # FALLA_SOBRECARGA: Mux input 31 (índice 62)
+                    sobrecarga_idx = modo_error_idx + 1
+                    if N > sobrecarga_idx:
+                        crane_state['FALLA_SOBRECARGA'] = float(values[sobrecarga_idx])
+                    # m_container_est: Mux input 32 (índice 63)
+                    m_est_idx = sobrecarga_idx + 1
+                    if N > m_est_idx:
+                        crane_state['m_container_est'] = float(values[m_est_idx])
                     crane_state['connected'] = True
                     _derive_mode_state()
             except socket.timeout:

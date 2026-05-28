@@ -60,6 +60,7 @@ function updateUI(data) {
   setLabel('lbl-vt', data.vt, 2, 'm/s');
   setLabel('lbl-vh', data.vh, 2, 'm/s');
   setLabel('lbl-tita', data.tita_l, 4, 'rad');
+  setLabel('lbl-m-est', data.m_container_est, 0, 'kg');
 
   updateConnectionBadge(data.connected);
 
@@ -80,7 +81,8 @@ function updateModeFlags(data) {
     modoActivo.textContent = data.modo_nombre || 'REPOSO';
     // Color según modo
     modoActivo.className = 'modo-badge-large';
-    if (data.modo_muerto)         modoActivo.classList.add('modo-muerto');
+    if (data.modo_error)          modoActivo.classList.add('modo-error');
+    else if (data.modo_muerto)    modoActivo.classList.add('modo-muerto');
     else if (data.recuperacion)   modoActivo.classList.add('modo-recuperacion');
     else if (data.modo_auto || data.modo_manual_auto) modoActivo.classList.add('modo-auto');
     else if (data.modo_manual)    modoActivo.classList.add('modo-manual');
@@ -93,12 +95,14 @@ function updateModeFlags(data) {
     'flag-man-auto': data.modo_manual_auto,
     'flag-recup':    data.recuperacion,
     'flag-muerto':   data.modo_muerto,
+    'flag-error':    data.modo_error,
   };
   for (const [id, val] of Object.entries(flagMap)) {
     const el = document.getElementById(id);
     if (!el) continue;
     el.className = 'flag-item' + (val ? ' flag-on' : '');
     if (val && id === 'flag-muerto') el.classList.add('flag-danger');
+    if (val && id === 'flag-error')  el.classList.add('flag-danger');
     if (val && id === 'flag-recup')  el.classList.add('flag-warn');
   }
 }
@@ -121,6 +125,7 @@ const FALLA_MAP = {
   'ind-falla_izaje_sup': 'FALLA_IZAJE_SUP',
   'ind-falla_izaje_sv':  'FALLA_IZAJE_SV',
   'ind-falla_carro_sv':  'FALLA_CARRO_SV',
+  'ind-falla_sobrecarga':'FALLA_SOBRECARGA',
 };
 
 function updateFaults(data) {
@@ -363,10 +368,11 @@ function cloneTpl(id) {
 async function initGoldenLayout() {
   const ws = document.getElementById('workspace');
 
-  let GoldenLayout;
+  let GoldenLayout, LayoutConfig;
   try {
     const mod = await import('https://esm.sh/golden-layout@2.6.0');
     GoldenLayout = mod.GoldenLayout;
+    LayoutConfig = mod.LayoutConfig;
   } catch (e) {
     ws.innerHTML = `<div style="color:#ff6060;padding:2rem;font-family:monospace;font-size:1.2rem">ERROR: GoldenLayout no cargó.<br>${e.message}</div>`;
     return;
@@ -384,7 +390,11 @@ async function initGoldenLayout() {
   requestAnimationFrame(() => {
     let loaded = false;
     if (saved) {
-      try { layout.loadLayout(JSON.parse(saved)); loaded = true; } catch (_) {}
+      try {
+        const resolved = JSON.parse(saved);
+        layout.loadLayout(LayoutConfig.fromResolved(resolved));
+        loaded = true;
+      } catch (e) { console.warn('[GL] Layout guardado inválido, usando default:', e); }
     }
     if (!loaded) {
       try { layout.loadLayout(GL_DEFAULT); } catch (e2) {
