@@ -361,6 +361,14 @@ const GL_DEFAULT = {
   },
 };
 
+const PANEL_META = {
+  'crane':     { title: 'Vista Grúa',         init: () => { CraneViz.init(); } },
+  'status':    { title: 'Estado del Sistema',  init: () => {} },
+  'chart-pos': { title: 'Posición (m)',        init: () => { if (chartPos) { chartPos.destroy(); chartPos = null; } chartPos = makeChart('chartPos', 'xt (m)',   'yh (m)',   COLORS.xt, COLORS.yh, -25, 55); } },
+  'chart-vel': { title: 'Velocidad (m/s)',     init: () => { if (chartVel) { chartVel.destroy(); chartVel = null; } chartVel = makeChart('chartVel', 'vt (m/s)', 'vh (m/s)', COLORS.vt, COLORS.vh, -5,  5);  } },
+  'control':   { title: 'Control',             init: () => { initStick('stickCarro', 'carro', 'x'); initStick('stickIzaje', 'izaje', 'y'); } },
+};
+
 function cloneTpl(id) {
   return document.getElementById(id).content.cloneNode(true);
 }
@@ -409,15 +417,65 @@ async function initGoldenLayout() {
     if (document.getElementById('stickCarro')) { initStick('stickCarro', 'carro', 'x'); initStick('stickIzaje', 'izaje', 'y'); }
   });
 
-  // Guardar layout en cada cambio
-  layout.on('stateChanged', () => {
-    try { localStorage.setItem(GL_KEY, JSON.stringify(layout.saveLayout())); } catch (_) {}
-  });
-
   // Reset layout
   document.getElementById('btn-reset-layout')?.addEventListener('click', () => {
     localStorage.removeItem(GL_KEY);
     location.reload();
+  });
+
+  // ── Paneles dropdown — reabrir paneles cerrados ──────────────────────────────
+  const closedPanels = new Set();
+
+  function walkLayout(item, found) {
+    if (!item) return;
+    if (item.type === 'component') found.add(String(item.componentType));
+    (item.contentItems || []).forEach(child => walkLayout(child, found));
+  }
+
+  function syncClosedPanels() {
+    const open = new Set();
+    walkLayout(layout.rootItem, open);
+    closedPanels.clear();
+    for (const type of Object.keys(PANEL_META)) {
+      if (!open.has(type)) closedPanels.add(type);
+    }
+  }
+
+  function updatePanelDropdown() {
+    const dd = document.getElementById('paneles-dropdown');
+    if (!dd) return;
+    dd.innerHTML = '';
+    if (closedPanels.size === 0) {
+      dd.innerHTML = '<span class="paneles-no-closed">Todos abiertos</span>';
+      return;
+    }
+    for (const type of closedPanels) {
+      const btn = document.createElement('button');
+      btn.className = 'panel-reopen-btn';
+      btn.textContent = '+ ' + PANEL_META[type].title;
+      btn.addEventListener('click', () => {
+        layout.addComponent(type, undefined, PANEL_META[type].title);
+        PANEL_META[type].init();
+        dd.classList.add('hidden');
+      });
+      dd.appendChild(btn);
+    }
+  }
+
+  // stateChanged dispara en cada cierre/apertura/resize — fuente confiable
+  layout.on('stateChanged', () => {
+    try { localStorage.setItem(GL_KEY, JSON.stringify(layout.saveLayout())); } catch (_) {}
+    syncClosedPanels();
+    updatePanelDropdown();
+  });
+
+  document.getElementById('btn-paneles')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('paneles-dropdown')?.classList.toggle('hidden');
+  });
+
+  window.addEventListener('click', () => {
+    document.getElementById('paneles-dropdown')?.classList.add('hidden');
   });
 }
 

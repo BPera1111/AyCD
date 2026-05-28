@@ -353,3 +353,33 @@ header {
   letter-spacing: 0.05em;
 }
 #btn-reset-layout:hover { color: var(--accent); border-color: var(--accent); }
+
+#btn-paneles {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+#btn-paneles:hover { color: var(--accent); border-color: var(--accent); }
+
+.paneles-dropdown {
+  position: absolute; top: 110%; right: 0;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); min-width: 170px; z-index: 1000;
+  padding: 0.3rem 0;
+  box-shadow: 0 4px 16px #0006;
+}
+.paneles-dropdown.hidden { display: none; }
+.panel-reopen-btn {
+  display: block; width: 100%; text-align: left;
+  background: none; border: none; color: var(--text);
+  padding: 0.4rem 0.8rem; cursor: pointer; font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+.panel-reopen-btn:hover { background: var(--surface2); color: var(--accent); }
+.paneles-no-closed { padding: 0.4rem 0.8rem; font-size: 0.72rem; color: var(--text-dim); }
