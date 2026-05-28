@@ -86,21 +86,16 @@ zitta = 0.5;
 Kcy = 1.8e9;                % Rigidez compresión vertical [N/m] [cite: 296]
 bcy = 10.0e6;               % Amortiguamiento compresión vertical [N/(m/s)] [cite: 299]
 bcx = 1.0e6;                % Fricción de arrastre horizontal [N/(m/s)] [cite: 299]
-%Kcy = 2e6;      % N/m  - misma frecuencia natural pero tratable
-%bcy = 2*sqrt(Kcy * 40000) * 0.7;  % amortiguamiento critico 70%
-%% Asignacion aleatoria de la masa del carro (Entorno)
-Mc_X=25000;
 
 %% Perfil de obstaculos (Entorno)
 N_xt = floor((xt_max-xt_min)/Wc)+1;                         % Cantidad de índices programados en el eje X
-is_scanned_vec = [ones(1,N_xt)];    % Vector de índices escaneados (1 = escaneado, 0 = no escaneado)
 alt_borde = 2.8;                                            % [m] Altura del borde del muelle 
 
-h_vec_inicial = [ 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, alt_borde,... 
+yc0_vec_inicial = [ 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, alt_borde,... 
                   3, 5, 6, 3, 5, 6, 6, 4, 1, 1, -4, -5, -2, -1, 2, 6, 4, 2, 5,...
                   alt_borde] * Hc;                          % Vector inicial del perfil de obstáculos
 
-yc0_vec_inicial = h_vec_inicial;  % Perfil inicial efectivamente medido (zona aún no escaneada = 0)
+%yc0_vec_inicial = h_vec_inicial;  % Perfil inicial efectivamente medido (zona aún no escaneada = 0)
 x_LIDAR = 3;                                                % [m] Offset del sensor lidar respecto al carro hacia +xt
 
 envolvent = [ones(1,N_xt)]*10;
@@ -131,9 +126,9 @@ k_omega_c = 3 * abs(polos_obs_c)^2;  % Ganancia del observador de estado para el
 k_i_c = abs(polos_obs_c)^3;     % Ganancia del observador de estado para el carro
 
 %% CN2 - Observador de estado - Izaje
-A_aug_h = [0, 1, 0; 0, -bh_eq/Jh_eq, 1/Jh_eq; 0, 0, 0];   
-C_aug_h = [1, 0, 0];
-polo_veloz_h = min(eig(A_aug_h));   
+%A_aug_h = [0, 1, 0; 0, -bh_eq/Jh_eq, 1/Jh_eq; 0, 0, 0];   
+%C_aug_h = [1, 0, 0];
+%polo_veloz_h = min(eig(A_aug_h));   
 
 polos_obs_h = 20*-bh_eq/Jh_eq;
 
@@ -142,15 +137,13 @@ k_omega_h = 3 * abs(polos_obs_h)^2-k_tita_h*bh_eq/Jh_eq;  % Ganancia del observa
 k_i_h = abs(polos_obs_h)^3;     % Ganancia del observador de estado para el izaje
 
 
-wh_obs = 20 * polo_veloz_h;                         % 20 veces la frecuencia del polo más rápido
-polos_obs_h = [wh_obs, wh_obs*1.01, wh_obs*1.02];   % Separamos polos ligeramente (1-2%) para evitar problemas con 'place'
-Lh = place(A_aug_h', C_aug_h', polos_obs_h)';       % Cálculo de ganancias
+%wh_obs = 20 * polo_veloz_h;                         % 20 veces la frecuencia del polo más rápido
+%polos_obs_h = [wh_obs, wh_obs*1.01, wh_obs*1.02];   % Separamos polos ligeramente (1-2%) para evitar problemas con 'place'
+%Lh = place(A_aug_h', C_aug_h', polos_obs_h)';       % Cálculo de ganancias
 %% Modo Automático
 % Lista de índices de columna válidos para selección (excluye bordes 1, 13, 33)
 %i_lista = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32];
 
-%% Fin
-fprintf('Parámetros de la planta cargados correctamente.\n');
 
 
 %% Condiciones iniciales
@@ -177,3 +170,6 @@ vh_0 = 0;
 periodo_pulsos = 100;               % Pulsos cada 100 ms
 timeout = 300;                      % [ms] Tiempo antes de detectar error
 counter_limit = timeout/(Ts0*1000); % Pulsos a contar antes de detectar error
+
+%% Fin
+fprintf('Parámetros de la planta cargados correctamente.\n');
