@@ -109,10 +109,13 @@ function updateModeFlags(data) {
 
 // ── Actuadores ────────────────────────────────────────────────────────────────
 function updateActuadores(data) {
-  setIndicator('ind-freno-c',   data.freno_c,       'warning');
-  setIndicator('ind-freno-h',   data.freno_h,       'warning');
-  setIndicator('ind-tlk',       data.tlk,           'active');
-  setIndicator('ind-container', data.hay_container, 'active');
+  // Frenos: sentido invertido (0=activo/frenando, 1=liberado)
+  setIndicator('ind-freno-c',    !data.freno_c,    'warning');
+  setIndicator('ind-freno-c-n0', !data.freno_c_n0, 'warning');
+  setIndicator('ind-freno-h-n1', !data.freno_h_n1, 'warning');
+  setIndicator('ind-freno-h-n0', !data.freno_h_n0, 'warning');
+  setIndicator('ind-tlk',        data.tlk,          'active');
+  setIndicator('ind-container',  data.hay_container, 'active');
 }
 
 // ── Fallas ────────────────────────────────────────────────────────────────────
@@ -139,10 +142,14 @@ function updateFaults(data) {
 
 // ── Fines de carrera ──────────────────────────────────────────────────────────
 const FC_MAP = {
-  'ind-fc_der': 'FC_der',
-  'ind-fc_izq': 'FC_izq',
-  'ind-fc_sup': 'FC_sup',
-  'ind-fc_inf': 'FC_inf',
+  'ind-fc_der':  'FC_der',
+  'ind-fc_izq':  'FC_izq',
+  'ind-fc_sup':  'FC_sup',
+  'ind-fc_inf':  'FC_inf',
+  'ind-fce_der': 'FCE_der',
+  'ind-fce_izq': 'FCE_izq',
+  'ind-fce_sup': 'FCE_sup',
+  'ind-fce_inf': 'FCE_inf',
 };
 
 function updateFCs(data) {

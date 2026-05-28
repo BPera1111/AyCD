@@ -253,13 +253,18 @@ header {
   background: #0f1520;
   transition: color 0.15s, background 0.15s;
 }
-.falla-item.falla-on { color: #ff8080; background: #2a1010; font-weight: 600; }
+.falla-item.falla-on             { color: #ff8080; background: #2a1010; font-weight: 600; }
+.falla-item.falla-n1             { color: #4a4020; }
+.falla-item.falla-n1.falla-on   { color: #ffc040; background: #201800; font-weight: 600; }
+.falla-nivel { float: right; opacity: 0.45; font-size: 0.6rem; margin-left: 4px; }
 
 /* ── Fines de carrera ──────────────────────────────────────────────────── */
 .fc-panel { margin-bottom: 0.7rem; }
 .fc-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(4, auto);
+  grid-auto-flow: column;
   gap: 3px;
   margin-top: 0.3rem;
 }
@@ -272,6 +277,8 @@ header {
   transition: color 0.15s, background 0.15s;
 }
 .fc-item.fc-on { color: #ffd080; background: #1e1800; font-weight: 600; }
+.fc-item.fce   { color: #5a3030; }
+.fc-item.fce.fc-on { color: #ff6060; background: #2a0808; font-weight: 700; }
 
 /* ── Gamepad status ───────────────────────────────────────────────────── */
 .gamepad-status { background: var(--surface2); border-radius: 6px; padding: 0.5rem 0.7rem; }

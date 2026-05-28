@@ -68,10 +68,16 @@
     <div class="panel-label" style="margin-top:0.7rem">ACTUADORES</div>
     <div class="indicators">
       <div class="indicator" id="ind-freno-c">
-        <div class="ind-dot"></div><div class="ind-label">Freno Carro</div>
+        <div class="ind-dot"></div><div class="ind-label">Freno Carro N1</div>
       </div>
-      <div class="indicator" id="ind-freno-h">
-        <div class="ind-dot"></div><div class="ind-label">Freno Izaje</div>
+      <div class="indicator" id="ind-freno-c-n0">
+        <div class="ind-dot"></div><div class="ind-label">Freno Carro N0</div>
+      </div>
+      <div class="indicator" id="ind-freno-h-n1">
+        <div class="ind-dot"></div><div class="ind-label">Freno Izaje N1</div>
+      </div>
+      <div class="indicator" id="ind-freno-h-n0">
+        <div class="ind-dot"></div><div class="ind-label">Freno Izaje N0</div>
       </div>
       <div class="indicator" id="ind-tlk">
         <div class="ind-dot"></div><div class="ind-label">TwistLock</div>
@@ -85,25 +91,29 @@
       <div class="panel-label">FALLAS</div>
       <div id="any-falla-banner" class="falla-banner hidden">&#9888; FALLA ACTIVA</div>
       <div class="falla-grid">
-        <div class="falla-item" id="ind-falla_man">       MAN</div>
-        <div class="falla-item" id="ind-falla_wd">        WD</div>
-        <div class="falla-item" id="ind-falla_carro_der"> CARRO DER</div>
-        <div class="falla-item" id="ind-falla_carro_izq"> CARRO IZQ</div>
-        <div class="falla-item" id="ind-falla_izaje_inf"> IZAJE INF</div>
-        <div class="falla-item" id="ind-falla_izaje_sup"> IZAJE SUP</div>
-        <div class="falla-item" id="ind-falla_izaje_sv">  IZAJE SV</div>
-        <div class="falla-item" id="ind-falla_carro_sv">  CARRO SV</div>
-        <div class="falla-item" id="ind-falla_sobrecarga">SOBRECARGA</div>
+        <div class="falla-item" id="ind-falla_man">       MAN <span class="falla-nivel">N0</span></div>
+        <div class="falla-item" id="ind-falla_wd">        WD <span class="falla-nivel">N0</span></div>
+        <div class="falla-item" id="ind-falla_carro_der"> CARRO DER <span class="falla-nivel">N0</span></div>
+        <div class="falla-item" id="ind-falla_carro_izq"> CARRO IZQ <span class="falla-nivel">N0</span></div>
+        <div class="falla-item" id="ind-falla_izaje_inf"> IZAJE INF <span class="falla-nivel">N0</span></div>
+        <div class="falla-item" id="ind-falla_izaje_sup"> IZAJE SUP <span class="falla-nivel">N0</span></div>
+        <div class="falla-item" id="ind-falla_izaje_sv">  IZAJE SV <span class="falla-nivel">N0</span></div>
+        <div class="falla-item" id="ind-falla_carro_sv">  CARRO SV <span class="falla-nivel">N0</span></div>
+        <div class="falla-item falla-n1" id="ind-falla_sobrecarga">SOBRECARGA <span class="falla-nivel">N1</span></div>
       </div>
     </div>
 
     <div class="fc-panel">
       <div class="panel-label">FINES DE CARRERA</div>
       <div class="fc-grid">
-        <div class="fc-item" id="ind-fc_der"> FC DER</div>
-        <div class="fc-item" id="ind-fc_izq"> FC IZQ</div>
-        <div class="fc-item" id="ind-fc_sup"> FC SUP</div>
-        <div class="fc-item" id="ind-fc_inf"> FC INF</div>
+        <div class="fc-item" id="ind-fc_der">  FC DER</div>
+        <div class="fc-item" id="ind-fc_izq">  FC IZQ</div>
+        <div class="fc-item" id="ind-fc_sup">  FC SUP</div>
+        <div class="fc-item" id="ind-fc_inf">  FC INF</div>
+        <div class="fc-item fce" id="ind-fce_der"> FCE DER</div>
+        <div class="fc-item fce" id="ind-fce_izq"> FCE IZQ</div>
+        <div class="fc-item fce" id="ind-fce_sup"> FCE SUP</div>
+        <div class="fc-item fce" id="ind-fce_inf"> FCE INF</div>
       </div>
     </div>
 

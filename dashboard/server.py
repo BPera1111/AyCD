@@ -68,8 +68,8 @@ crane_state = {
     # Modos
     'modo_reposo': 1, 'modo_manual': 0, 'modo_auto': 0,
     'modo_manual_auto': 0, 'recuperacion': 0, 'modo_muerto': 0, 'modo_error': 0,
-    # Actuadores / frenos
-    'freno_c': 1, 'freno_c_n0': 1, 'freno_h': 1,
+    # Actuadores / frenos (sentido invertido: 1=liberado, 0=activo)
+    'freno_c': 1, 'freno_c_n0': 1, 'freno_h_n1': 1, 'freno_h_n0': 1,
     'tlk': 0, 'hay_container': 0, 'm_container': 0.0, 'm_container_est': 0.0, 'i_sel': 0,
     # Fallas
     'FALLA_MAN': 0, 'FALLA_WD': 0, 'FALLA_CARRO_DER': 0, 'FALLA_CARRO_IZQ': 0,
@@ -77,6 +77,8 @@ crane_state = {
     'FALLA_SOBRECARGA': 0,
     # Fines de carrera
     'FC_der': 0, 'FC_izq': 0, 'FC_sup': 0, 'FC_inf': 0,
+    # Fines de carrera emergencia
+    'FCE_der': 0, 'FCE_izq': 0, 'FCE_sup': 0, 'FCE_inf': 0,
     # Perfil de obstáculos (metros, 33 columnas de xt_min a xt_max)
     'yc0_vec': [0.0] * 33,
     '_udp_n': 0,   # debug: cantidad de doubles en último paquete UDP
@@ -180,6 +182,19 @@ def _udp_receiver():
                     m_est_idx = sobrecarga_idx + 1
                     if N > m_est_idx:
                         crane_state['m_container_est'] = float(values[m_est_idx])
+                    # freno_h_n0: Mux input 33 (índice 64) — freno emergencia izaje nivel 0
+                    freno_h_n0_idx = m_est_idx + 1
+                    if N > freno_h_n0_idx:
+                        crane_state['freno_h_n0'] = float(values[freno_h_n0_idx])
+                    # freno_h_n1: Mux input 34 (índice 65) — freno izaje nivel 1
+                    freno_h_n1_idx = freno_h_n0_idx + 1
+                    if N > freno_h_n1_idx:
+                        crane_state['freno_h_n1'] = float(values[freno_h_n1_idx])
+                    # FCE: Mux inputs 35-38 (índices 66-69) — fines de carrera emergencia
+                    for j, key in enumerate(['FCE_der', 'FCE_inf', 'FCE_izq', 'FCE_sup']):
+                        idx = freno_h_n1_idx + 1 + j
+                        if N > idx:
+                            crane_state[key] = float(values[idx])
                     crane_state['connected'] = True
                     _derive_mode_state()
             except socket.timeout:
