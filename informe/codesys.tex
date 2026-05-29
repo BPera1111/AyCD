@@ -17,23 +17,23 @@ a tal velocidad que, a fines prácticos, el comportamiento es idéntico al de un
 
 \subsection{Control Regulatorio (Nivel 2) en CODESYS}
 Remitiéndose a la sección de diseño del control regulatorio, se rediseñó usando la misma lógica pero representándola con bloques de función de Matlab:
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=1\textwidth]{control_carro_funciones2.png}
-%     \caption{Control del Carro con funciones de Matlab.}
-% \end{figure}
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=1\textwidth]{control_izaje_funciones2.png}
-%     \caption{Control de Izaje con funciones de Matlab.}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{codesys/control_carro_funciones2.png}
+    \caption{Control del Carro con funciones de Matlab.}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{codesys/control_izaje_funciones2.png}
+    \caption{Control de Izaje con funciones de Matlab.}
+\end{figure}
 
 Una vez llevado a bloques de función, es relativamente directo realizar la traducción a ST, manteniendo la misma lógica de control.
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.8\textwidth]{codesys_regulatorio.png}
-%     \caption{Control de Izaje en CODESYS (ST).}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{codesys_regulatorio.png}
+    \caption{Control de Izaje en CODESYS (ST).}
+\end{figure}
 
 \subsection{Control supervisor en CODESYS}
 En el control supervisor se pasan los bloques de Stateflow a SFC, manteniendo el mismo número de estados y lógica de transición. 
