@@ -173,3 +173,24 @@ counter_limit = timeout/(Ts0*1000); % Pulsos a contar antes de detectar error
 
 %% Fin
 fprintf('Parámetros de la planta cargados correctamente.\n');
+
+%% Cargar modelo y compilar Accelerator
+model_name = 'nivel_1_full';
+script_dir = fileparts(mfilename('fullpath'));
+model_path = fullfile(script_dir, [model_name '.slx']);
+
+if ~bdIsLoaded(model_name)
+    load_system(model_path);
+    fprintf('Modelo ''%s'' cargado.\n', model_name);
+else
+    fprintf('Modelo ''%s'' ya estaba cargado.\n', model_name);
+end
+
+set_param(model_name, 'SimulationMode', 'accelerator');
+fprintf('Compilando Accelerator (puede tardar ~30s la primera vez)...\n');
+try
+    accelbuild(model_name);
+    fprintf('Accelerator compilado. Listo para simular.\n');
+catch e
+    fprintf('[WARN] accelbuild: %s\n', e.message);
+end

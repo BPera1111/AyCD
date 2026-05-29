@@ -49,6 +49,7 @@ socket.on('telemetry', (data) => {
   lastTelemetryTime = now;
 
   CraneViz.update(data);
+  SelectorViz.update(data);
   updateUI(data);
   updateCharts(data);
 });
@@ -353,8 +354,9 @@ const GL_DEFAULT = {
                 content: [
                   { type: 'component', componentType: 'crane',     title: 'Vista Grúa',     height: 65 },
                   { type: 'row', height: 35, content: [
-                    { type: 'component', componentType: 'chart-pos', title: 'Posición (m)',    width: 50 },
-                    { type: 'component', componentType: 'chart-vel', title: 'Velocidad (m/s)', width: 50 },
+                    { type: 'component', componentType: 'chart-pos', title: 'Posición (m)',    width: 33 },
+                    { type: 'component', componentType: 'chart-vel', title: 'Velocidad (m/s)', width: 33 },
+                    { type: 'component', componentType: 'selector',  title: 'Selector Pos.',   width: 34 },
                   ]},
                 ],
               },
@@ -374,6 +376,7 @@ const PANEL_META = {
   'chart-pos': { title: 'Posición (m)',        init: () => { if (chartPos) { chartPos.destroy(); chartPos = null; } chartPos = makeChart('chartPos', 'xt (m)',   'yh (m)',   COLORS.xt, COLORS.yh, -25, 55); } },
   'chart-vel': { title: 'Velocidad (m/s)',     init: () => { if (chartVel) { chartVel.destroy(); chartVel = null; } chartVel = makeChart('chartVel', 'vt (m/s)', 'vh (m/s)', COLORS.vt, COLORS.vh, -5,  5);  } },
   'control':   { title: 'Control',             init: () => { initStick('stickCarro', 'carro', 'x'); initStick('stickIzaje', 'izaje', 'y'); } },
+  'selector':  { title: 'Selector Posición',   init: () => { SelectorViz.init(); } },
 };
 
 function cloneTpl(id) {
@@ -399,6 +402,7 @@ async function initGoldenLayout() {
   layout.registerComponentConstructor('chart-pos', class { constructor(c) { c.element.appendChild(cloneTpl('tpl-chart-pos')); } });
   layout.registerComponentConstructor('chart-vel', class { constructor(c) { c.element.appendChild(cloneTpl('tpl-chart-vel')); } });
   layout.registerComponentConstructor('control',   class { constructor(c) { c.element.appendChild(cloneTpl('tpl-control'));   } });
+  layout.registerComponentConstructor('selector',  class { constructor(c) { c.element.appendChild(cloneTpl('tpl-selector'));  } });
 
   // loadLayout es síncrono — cuando retorna, todos los elementos YA están en el DOM
   const saved = localStorage.getItem(GL_KEY);
@@ -421,7 +425,8 @@ async function initGoldenLayout() {
     if (document.getElementById('craneCanvas'))  CraneViz.init();
     if (document.getElementById('chartPos'))     chartPos = makeChart('chartPos', 'xt (m)',   'yh (m)',   COLORS.xt, COLORS.yh, -25, 55);
     if (document.getElementById('chartVel'))     chartVel = makeChart('chartVel', 'vt (m/s)', 'vh (m/s)', COLORS.vt, COLORS.vh, -5,  5);
-    if (document.getElementById('stickCarro')) { initStick('stickCarro', 'carro', 'x'); initStick('stickIzaje', 'izaje', 'y'); }
+    if (document.getElementById('stickCarro'))    { initStick('stickCarro', 'carro', 'x'); initStick('stickIzaje', 'izaje', 'y'); }
+    if (document.getElementById('selectorCanvas')) SelectorViz.init();
   });
 
   // Reset layout

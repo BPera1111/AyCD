@@ -96,6 +96,14 @@ header {
 .gl-control { justify-content: center; align-items: center; }
 .chart-panel { padding: 0.4rem; }
 
+.selector-panel { padding: 0; }
+.selector-panel canvas { flex: 1; min-height: 0; width: 100%; display: block; }
+.selector-info {
+  font-size: 0.70rem; color: var(--text-dim); padding: 2px 8px;
+  background: var(--surface2); border-top: 1px solid var(--border);
+  white-space: nowrap; overflow: hidden; flex-shrink: 0;
+}
+
 /* ── Crane section ───────────────────────────────────────────────────── */
 #craneCanvas {
   width: 100%;

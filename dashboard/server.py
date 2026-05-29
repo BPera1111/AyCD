@@ -142,7 +142,14 @@ BUTTON_MAP = {
 # ── Flask / SocketIO ─────────────────────────────────────────────────────────
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.config["SECRET_KEY"] = "sts-crane-secret"
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
+try:
+    import eventlet
+    eventlet.monkey_patch()
+    _async_mode = "eventlet"
+except ImportError:
+    _async_mode = "threading"
+
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode=_async_mode)
 
 
 # ── Hilo: UDP receiver — parsea doubles binarios de MATLAB ───────────────────
@@ -345,4 +352,7 @@ if __name__ == "__main__":
     print(f"  JSON fallback: {JSON_FILE}")
     print("=" * 60)
     start_background_threads()
-    socketio.run(app, host="0.0.0.0", port=5000, debug=False, allow_unsafe_werkzeug=True)
+    kwargs = {"host": "0.0.0.0", "port": 5000, "debug": False}
+    if _async_mode == "threading":
+        kwargs["allow_unsafe_werkzeug"] = True
+    socketio.run(app, **kwargs)

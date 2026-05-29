@@ -40,6 +40,9 @@ const CraneViz = (() => {
     hay_container: 0,
     tlk: 0,
     estado: 0,
+    i_sel: 0,
+    modo_auto: 0,
+    modo_manual_auto: 0,
   };
 
   // ── Coordenadas de la escena ─────────────────────────────────────────────
@@ -439,6 +442,25 @@ const CraneViz = (() => {
     drawBackground();
     drawDock();
     drawShip();
+
+    // Banda semitransparente en columna i_sel — solo en modo auto
+    if ((state.modo_auto || state.modo_manual_auto) && state.i_sel >= 1 && state.i_sel <= 33) {
+      const xi   = PHYS.xt_min + ((state.i_sel - 1) / 32) * (PHYS.xt_max - PHYS.xt_min);
+      const cx1  = toCanvasX(xi - PHYS.Wc / 2);
+      const cx2  = toCanvasX(xi + PHYS.Wc / 2);
+      ctx.fillStyle = 'rgba(255, 220, 50, 0.15)';
+      ctx.fillRect(cx1, 0, cx2 - cx1, H);
+      ctx.strokeStyle = 'rgba(255, 220, 50, 0.5)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo((cx1 + cx2) / 2, H - M.bottom + 2);
+      ctx.lineTo((cx1 + cx2) / 2 - 4, H - M.bottom + 10);
+      ctx.lineTo((cx1 + cx2) / 2 + 4, H - M.bottom + 10);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(255, 220, 50, 0.7)';
+      ctx.fill();
+    }
+
     drawCraneStructure();
     drawTrolleyAndHoist(state.xt, state.yh, state.hay_container, state.tita_l);
     drawVelocityBars(state.vt, state.vh);
@@ -480,6 +502,9 @@ const CraneViz = (() => {
     if (data.hay_container !== undefined) state.hay_container = parseInt(data.hay_container);
     if (data.tlk          !== undefined) state.tlk          = parseInt(data.tlk);
     if (data.estado !== undefined) state.estado = parseInt(data.estado);
+    if (data.i_sel           !== undefined) state.i_sel           = parseInt(data.i_sel) || 0;
+    if (data.modo_auto       !== undefined) state.modo_auto       = parseInt(data.modo_auto) || 0;
+    if (data.modo_manual_auto !== undefined) state.modo_manual_auto = parseInt(data.modo_manual_auto) || 0;
     // yc0_vec viene en metros → convertir a stack count dividiendo por Hc
     if (Array.isArray(data.yc0_vec) && data.yc0_vec.length === 33) {
       PHYS.h_vec = data.yc0_vec.map(v => v / PHYS.Hc);
