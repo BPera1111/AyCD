@@ -1,5 +1,5 @@
 \section{CODESYS codificación manual}
-Los Niveles 0 y 1 se han diseñado en Stateflow y el Nivel 2 en Simulink como diagrama de bloques discretos, sin Sin embargo, 
+Los Niveles 0 y 1 se han diseñado en Stateflow y el Nivel 2 en Simulink como diagrama de bloques discretos, sin embargo, 
 para la implementación en hardware real, se debe traducir la lógica desarrollada a un programa en CODESYS utilizando una mezcla de los lenguajes
 diagrama de funciones secuenciales (SFC) y texto estructurado (ST). Este proceso implica mapear 
 cada bloque funcional a funciones y estructuras de control equivalentes en SFC y ST, asegurando que la lógica de control se mantenga 
@@ -35,16 +35,17 @@ Una vez llevado a bloques de función, es relativamente directo realizar la trad
 %     \caption{Control de Izaje en CODESYS (ST).}
 % \end{figure}
 
-\subsection{Control Supervisor (Nivel 1) en CODESYS}
-Para el control supervisor se debe repensar la forma de traducir los bloques de Stateflow a SFC, ya que no es tan directo. De este proceso se obtuvo un conjunto de varios bloques en paralelo:
+\subsection{Control supervisor en CODESYS}
+En el control supervisor se pasan los bloques de Stateflow a SFC, manteniendo el mismo número de estados y lógica de transición. 
+De este proceso se obtiene un conjunto de varios bloques en paralelo:
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{codesys/codesys_supervisor11.png}
     \caption{CODESYS - Diagrama general de control supervisor.}
 \end{figure}
-A diferencia de Stateflow, se debe agregar un estado paralelo adicional \texttt{LECTURA\_BOTONES}, el cuál se encarga exclusivamente de detectar flancos de subida de los botones presionados por el usuario.
 
-El autómata principal se desarrolla de forma similar, y se encarga de alternar entre los modos de Stand By, Manual, Automático, Errores y Recuperación. 
+El autómata principal se desarrolla de forma similar, y se encarga de alternar entre los modos de reposo, 
+manual, automático, errores y recuperación. 
 \begin{figure}[H]
     \centering
     \begin{subfigure}{1\textwidth}
@@ -58,7 +59,9 @@ El autómata principal se desarrolla de forma similar, y se encarga de alternar 
     \caption{CODESYS - Supervisor - Autómata principal.}
 \end{figure}
 
-Para el modo automático se tuvo que modificar ligeramente las transiciones. En SFC, si se interrumpe un paso y salimos del modo automático, al volver al mismo no comienza por el paso inicial, sino que retoma en el paso interrumpido. Para evitar este comportamiento indeseado se agregó una variable adicional que permite transicionar al paso inicial. Esto no ocurre en Stateflow, ya que al entrar el modo automático éste siempre comienza a ejecutarse desde el estado inicial. En la siguiente imágen se puede ver la implementación utilizada:
+Para el modo automático se realizan algunos cambios. En Stateflow, al entrar al modo automático se pasa por una \textit{junction} para decidir si la ejecución comienza desde cero o si se retoma desde el paso interrumpido. En SFC esto no es posible, ya que el diagrama debe iniciar obligatoriamente en un estado, por lo que se utiliza un estado vacío.
+Además, al finalizar el movimiento de \textit{homing}, en Stateflow la transición de salida del modo automático conduce directamente al modo reposo. En cambio, en SFC es necesario incluir una transición o un salto luego del estado para que el programa compile correctamente. Por este motivo, se agrega una transición con condición \textit{FALSE}, la cual nunca se cumple.
+En la siguiente imágen se puede ver la implementación utilizada:
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{codesys/codesys_supervisor15.png}
@@ -73,17 +76,21 @@ Sin modificaciones notorias, se replica el bloque encargado de la lógica de los
     \caption{CODESYS - Supervisor - Lógica de Twistlocks.}
 \end{figure}
 
-De la misma forma, se utilizan las entradas de los sensores para calcular la posición discreta del carro y actualizar el perfil de obstáculos, información que es fundamental para la generación de trayectorias seguras en modo automático. También se actualiza la posición de la cruceta:
+De la misma forma, se utilizan las entradas de los sensores para calcular la posición discreta del carro y actualizar el perfil de 
+obstáculos, información que es fundamental para la generación de trayectorias en modo automático. También maneja la lógica del
+escaneo del muelle:
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.55\textwidth]{codesys/codesys_supervisor14.png}
     \caption{CODESYS - Supervisor - Cruceta Índices Perfil.}
 \end{figure}
 
-Los bloques de \textit{Suavizador Velocidad}, \textit{Límites Suave} y \textit{Watchdog Heartbeat} se mantienen prácticamente iguales, desarrollados en ST directamente debido a su sencillez.
+Los bloques de \textit{Suavizado velocidad}, \textit{Velocidad límites} y \textit{Watchdog heartbeat} se mantienen prácticamente iguales, desarrollados en ST directamente debido a su sencillez.
 
-\subsection{Control de Seguridad (Nivel 0) en CODESYS}
-Para el control de seguridad se mantuvo el mismo diseño, esta vez con dos procesos paralelos, uno para la máquina de estados de seguridad y otro para el watchdog. La lógica de ambos procesos se mantuvo prácticamente igual, con pequeñas modificaciones para adaptarse a la sintaxis y estructura de SFC.
+\subsection{Control de seguridad en CODESYS}
+Para el control de seguridad se mantiene el mismo diseño, con dos procesos paralelos, uno para la máquina de estados de seguridad y 
+otro para el watchdog. La lógica de ambos procesos es prácticamente la misma que en Stateflow, con pequeñas modificaciones para adaptarse a la 
+sintaxis y estructura de SFC.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{codesys/codesys_seguridad1.png}

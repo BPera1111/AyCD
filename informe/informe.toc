@@ -47,7 +47,7 @@
 \contentsline {subsection}{\numberline {6.6}Modelo del controlador regulatorio en Simulink}{28}{subsection.6.6}%
 \contentsline {section}{\numberline {7}CODESYS codificación manual}{29}{section.7}%
 \contentsline {subsection}{\numberline {7.1}Control Regulatorio (Nivel 2) en CODESYS}{30}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Control Supervisor (Nivel 1) en CODESYS}{30}{subsection.7.2}%
-\contentsline {subsection}{\numberline {7.3}Control de Seguridad (Nivel 0) en CODESYS}{34}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.2}Control supervisor en CODESYS}{30}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Control de seguridad en CODESYS}{34}{subsection.7.3}%
 \contentsline {subsection}{\numberline {7.4}Comunicación OPC Simulink/CODESYS}{35}{subsection.7.4}%
 \contentsline {subsection}{\numberline {7.5}Comunicación UDP Simulink/CODESYS}{36}{subsection.7.5}%
