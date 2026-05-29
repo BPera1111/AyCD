@@ -1,0 +1,176 @@
+\section{CODESYS codificación manual}
+Los Niveles 0 y 1 se han diseñado en Stateflow y el Nivel 2 en Simulink como diagrama de bloques discretos, sin Sin embargo, 
+para la implementación en hardware real, se debe traducir la lógica desarrollada a un programa en CODESYS utilizando una mezcla de los lenguajes
+diagrama de funciones secuenciales (SFC) y texto estructurado (ST). Este proceso implica mapear 
+cada bloque funcional a funciones y estructuras de control equivalentes en SFC y ST, asegurando que la lógica de control se mantenga 
+intacta durante la transición al entorno de ejecución real. Puede verse a continuación la estructura resultante:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{codesys/arbol_codesys.png}
+    \caption{CODESYS - Árbol de componentes.}
+\end{figure}
+
+Los 2 POUs principales corresponden a los Niveles 0 y 1, mientras que el Nivel 2 se aplica en Simulink como Matlab functions simil ST
+en tiempo discreto. Estos 2 POUs se ejecutan de forma cíclica y en paralelo. Sin embargo en CODESYS debido a la utilización de un PLC 
+virtual con una sola CPU, estas tareas se ejecutan de forma secuencial pero de manera intercalada. A pesar de la limitación, se ejecuta 
+a tal velocidad que, a fines prácticos, el comportamiento es idéntico al de un sistema con múltiples CPUs ejecutando tareas en paralelo (o múltiples PLCs).
+
+\subsection{Control Regulatorio (Nivel 2) en CODESYS}
+Remitiéndose a la sección de diseño del control regulatorio, se rediseñó usando la misma lógica pero representándola con bloques de función de Matlab:
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=1\textwidth]{control_carro_funciones2.png}
+%     \caption{Control del Carro con funciones de Matlab.}
+% \end{figure}
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=1\textwidth]{control_izaje_funciones2.png}
+%     \caption{Control de Izaje con funciones de Matlab.}
+% \end{figure}
+
+Una vez llevado a bloques de función, es relativamente directo realizar la traducción a ST, manteniendo la misma lógica de control.
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{codesys_regulatorio.png}
+%     \caption{Control de Izaje en CODESYS (ST).}
+% \end{figure}
+
+\subsection{Control Supervisor (Nivel 1) en CODESYS}
+Para el control supervisor se debe repensar la forma de traducir los bloques de Stateflow a SFC, ya que no es tan directo. De este proceso se obtuvo un conjunto de varios bloques en paralelo:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{codesys/codesys_supervisor11.png}
+    \caption{CODESYS - Diagrama general de control supervisor.}
+\end{figure}
+A diferencia de Stateflow, se debe agregar un estado paralelo adicional \texttt{LECTURA\_BOTONES}, el cuál se encarga exclusivamente de detectar flancos de subida de los botones presionados por el usuario.
+
+El autómata principal se desarrolla de forma similar, y se encarga de alternar entre los modos de Stand By, Manual, Automático, Errores y Recuperación. 
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{1\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{codesys/codesys_supervisor12.png}
+    \end{subfigure}
+    \begin{subfigure}{1\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{codesys/codesys_supervisor13.png}
+    \end{subfigure}
+    \caption{CODESYS - Supervisor - Autómata principal.}
+\end{figure}
+
+Para el modo automático se tuvo que modificar ligeramente las transiciones. En SFC, si se interrumpe un paso y salimos del modo automático, al volver al mismo no comienza por el paso inicial, sino que retoma en el paso interrumpido. Para evitar este comportamiento indeseado se agregó una variable adicional que permite transicionar al paso inicial. Esto no ocurre en Stateflow, ya que al entrar el modo automático éste siempre comienza a ejecutarse desde el estado inicial. En la siguiente imágen se puede ver la implementación utilizada:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{codesys/codesys_supervisor15.png}
+    \caption{CODESYS - Supervisor - Autómata principal - Auto.}
+\end{figure}
+
+
+Sin modificaciones notorias, se replica el bloque encargado de la lógica de los Twistlocks. Como es un SFC cíclico, el último paso regresa al inicial al cumplir su transición:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{codesys/codesys_supervisor4.png}
+    \caption{CODESYS - Supervisor - Lógica de Twistlocks.}
+\end{figure}
+
+De la misma forma, se utilizan las entradas de los sensores para calcular la posición discreta del carro y actualizar el perfil de obstáculos, información que es fundamental para la generación de trayectorias seguras en modo automático. También se actualiza la posición de la cruceta:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{codesys/codesys_supervisor14.png}
+    \caption{CODESYS - Supervisor - Cruceta Índices Perfil.}
+\end{figure}
+
+Los bloques de \textit{Suavizador Velocidad}, \textit{Límites Suave} y \textit{Watchdog Heartbeat} se mantienen prácticamente iguales, desarrollados en ST directamente debido a su sencillez.
+
+\subsection{Control de Seguridad (Nivel 0) en CODESYS}
+Para el control de seguridad se mantuvo el mismo diseño, esta vez con dos procesos paralelos, uno para la máquina de estados de seguridad y otro para el watchdog. La lógica de ambos procesos se mantuvo prácticamente igual, con pequeñas modificaciones para adaptarse a la sintaxis y estructura de SFC.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{codesys/codesys_seguridad1.png}
+    \caption{CODESYS - Seguridad - Diagrama general del control de seguridad.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{codesys/codesys_seguridad22.png}
+    \caption{CODESYS - Seguridad - Estados de Seguridad.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{codesys/codesys_seguridad3.png}
+    \caption{CODESYS - Seguridad - Watchdog.}
+\end{figure}
+
+\subsection{Comunicación OPC Simulink/CODESYS}
+Para poder comunicar el PLC virtual de CODESYS con Simulink, se utilizó el protocolo de comunicación industrial \texttt{OPC-UA}. La versión de CODESYS utilizada (CODESYS V3.5 SP21 Patch 2) cuenta con la posibilidad de montar un servidor OPC-UA y de seleccionar qué variables del programa se quieren exponer a través de este protocolo. Por otro lado, Matlab R2025b cuenta con un cliente OPC-UA que permite conectarse a este servidor y leer/escribir las variables expuestas en tiempo real.
+
+Para permitir una conexión adecuada, se modificó algunos ajustes del dispositivo que hace de servidor. Se configuró sin encriptación, y la configuración de Device Security Settings se ve de la siguiente forma:
+
+También se desahabilitó el certificado de OPC-UA en Security Screen, y se movió a Trusted el certificado que genera Matlab al intentar conectarse por primera vez:
+
+Estos ajustes permiten a Simulink conectarse al servidor OPC-UA de CODESYS sin problemas, y leer/escribir las variables expuestas en tiempo real. Sin embargo, lo hace de forma anónima y sin seguridad alguna, lo cual no es recomendable para un entorno real, pero para fines de simulación y pruebas es suficiente.
+
+Debido a la naturaleza de la comunicación OPC, cada lectura o escritura de una variable implica un proceso de comunicación cliente-servidor que introduce un retardo significativo. Este retardo se vuelve especialmente problemático cuando se intenta realizar lecturas/escrituras a alta frecuencia, lo cual es necesario para el control supervisor y más aún para el control regulatorio. OPC es un estandar de tipo TCP/IP, el cuál está diseñado para sistemas SCADA, con retardos de comunicación de $500$ ms o más, y no para sistemas de control en tiempo real. 
+
+Para mitigar un poco este problema, se decidió implementar bloques de comunicación que se ejecuten a diferentes tiempos de muestreo. Esto enlentece la respuesta del modelo, causando delays peligrosos para la seguridad, pero permite que el sistema funcione de forma estable. El control regulatorio se ejecuta a $100$ ms, el control supervisor y de seguridad a $500$ ms. Para no tener errores con el heartbeat del watchdog, su variable corre al tiempo de muestro original de $20$ ms. De esta forma, se reduce la cantidad de lecturas/escrituras por segundo, disminuyendo la carga en la red y permitiendo Simulink pueda correr a $1$s por segundo de simulación.
+
+Luego de algunas pruebas y reajustes, se mejoró significativamente la fluidez de la simulación, manteniendo una comunicación efectiva entre Simulink y CODESYS. Y se ha podido comprobar de forma satisfactoria que el controlador responde de la misma manera que el modelado en Simulink.
+
+A continuación, los bloques de escritura/lectura de las variables de control regulatorio, supervisor y seguridad, respectivamente:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{codesys/opc_ua_1.png}
+    \caption{Simulink - Cliente OPC-UA - Control Supervisor.}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{codesys/opc_ua_0.png}
+    \caption{Simulink - Cliente OPC-UA - Control de Seguridad.}
+\end{figure}
+
+\subsection{Comunicación UDP Simulink/CODESYS}
+Debido al retardo que se produce en la comunicación, se considera que OPC no es un protocolo adecuado para la comunicación entre la simulación y el controlador. Para probar esta hipótesis, se implementó una comunicación alternativa utilizando el protocolo UDP, que es un protocolo de comunicación sin conexión y de baja latencia. Esto permite a la simulación correr en tiempo real, sin experimentar retrasos significativos en la comunicación. Se implementó para el control supervisor y de seguridad, dejando de lado el control regulatorio, ya que requiere una mayor velocidad de comunicación que incluso con UDP es difícil de mantener.
+
+La implementación UDP es un poco más compleja, requiere el desarrollo de un protocolo de empaquetado y desempaquetado de datos, así como la sincronización entre los sistemas. Se creó por lo tanto dos programas adicionales en CODESYS, uno para enviar los datos a Simulink (\texttt{COM\_UDP\_TX}), y otro para recibir las variables desde Simulink (\texttt{COM\_UDP\_RX}). 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{codesys/com_udp_codesys.png}
+    \caption{Nuevas funciones de comunicación UDP en CODESYS.}
+\end{figure}
+
+Los archivos de trama son de tipo DUT (Data Unit Type), y se definen como estructuras que organizan los datos a enviar. El orden es vital, ya que por UDP solo se envian bytes en un vector, y el receptor debe conocer el orden y tipo de cada dato para poder desempaquetarlo correctamente. 
+
+Los programas \texttt{COM} se encargan de repartir los valores de las variables a enviar o recibir a sus respectivas posiciones en la trama, y luego utilizan librerías con varibales de envío o recepción.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{codesys/com_udp_rx.png}
+    \caption{Función de Recepción UDP en CODESYS.}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{codesys/com_udp_tx.png}
+    \caption{Función de Transmisión UDP en CODESYS.}
+\end{figure}
+
+En Simulink, al igual que con la comunicación con la animación, se implementaron bloques de lectura/escritura de UDP, permitiendo enviar y recibir datos en tiempo real sin los retrasos de OPC.
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{codesys/simulink_udp_codesys.png}
+%     \caption{Diseño UDP en Simulink.}
+% \end{figure}
+
+Para lograr una sincronización adecuada, se debe programar una tarea en CODESYS que ejecute la funcion de lectura de datos más rápido que la de envío, para evitar pérdida de información. En este caso, se programó a $10$ ms, mientras que el bloque de escritura se ejecuta a $20$ ms. Además, el orden de ejecución también es vital, por lo que la prioridad más elevada es para la lectura (luego el control de seguridad, el control supervisor, y por último el envío de datos). En Simulink es necesario activar \textit{pacing} a tiempo real, es decir, 1 segundo.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{codesys/task_config.png}
+    \caption{Task Configuration en CODESYS.}
+\end{figure}
+
+A continuación se muestra una captura de la simulación funcionando a través de UDP:
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=1\textwidth]{ejemplo_UDP.png}
+%     \caption{Simulación funcionando a través de UDP.}
+% \end{figure}

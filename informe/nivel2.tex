@@ -42,8 +42,7 @@ Finalmente, la señal saturada se convierte a velocidad angular, conformando la 
 
 \section{Diseño del control regulatorio (Nivel 2)}
 El Nivel 2 corresponde al control regulatorio de los accionamientos del sistema. Su objetivo es garantizar que estos
-sigan referencias de velocidad con precisión y suavidad, respetando restricciones físicas (límites de velociad y aceleración) 
-y atenuando perturbaciones como el balanceo de la carga o variaciones de masa. Este nivel 
+sigan referencias de velocidad con precisión y suavidad, atenuando perturbaciones como el balanceo de la carga o variaciones de masa. Este nivel 
 opera en tiempo discretizado mediante muestreo (Sampled CTDS) y se implementará con compensaciones para mejorar la respuesta transitoria.
 
 
@@ -110,6 +109,13 @@ El torque de referencia en tiempo discreto es:
 \begin{equation}
     T_{tm}^\ast(k) = K_p\,e_v(k) + K_i \sum_{j=1}^{k} \frac{T_s}{2}\left[e_v(j) + e_v(j-1)\right], \quad siendo\quad e_v(k) = v_t^\ast - v_t(k)
 \end{equation}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{nivel_2/lazo_controlador_carro.png}
+    \caption{Controlador PI del carro}
+\end{figure}
+
 
 \subsubsection{Anti-windup}
 Debido a la presencia del freno de operación en el sistema (\textcolor{signalcolor}{$BRK_t$}), es necesario implementar una estrategia de 
@@ -184,6 +190,13 @@ Esta ganancia teórica produce un amortiguamiento perfecto de la oscilación. Si
 notorias. Para evitar sobrecorrecciones en la posición objetivo de la carga, se debe subamortiguar el balanceo. Después de varias pruebas, 
 se seleccionó $\zeta = 0.5$ para lograr un compromiso entre amortiguamiento efectivo y estabilidad robusta. Esto genera oscilaciones 
 adicionales pequeñas, pero a cambio la posición de la carga se mantiene más cercana a la deseada, sin introducir retrasos excesivos.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{nivel_2/control_balanceo.png}
+    \caption{Controlador del balanceo del carro}
+\end{figure}
+
 
 \subsection{Observador de estado del carro}
 
@@ -371,12 +384,12 @@ Finalmente, las ecuaciones implementadas en Simulink para el observador con acci
 \right.
 \]
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.8\textwidth]{imagenes/parte_2/obs_pid.png}
-%     \caption{Observador de estado con ganancia integral}
-%     \label{fig:observador_aumentado}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{nivel_2/obs_pid_carro.png}
+    \caption{Observador de estado del carro con ganancia integral}
+    \label{fig:observador_aumentado}
+\end{figure}
 
 \subsection{Control de izaje de la carga}
 El control de izaje de la carga se encarga de generar comandos de torque $T_{hm}^\ast$ a partir de referencias de velocidad $v_h^\ast$
@@ -426,6 +439,12 @@ Para mejorar el desempeño, se añade un término de pre-alimentación $T_{g,ff}
 La ley de control del lazo regulador queda como: 
 $T_{hm}^\ast(k) = T_{PI}(k) + T_{g,ff}$.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{nivel_2/lazo_controlador_izaje.png}
+    \caption{Controlador PI del izaje con compensación de gravedad}
+\end{figure}
+
 \subsection{Anti-windup y observador de estado del izaje}
 Dado que el sistema de izaje cuenta con un freno de operación (\textcolor{signalcolor}{$BRK_h$}) y con un freno de emergencia (\textcolor{signalcolor}{$BRK_{hE}$}), 
 se implementa la misma estrategia de anti-windup que en el caso del carro, con la diferencia de que se usan cualquiera de las dos señales de freno para resetear el integrador. 
@@ -461,238 +480,22 @@ Quedando así las ecuaciones implementadas en Simulink como:
 \right.
 \]
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{nivel_2/obs_pid_izaje.png}
+    \caption{Observador de estado del izaje con ganancia integral}
+\end{figure}
 
 
 
-
-% \subsection{Modelo del Controlador Regulatorio en Simulink}
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=1\textwidth]{control_carro2.png}
-%     \caption{Control Regulatorio del Carro (Trolley).}
-% \end{figure}
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=1\textwidth]{control_izaje2.png}
-%     \caption{Control Regulatorio del Izaje (Hoist).}
-% \end{figure}
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.8\textwidth]{control_regulatorio2.png}
-%     \caption{Modelo del Control Regulatorio en Simulink.}
-% \end{figure}
-
-\newpage
-
-\begin{align}
-\frac{B_{eq}*K_d*i_h}{J_{eq}} &= (2 \cdot \zeta + 1) \cdot \omega_{pos} \\
-\frac{K_{p}*i_h}{J_{eq}} &= (2 \cdot \zeta + 1) \cdot \omega_{pos}^2 \\
-\frac{K_{i}*i_h}{J_{eq}} &= \omega_{pos}^3
-\end{align}
-
-
-\section{Identificación de Parámetros de la Planta e Implementación del Controlador PI}
-
-\subsection{Modelo de la Planta de Velocidad de Izaje}
-
-El accionamiento de izaje puede representarse, referido al eje rápido del motor,
-mediante la ecuación diferencial de primer orden:
-
-\begin{equation}
-    J_{eq}\,\dot{\omega}_{hm}(t) = i_h\,T_{hm}(t) - B_{eq}\,\omega_{hm}(t)
-\end{equation}
-
-donde los parámetros equivalentes referidos al eje del motor son:
-
-\begin{align}
-    J_{eq} &= J_{hm+hb} + \frac{J_{hd+hEb}}{i_h^2}  \label{eq:Jeq}\\[4pt]
-    B_{eq} &= b_{hm}     + \frac{b_{hd}}{i_h^2}       \label{eq:Beq}
-\end{align}
-
-Tomando la Transformada de Laplace de \eqref{eq:dinamica_motor} con condiciones
-iniciales nulas, la función de transferencia de la planta resulta:
-
-\begin{equation}
-    G(s) = \frac{\omega_{hm}(s)}{T_{hm}(s)}
-         = \frac{i_h}{J_{eq}\,s + B_{eq}}
-    \label{eq:FT_planta}
-\end{equation}
-
-Expresada en forma estándar de primer orden:
-
-\begin{equation}
-    G(s) = \frac{K}{\tau\,s + 1},
-    \qquad
-    K = \frac{i_h}{B_{eq}},
-    \qquad
-    \tau = \frac{J_{eq}}{B_{eq}}
-    \label{eq:FT_estandar}
-\end{equation}
-
-donde $K$ es la ganancia estática de la planta y $\tau$ su constante de tiempo.
-
-% ----------------------------------------------------------------
-\subsection{Identificación Experimental por Respuesta al Escalón}
-
-Dado que los parámetros nominales calculados con \eqref{eq:Jeq}--\eqref{eq:Beq}
-no contemplan efectos de carga variable ni la componente gravitacional, se adopta
-el método de identificación por \textit{Process Reaction Curve}: se aplica un
-escalón de torque conocido $T_0$ en lazo abierto y se registra la respuesta
-$\omega_{hm}(t)$.
-
-\subsubsection{Solución analítica ante escalón}
-
-Para una entrada $T_{hm}(s) = T_0/s$, la salida en el dominio de Laplace es:
-
-\begin{equation}
-    \omega_{hm}(s)
-    = G(s)\,\frac{T_0}{s}
-    = \frac{K\,T_0}{s\,(\tau s + 1)}
-\end{equation}
-
-Antitransformando:
-
-\begin{equation}
-    \omega_{hm}(t)
-    = \omega_0
-      + \bigl(\omega_\infty - \omega_0\bigr)
-        \!\left(1 - e^{-t/\tau}\right)
-    \label{eq:respuesta_escalon}
-\end{equation}
-
-donde $\omega_0 = \omega_{hm}(0)$ es la condición inicial.
-
-\subsubsection{Valor final por el Teorema del Valor Final}
-
-Aplicando el Teorema del Valor Final a la salida:
-
-\begin{equation}
-    \omega_\infty
-    = \lim_{s \to 0}\, s\,\omega_{hm}(s)
-    = \lim_{s \to 0}\, s \cdot \frac{K}{\tau s + 1} \cdot \frac{T_0}{s}
-    = K\,T_0
-    = \frac{i_h\,T_0}{B_{eq}}
-    \label{eq:valor_final}
-\end{equation}
-
-En régimen permanente $\dot{\omega} = 0$, de modo que \eqref{eq:valor_final}
-equivale directamente al equilibrio estático de \eqref{eq:dinamica_motor}.
-
-\subsubsection{Extracción de parámetros desde el ensayo}
-
-A partir de la curva de respuesta se identifican experimentalmente:
-
-\begin{itemize}
-    \item $\omega_0$: valor de $\omega_{hm}$ en $t = 0$.
-    \item $\omega_\infty$: valor en régimen permanente.
-    \item $\tau$: tiempo en alcanzar
-          $\omega_0 + 0{,}632\,(\omega_\infty - \omega_0)$,
-          según \eqref{eq:respuesta_escalon}.
-\end{itemize}
-
-Los parámetros físicos equivalentes resultan:
-
-\begin{align}
-    B_{eq} &= \frac{i_h\,T_0}{\omega_\infty - \omega_0}
-    \label{eq:Beq_id}\\[6pt]
-    J_{eq} &= \tau\,B_{eq}
-    \label{eq:Jeq_id}\\[6pt]
-    p_{OL} &= -\frac{B_{eq}}{J_{eq}} = -\frac{1}{\tau}
-    \label{eq:polo_OL}
-\end{align}
-
-% ----------------------------------------------------------------
-\subsection{Diseño del Controlador PI por Colocación de Polos}
-
-Se adopta un controlador Proporcional-Integral (PI):
-
-\begin{equation}
-    C(s) = K_p + \frac{K_i}{s}
-         = \frac{K_p\,s + K_i}{s}
-    \label{eq:PI}
-\end{equation}
-
-\subsubsection{Ecuación característica en lazo cerrado}
-
-Con realimentación unitaria, los polos en lazo cerrado son las raíces de
-$1 + C(s)\,G(s) = 0$:
-
-\begin{equation}
-    s\,(J_{eq}\,s + B_{eq})
-    + i_h\,(K_p\,s + K_i) = 0
-\end{equation}
-
-Dividiendo por $J_{eq}$:
-
-\begin{equation}
-    s^2
-    + \frac{B_{eq} + i_h\,K_p}{J_{eq}}\,s
-    + \frac{i_h\,K_i}{J_{eq}}
-    = 0
-    \label{eq:ec_caract}
-\end{equation}
-
-\subsubsection{Polinomio deseado}
-
-Se especifica un polo doble real en $s = -\omega_{cl}$
-(factor de amortiguamiento $\zeta = 1$, sin sobreoscilación):
-
-\begin{equation}
-    (s + \omega_{cl})^2
-    = s^2 + 2\,\omega_{cl}\,s + \omega_{cl}^2
-    = 0
-    \label{eq:pol_deseado}
-\end{equation}
-
-donde $\omega_{cl}$ es el único parámetro libre de diseño, elegido como:
-
-\begin{equation}
-    \omega_{cl} = \alpha\,|p_{OL}| = \frac{\alpha}{\tau},
-    \qquad \alpha \in [3,\,20]
-    \label{eq:wcl}
-\end{equation}
-
-El tiempo de estabilización al 2\% resulta aproximadamente:
-
-\begin{equation}
-    t_s \approx \frac{4}{\omega_{cl}}
-\end{equation}
-
-\subsubsection{Igualación de coeficientes}
-
-Igualando \eqref{eq:ec_caract} con \eqref{eq:pol_deseado} término a término:
-
-\begin{align}
-    \frac{B_{eq} + i_h\,K_p}{J_{eq}} &= 2\,\omega_{cl}
-    \label{eq:ec1}\\[4pt]
-    \frac{i_h\,K_i}{J_{eq}} &= \omega_{cl}^2
-    \label{eq:ec2}
-\end{align}
-
-Despejando las ganancias del controlador:
-
-\begin{align}
-    \boxed{K_p = \frac{2\,\omega_{cl}\,J_{eq} - B_{eq}}{i_h}}
-    \label{eq:Kp}\\[8pt]
-    \boxed{K_i = \frac{\omega_{cl}^2\,J_{eq}}{i_h}}
-    \label{eq:Ki}
-\end{align}
-
-\subsubsection{Anti-windup por back-calculation}
-
-Para evitar la saturación del integrador cuando la consigna de torque supera
-$T_{hm,\text{MAX}}$ (límite físico del accionamiento), se implementa la corrección
-por \textit{back-calculation}:
-
-\begin{equation}
-    \dot{x}_i(t) = e(t) + K_b\,\bigl[T^*_{sat}(t) - T^*(t)\bigr],
-    \qquad
-    K_b = \frac{1}{K_p}
-\end{equation}
-
-donde $T^*_{sat}$ es la salida del limitador y $T^*$ la salida no saturada del PI.
-Cuando no hay saturación ambas coinciden y la corrección es nula.
-Cuando el actuador satura, el término de corrección detiene la integración,
-eliminando el fenómeno de \textit{windup}.
-
-
+\subsection{Modelo del controlador regulatorio en Simulink}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{nivel_2/controlador_carro.png}
+    \caption{Diagrama del controlador regulatorio del carro}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{nivel_2/controlador_izaje.png}
+    \caption{Diagrama del controlador regulatorio del izaje}
+\end{figure}
