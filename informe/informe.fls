@@ -190,6 +190,9 @@ INPUT C:\Users\bruno\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\sym
 INPUT C:\Users\bruno\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm5.tfm
 INPUT C:\Users\bruno\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbx7.tfm
 OUTPUT informe.toc
+INPUT .\resumen_introduccion.tex
+INPUT .\resumen_introduccion.tex
+INPUT resumen_introduccion.tex
 INPUT C:\Users\bruno\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmti10.tfm
 INPUT .\figs\vista_lateral.jpg
 INPUT .\figs\vista_lateral.jpg
@@ -565,6 +568,9 @@ INPUT .\figs\codesys\st_generado.png
 INPUT .\figs\codesys\st_generado.png
 INPUT .\figs\codesys\st_generado.png
 INPUT .\figs\codesys\st_generado.png
+INPUT .\conclusiones.tex
+INPUT .\conclusiones.tex
+INPUT conclusiones.tex
 INPUT informe.aux
 INPUT .\informe.out
 INPUT .\informe.out

@@ -1,0 +1,40 @@
+\newpage
+\section{Conclusiones}
+
+En este trabajo se desarrolla un sistema híbrido de control y automatización para una grúa
+portacontenedores tipo STS, organizado en una arquitectura jerárquica de tres niveles que
+coordina la traslación del carro y el izaje de la carga de forma semi-automática, simultánea y
+segura. La estrategia combina un control de eventos discretos con un control regulatorio en
+tiempo discreto, integrando las capas de desempeño y de seguridad en un único modelo.
+
+El control regulatorio (Nivel 2) cumple el seguimiento de las consignas de velocidad de ambos
+ejes mediante lazos PI sintonizados por asignación de polos, complementados con observadores de
+estado para estimar la velocidad a partir de la sola medición de posición y con una compensación
+de gravedad que descarga el término integral del izaje. El control de balanceo (\textit{anti-sway})
+desacoplado amortigua eficazmente la oscilación pendular de la carga, transformando la cinemática
+del carro en un amortiguamiento viscoso sin depender de la aproximación de ángulos pequeños.
+
+El control supervisor (Nivel 1) se implementa como un autómata de procesos paralelos que coordina
+los modos de operación (reposo, manual y automático), gestiona la lógica de toma y liberación de
+la carga mediante los \textit{twistlocks}, releva el perfil de obstáculos con el LIDAR y planifica
+trayectorias con evasión de colisiones. Sus límites suaves de velocidad y el suavizado de
+consignas garantizan movimientos graduales y dentro del área de trabajo válida, evitando que la
+operación alcance los límites físicos de forma abrupta.
+
+El control de protección (Nivel 0) constituye la capa de mayor autoridad: supervisa de forma
+permanente la planta y, ante cualquier anomalía, sobrescribe a los niveles superiores aplicando
+los frenos mecánicos. Su frenado selectivo detiene únicamente el eje afectado, mientras que el
+monitor de comunicaciones (\textit{watchdog}) detecta la pérdida de enlace con el supervisor y
+fuerza la parada de emergencia, garantizando que la grúa nunca quede operando con un comando
+desactualizado.
+
+El comportamiento del sistema se valida satisfactoriamente mediante simulación, apoyada en una
+animación 2D en tiempo real que permite observar la operación en los distintos modos. Asimismo, la
+lógica de control se traslada a un PLC virtual programado en CODESYS (combinando SFC y texto
+estructurado) y se comunica con la simulación de la planta a través del protocolo OPC-UA,
+comprobándose que el controlador implementado responde de igual manera que el modelo original.
+
+Como trabajos futuros se propone llevar el control a hardware real sobre un PLC físico, sustituir
+la comunicación OPC-UA por un enlace de menor latencia apto para control en tiempo real, y
+profundizar en las estrategias de planificación de trayectorias y de control anti-balanceo para
+optimizar los tiempos de ciclo de la grúa.

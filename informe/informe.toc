@@ -45,8 +45,8 @@
 \contentsline {subsubsection}{\numberline {6.4.3}Compensación de gravedad}{26}{subsubsection.6.4.3}%
 \contentsline {subsection}{\numberline {6.5}Anti-windup y observador de estado del izaje}{27}{subsection.6.5}%
 \contentsline {subsection}{\numberline {6.6}Modelo del controlador regulatorio en Simulink}{28}{subsection.6.6}%
-\contentsline {section}{\numberline {7}Diseño del Control Supervisor (Nivel 1)}{29}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Autómata Principal de Modos de Operación}{29}{subsection.7.1}%
+\contentsline {section}{\numberline {7}Diseño del control supervisor (Nivel 1)}{29}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Autómata principal de modos de operación}{29}{subsection.7.1}%
 \contentsline {subsection}{\numberline {7.2}Gestión de Twistlocks}{31}{subsection.7.2}%
 \contentsline {subsection}{\numberline {7.3}Suavizador de Consignas de Velocidad}{32}{subsection.7.3}%
 \contentsline {subsection}{\numberline {7.4}Análisis Espacial, Perfil de Obstáculos e Índices}{33}{subsection.7.4}%
@@ -65,3 +65,4 @@
 \contentsline {subsection}{\numberline {10.3}Control de protección en CODESYS}{52}{subsection.10.3}%
 \contentsline {subsection}{\numberline {10.4}Comunicación OPC Simulink/CODESYS}{53}{subsection.10.4}%
 \contentsline {section}{\numberline {11}Generación Automática de Código ST}{55}{section.11}%
+\contentsline {section}{\numberline {12}Conclusiones}{57}{section.12}%

@@ -86,64 +86,7 @@
 \newpage
 
 % Contenido del documento
-\section{Resumen}
-Este documento presenta el diseño y análisis de un sistema 
-de control para un accionamiento eléctrico 
-de corriente alterna (CA) compuesto por una máquina eléctrica sincrónica con excitación
-por imanes permanentes (PMSM), aplicado al 
-control de una articulación robótica de un grado de libertad.
-El proyecto busca integrar los conocimientos 
-adquiridos en el espacio curricular de Automática y Máquinas 
-Eléctricas mediante el modelado, simulación, diseño
-y evaluación del rendimiento 
-de un sistema de control automático para regular el 
-movimiento y la posición de un eje mecánico.
-
-Durante el desarrollo del trabajo, se construirá el modelo 
-matemático completo del sistema físico, incluyendo 
-los subsistemas mecánico, electromagnético y térmico, y se 
-realizarán simulaciones utilizando Matlab/Simulink. 
-A partir de estos modelos, se diseñará una estrategia de 
-control vectorial con desacoplamiento de variables y 
-un controlador externo de movimiento tipo PID, evaluando 
-además la estabilidad, controlabilidad y 
-observabilidad del sistema.
-
-Los resultados obtenidos a partir de las simulaciones 
-permitirán verificar la capacidad del controlador para 
-regular eficazmente la velocidad y el torque del motor, 
-así como su robustez frente a perturbaciones 
-externas y variaciones en los parámetros del sistema. 
-También se analizarán los efectos térmicos en el 
-motor y el impacto del torque de carga en distintas 
-condiciones de operación.
-
-Posteriormente, se reemplazarán los modelos ideales de 
-sensores e inversor por modelos más realistas, 
-incluyendo limitaciones como la saturación y un ancho de 
-banda finito. Se analizará cómo estas restricciones 
-afectan el desempeño del sistema de control.
-
-Finalmente, se desarrollará una versión del controlador 
-en tiempo discreto, evaluando la influencia de 
-la frecuencia de muestreo sobre la precisión del sistema 
-y su estabilidad, acercando la simulación a 
-un escenario realista.
-
-
-\newpage
-\section{Introducción}
-Este trabajo tiene como objetivo desarrollar un sistema de control automático para un accionamiento eléctrico de corriente alterna, basado en una máquina síncrona de imanes permanentes (PMSM), que actúa sobre la articulación de un brazo manipulador robótico con un solo grado de libertad. El sistema está diseñado para operar en un plano vertical, donde el eje de rotación se encuentra fijo a una base y sometido a la acción constante de la gravedad. La dinámica del sistema varía según las condiciones de carga útil aplicadas en el extremo del brazo.
-
-El accionamiento propuesto está compuesto por un reductor de velocidad de engranajes planetarios, un motor eléctrico PMSM, y un conjunto de sensores encargados de proporcionar retroalimentación sobre la posición angular del motor, las corrientes de fase y la temperatura del estator. Con base en las especificaciones dadas, se desarrollará un modelo dinámico que integre los efectos mecánicos, electromagnéticos y térmicos, considerando tanto el comportamiento no lineal como su aproximación lineal, con el propósito de facilitar el análisis y diseño de estrategias de control.
-
-El proyecto comprende distintas etapas, que incluyen el modelado del sistema físico, la simulación en lazo abierto, el diseño de un controlador vectorial mediante un modulador de torque equivalente, y la implementación de un controlador externo de movimiento en cascada. Estas simulaciones permitirán analizar la estabilidad, controlabilidad y observabilidad del sistema bajo distintas condiciones de operación. Además, se evaluará el desempeño térmico del motor y el impacto que tienen las limitaciones físicas de sensores e inversores sobre el comportamiento general del sistema.
-
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[width=1\textwidth]{imagenes/sistema_fisico.png}
-%     \caption{Robot manipulador elemental de 1 g.d.l. en plano vertical (péndulo rígido actuado)}
-% \end{figure}
+\input{resumen_introduccion.tex}
 
 \newpage
 
@@ -881,6 +824,8 @@ T_{hm\ Lim}^*(k \, T_{s2} \leq t < (k+1) \, T_{s2}) = \text{min}\left(+T_{hm\max
 \input{nivel0.tex}
 \input{simulacion.tex}
 \input{codesys.tex}
+
+\input{conclusiones.tex}
 
 
 \end{document}
