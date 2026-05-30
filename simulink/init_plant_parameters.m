@@ -175,7 +175,7 @@ counter_limit = timeout/(Ts0*1000); % Pulsos a contar antes de detectar error
 fprintf('Parámetros de la planta cargados correctamente.\n');
 
 %% Cargar modelo y compilar Accelerator
-model_name = 'nivel_1_full';
+model_name = 'planta';
 script_dir = fileparts(mfilename('fullpath'));
 model_path = fullfile(script_dir, [model_name '.slx']);
 

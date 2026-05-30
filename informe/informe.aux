@@ -114,37 +114,57 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.6}Modelo del controlador regulatorio en Simulink}{28}{subsection.6.6}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces Diagrama del controlador regulatorio del carro}}{28}{figure.caption.18}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {18}{\ignorespaces Diagrama del controlador regulatorio del izaje}}{29}{figure.caption.19}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}Comunicacion y Animación con Python}{29}{section.7}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {19}{\ignorespaces Bloque de comunicación Simulink - Python.}}{30}{figure.caption.20}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {20}{\ignorespaces Modo manual.}}{30}{figure.caption.21}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {21}{\ignorespaces Modo automático.}}{31}{figure.caption.22}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces Estado de error.}}{31}{figure.caption.23}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {8}CODESYS codificación manual}{31}{section.8}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {23}{\ignorespaces CODESYS - Árbol de componentes.}}{32}{figure.caption.24}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Control Regulatorio (Nivel 2) en CODESYS}{32}{subsection.8.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {24}{\ignorespaces Control del Carro con funciones de Matlab.}}{33}{figure.caption.25}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {25}{\ignorespaces Control de Izaje con funciones de Matlab.}}{34}{figure.caption.26}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Control supervisor en CODESYS}{35}{subsection.8.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {27}{\ignorespaces CODESYS - Diagrama general de control supervisor.}}{35}{figure.caption.28}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {28}{\ignorespaces CODESYS - Supervisor - Autómata principal.}}{36}{figure.caption.29}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {29}{\ignorespaces CODESYS - Supervisor - Autómata principal - Auto.}}{37}{figure.caption.30}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {30}{\ignorespaces CODESYS - Supervisor - Lógica de Twistlocks.}}{38}{figure.caption.31}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {31}{\ignorespaces CODESYS - Supervisor - Cruceta Índices Perfil.}}{38}{figure.caption.32}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}Control de seguridad en CODESYS}{39}{subsection.8.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {32}{\ignorespaces CODESYS - Seguridad - Diagrama general del control de seguridad.}}{39}{figure.caption.33}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {33}{\ignorespaces CODESYS - Seguridad - Estados de Seguridad.}}{39}{figure.caption.34}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {34}{\ignorespaces CODESYS - Seguridad - Watchdog.}}{40}{figure.caption.35}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.4}Comunicación OPC Simulink/CODESYS}{40}{subsection.8.4}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {35}{\ignorespaces Simulink - Cliente OPC-UA - Control Supervisor.}}{41}{figure.caption.36}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {36}{\ignorespaces Simulink - Cliente OPC-UA - Control de Seguridad.}}{41}{figure.caption.37}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.5}Comunicación UDP Simulink/CODESYS}{41}{subsection.8.5}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {37}{\ignorespaces Nuevas funciones de comunicación UDP en CODESYS.}}{42}{figure.caption.38}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {38}{\ignorespaces Función de Recepción UDP en CODESYS.}}{43}{figure.caption.39}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {39}{\ignorespaces Función de Transmisión UDP en CODESYS.}}{44}{figure.caption.40}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {40}{\ignorespaces Task Configuration en CODESYS.}}{44}{figure.caption.41}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {9}Generación Automática de Código ST}{45}{section.9}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {41}{\ignorespaces Fragmento de código ST autogenerado por Simulink PLC Coder.}}{46}{figure.caption.42}\protected@file@percent }
-\newlabel{LastPage}{{9}{46}{Generación Automática de Código ST}{page.46}{}}
-\gdef\lastpage@lastpage{46}
-\gdef\lastpage@lastpageHy{46}
-\gdef \@abspage@last{47}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Diseño del Control Supervisor (Nivel 1)}{29}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Autómata Principal de Modos de Operación}{29}{subsection.7.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {19}{\ignorespaces Máquina de estados del autómata principal en Stateflow}}{31}{figure.caption.20}\protected@file@percent }
+\newlabel{fig:n1_automata_principal}{{19}{31}{Máquina de estados del autómata principal en Stateflow}{figure.caption.20}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Gestión de Twistlocks}{31}{subsection.7.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {20}{\ignorespaces Lógica de gestión de twistlocks en Stateflow}}{32}{figure.caption.21}\protected@file@percent }
+\newlabel{fig:n1_twistlocks}{{20}{32}{Lógica de gestión de twistlocks en Stateflow}{figure.caption.21}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Suavizador de Consignas de Velocidad}{32}{subsection.7.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {21}{\ignorespaces Suavizador de consignas de velocidad en Stateflow}}{33}{figure.caption.22}\protected@file@percent }
+\newlabel{fig:n1_suavizado}{{21}{33}{Suavizador de consignas de velocidad en Stateflow}{figure.caption.22}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}Análisis Espacial, Perfil de Obstáculos e Índices}{33}{subsection.7.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces Cálculo de índices y actualización del perfil de obstáculos en Stateflow}}{34}{figure.caption.23}\protected@file@percent }
+\newlabel{fig:n1_indices_perfil}{{22}{34}{Cálculo de índices y actualización del perfil de obstáculos en Stateflow}{figure.caption.23}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.5}Límites Suaves de Velocidad}{35}{subsection.7.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {23}{\ignorespaces Lógica de límites suaves de velocidad en Stateflow}}{36}{figure.caption.24}\protected@file@percent }
+\newlabel{fig:n1_limites_suaves}{{23}{36}{Lógica de límites suaves de velocidad en Stateflow}{figure.caption.24}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.6}Supervisión de Comunicación (Watchdog Heartbeat)}{37}{subsection.7.6}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {24}{\ignorespaces Watchdog Heartbeat en Stateflow}}{37}{figure.caption.25}\protected@file@percent }
+\newlabel{fig:n1_watchdog}{{24}{37}{Watchdog Heartbeat en Stateflow}{figure.caption.25}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.7}Modelo del Control Supervisor en Simulink}{37}{subsection.7.7}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {25}{\ignorespaces Modelo del control supervisor (Nivel 1) en Simulink}}{38}{figure.caption.26}\protected@file@percent }
+\newlabel{fig:n1_modelo}{{25}{38}{Modelo del control supervisor (Nivel 1) en Simulink}{figure.caption.26}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.8}Control del Joystick y Botones Físicos}{39}{subsection.7.8}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {26}{\ignorespaces Bloque de configuración del joystick y botones físicos}}{39}{figure.caption.27}\protected@file@percent }
+\newlabel{fig:n1_joystick}{{26}{39}{Bloque de configuración del joystick y botones físicos}{figure.caption.27}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Comunicacion y Animación con Python}{39}{section.8}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {27}{\ignorespaces Bloque de comunicación Simulink - Python.}}{40}{figure.caption.28}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {28}{\ignorespaces Modo manual.}}{40}{figure.caption.29}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {29}{\ignorespaces Modo automático.}}{41}{figure.caption.30}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {30}{\ignorespaces Estado de error.}}{41}{figure.caption.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9}CODESYS codificación manual}{41}{section.9}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {31}{\ignorespaces Árbol de componentes del programa en CODESYS}}{42}{figure.caption.32}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.1}Control regulatorio en simil ST}{42}{subsection.9.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {32}{\ignorespaces Diagrama de control del carro con funciones de Matlab}}{43}{figure.caption.33}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {33}{\ignorespaces Diagrama de control de izaje con funciones de Matlab}}{44}{figure.caption.34}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {34}{\ignorespaces Código de los controladores del Nivel 2 en simil ST}}{45}{figure.caption.35}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.2}Control supervisor en CODESYS}{45}{subsection.9.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {35}{\ignorespaces Diagrama general de control supervisor en CODESYS}}{45}{figure.caption.36}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {36}{\ignorespaces Diagrama del autómata principal en CODESYS}}{46}{figure.caption.37}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {37}{\ignorespaces Diagrama del modo automático en CODESYS}}{47}{figure.caption.38}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {38}{\ignorespaces Diagrama de la lógica de los Twistlocks en CODESYS}}{48}{figure.caption.39}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {39}{\ignorespaces Diagrama del bloque indices perfil en CODESYS}}{48}{figure.caption.40}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.3}Control de protección en CODESYS}{49}{subsection.9.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {40}{\ignorespaces Diagrama general del control de protección en CODESYS}}{49}{figure.caption.41}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {41}{\ignorespaces Diagrama de la máquina de estados de seguridad en CODESYS}}{49}{figure.caption.42}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {42}{\ignorespaces Diagrama del watchdog en CODESYS}}{50}{figure.caption.43}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.4}Comunicación OPC Simulink/CODESYS}{50}{subsection.9.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {43}{\ignorespaces Diagrama de bloques de comunicación OPC-UA para el control supervisor en Simulink}}{51}{figure.caption.44}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {44}{\ignorespaces Diagrama de bloques de comunicación OPC-UA para el control de protección en Simulink}}{51}{figure.caption.45}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {45}{\ignorespaces Simulación con comunicación OPC-UA en funcionamiento.}}{52}{figure.caption.46}\protected@file@percent }
+\newlabel{LastPage}{{9.4}{52}{Comunicación OPC Simulink/CODESYS}{page.52}{}}
+\gdef\lastpage@lastpage{52}
+\gdef\lastpage@lastpageHy{52}
+\gdef \@abspage@last{53}

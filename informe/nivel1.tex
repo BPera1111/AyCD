@@ -1,0 +1,228 @@
+\section{Diseño del Control Supervisor (Nivel 1)}
+
+El control supervisor actúa como el cerebro lógico-operativo de la grúa. Se ejecuta a un
+tiempo de muestreo $T_{s1} = 20$ ms y su objetivo es tomar decisiones lógicas, coordinar la
+operación de ambos ejes y garantizar la seguridad funcional del sistema, habilitando o
+bloqueando las consignas que luego procesa el control regulatorio (Nivel 2). A diferencia del
+Nivel 2, que opera con variables continuas muestreadas, el Nivel 1 es un sistema de eventos
+discretos (DEDS) implementado como una máquina de estados en Stateflow.
+
+Este nivel recibe como entradas la realimentación de los sensores de la planta (posiciones de
+encoder $x_{t}$ e $y_{h}$, velocidades estimadas, tensión de cable $F_{hw}$, ángulo de
+balanceo $\theta_l$), las señales del joystick del operador, los finales de carrera y las
+banderas de falla provenientes del Nivel 0. Como salidas genera las consignas de velocidad
+\textcolor{signalcolor}{vx\_cmd} y \textcolor{signalcolor}{vy\_cmd} hacia el regulatorio, los
+comandos de freno de operación \textcolor{signalcolor}{$BRK_t$} y \textcolor{signalcolor}{$BRK_h$},
+la señal de twistlocks \textcolor{signalcolor}{TLK}, el límite dinámico de velocidad de izaje
+\textcolor{signalcolor}{vh\_lim}, el pulso de vida \textcolor{signalcolor}{heartbeat} y diversas
+banderas de estado de la interfaz.
+
+Para organizar esta lógica, la arquitectura se dividió en múltiples \textit{procesos paralelos}
+que el autómata evalúa simultáneamente en cada paso: el autómata principal de modos, la gestión
+de twistlocks, el suavizado de consignas, el análisis espacial del entorno, los límites suaves
+de velocidad y la supervisión de comunicación.
+
+\subsection{Autómata Principal de Modos de Operación}
+
+Como bloque principal se desarrolla la máquina de estados \texttt{AUTOMATA\_PRINCIPAL}. Este es
+el hilo de ejecución primario que dicta el comportamiento global de la grúa, gestionando de
+manera segura las transiciones entre los distintos modos de operación.
+
+\begin{itemize}
+    \item \textbf{Reposo (\texttt{REPOSO}):} estado inicial y de espera de comandos. La grúa
+    permanece detenida con los frenos cerrados. Es el estado al que se regresa tras una
+    operación completa o ante inactividad, garantizando que el sistema no quede en una posición
+    vulnerable.
+
+    \item \textbf{Manual (\texttt{MANUAL}):} permite al operador tomar el control directo de las
+    velocidades de ambos ejes mediante el joystick. Las consignas del joystick se traducen a
+    referencias de velocidad para el control regulatorio, permitiendo movimientos precisos y
+    suaves. Se activa al detectarse una consigna en el joystick o al presionar el botón
+    correspondiente.
+
+    \item \textbf{Modo Automático (\texttt{MODO\_AUTO}):} es el estado más complejo, ya que debe
+    controlar la grúa sin intervención del operador. Posee subestados internos que gestionan el
+    ciclo completo de movimiento de un contenedor desde un punto de origen hasta un punto de
+    destino:
+    \begin{itemize}
+        \item \texttt{AUTO\_INIT}: inicializa la maniobra, fija la posición de retorno
+        (\textit{home}) y determina la etapa según el estado de los twistlocks.
+        \item \texttt{SEL\_ORIGEN} y \texttt{SEL\_DESTINO}: permiten seleccionar los índices de
+        las posiciones de origen y destino del contenedor sobre el perfil de obstáculos.
+        \item \texttt{SELECCION\_TRAYECTORIA}: según la etapa actual del ciclo (origen, destino
+        o retorno), elige el índice objetivo que se utilizará en la planificación.
+        \item \texttt{MOVIMIENTO\_CURVO} y \texttt{MOVIMIENTO\_CURVO\_FINAL}: ejecutan el
+        movimiento coordinado. Una función planificadora de trayectoria genera las consignas de
+        velocidad seguras (\textcolor{signalcolor}{vx\_target}, \textcolor{signalcolor}{vy\_target})
+        evitando colisiones con la pila de contenedores, abriendo los frenos solo cuando se
+        requiere torque de movimiento.
+        \item \texttt{MODO\_MANUAL\_SIMPLE}: etapa de ajuste fino que permite correcciones
+        puntuales del operador dentro de la secuencia automática.
+    \end{itemize}
+    Durante el modo automático, el sistema vigila la consigna del joystick: si el operador
+    interviene, se habilita el retorno seguro al control manual.
+
+    \item \textbf{Recuperación (\texttt{RECUPERACION}):} estado de resguardo que limita la
+    velocidad y dirección del movimiento manual para que el operador pueda llevar la grúa a una
+    condición segura tras una falla. Se activa y se abandona mediante el botón de reset.
+
+    \item \textbf{Estados de error:} ante una falla propia del supervisor o detectada por el
+    Nivel 0, el autómata aborta la operación en curso y fuerza al sistema a un estado seguro con
+    los frenos aplicados. Los errores se discriminan según su origen: \texttt{ERROR\_FC\_sup\_inf}
+    para fallas de finales de carrera de izaje, \texttt{ERROR\_FC\_izq\_der} para los del carro y
+    \texttt{ERROR\_OTRO} para el resto de las condiciones críticas.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{nivel_1/automata_principal.png}
+    \caption{Máquina de estados del autómata principal en Stateflow}
+    \label{fig:n1_automata_principal}
+\end{figure}
+
+\subsection{Gestión de Twistlocks}
+
+Este proceso paralelo se encarga exclusivamente de la lógica del \textit{spreader},
+administrando los tiempos y las confirmaciones de los sensores para tomar o soltar el
+contenedor, asegurando que la grúa nunca intente un movimiento de izaje si el anclaje no es
+mecánicamente seguro. Posee cuatro estados internos:
+
+\begin{itemize}
+    \item \texttt{VACIO}: estado inicial, con el spreader sin carga moviéndose a la velocidad
+    máxima permitida.
+    \item \texttt{CERRANDO\_TLK}: se activa cuando la tensión en el cable disminuye lo suficiente
+    para indicar que el spreader se apoyó sobre un contenedor; se cierran los twistlocks
+    (\textcolor{signalcolor}{TLK} $= 1$) y se limita la velocidad de izaje.
+    \item \texttt{CARGADO}: con el contenedor enganchado, se estima su masa a partir de la celda
+    de carga mediante un filtro de primer orden sobre la tensión del cable. Con dicha estimación
+    se ajusta dinámicamente el límite de velocidad de izaje según la curva de potencia constante
+    del motor y se detecta una condición de sobrecarga si la masa estimada supera el máximo
+    admisible.
+    \item \texttt{ABRIENDO\_TLK}: de forma análoga al cierre, detecta la disminución de tensión
+    al apoyar la carga para liberar los twistlocks. Una vez superada cierta altura de seguridad,
+    se transiciona nuevamente al estado inicial.
+\end{itemize}
+
+La estimación de masa y el límite de velocidad asociado vinculan este proceso con el control
+regulatorio (Nivel 2), que utiliza \textcolor{signalcolor}{vh\_lim} como saturación de la
+referencia de velocidad de izaje.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{nivel_1/twistlocks.png}
+    \caption{Lógica de gestión de twistlocks en Stateflow}
+    \label{fig:n1_twistlocks}
+\end{figure}
+
+\subsection{Suavizador de Consignas de Velocidad}
+
+Este proceso aplica filtros de suavizado a las consignas de velocidad provenientes del autómata
+principal. Resulta especialmente importante en el modo manual, donde las señales del joystick
+pueden ser abruptas. El bloque implementa límites de \textit{jerk} y aceleración, garantizando
+que cualquier cambio en la referencia se realice de manera gradual y evitando movimientos
+bruscos que comprometan la estabilidad o la seguridad de la operación. Las consignas crudas
+(\textcolor{signalcolor}{vx\_target}, \textcolor{signalcolor}{vy\_target}) se transforman en
+consignas suavizadas (\textcolor{signalcolor}{vx\_suave}, \textcolor{signalcolor}{vy\_suave})
+respetando las aceleraciones máximas de cada eje.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{nivel_1/suavizado_velocidad.png}
+    \caption{Suavizador de consignas de velocidad en Stateflow}
+    \label{fig:n1_suavizado}
+\end{figure}
+
+\subsection{Análisis Espacial, Perfil de Obstáculos e Índices}
+
+Para que el modo automático pueda trazar rutas seguras, la grúa debe conocer su entorno. Este
+proceso paralelo procesa los datos del sensor LIDAR del carro y actualiza continuamente un mapa
+de alturas o perfil de obstáculos bajo el área de trabajo, garantizando que cualquier
+trayectoria generada esquive las pilas de contenedores existentes. Se compone de los subestados
+de relevamiento (\texttt{Escaneo}), cálculo de índices (\texttt{INDICES}) y actualización del
+perfil de alturas (\texttt{ACTUALIZAR\_PERFIL\_ALTURAS}).
+
+Al mismo tiempo, calcula los índices discretos en los que se encuentra el carro y la cruceta
+(punto de referencia para el operador), y genera una \textit{envolvente de seguridad} a partir
+del perfil de alturas, con márgenes laterales y superiores que garantizan que la grúa no intente
+pasar por zonas donde pudiera colisionar. Como condición de habilitación del modo automático se
+exige que el perfil de obstáculos haya sido escaneado previamente en su totalidad, por lo que el
+operador debe recorrer manualmente todo el rango de operación antes de habilitar la operación
+autónoma.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{nivel_1/indices_perfil.png}
+    \caption{Cálculo de índices y actualización del perfil de obstáculos en Stateflow}
+    \label{fig:n1_indices_perfil}
+\end{figure}
+
+\subsection{Límites Suaves de Velocidad}
+
+Este proceso actúa como una barrera de seguridad preventiva. Antes de que el carro o el izaje
+alcancen los límites físicos extremos de su carrera (donde actuarían los finales de carrera del
+Nivel 0), este bloque recorta gradualmente las referencias de velocidad, forzando una detención
+suave y controlada dentro del área de trabajo válida.
+
+El recorte se aplica de forma independiente en los cuatro límites de operación (superior e
+inferior de izaje, izquierdo y derecho del carro). Para cada uno se calcula una velocidad segura
+de aproximación a partir de la distancia remanente al límite, de modo que la velocidad
+disponible se reduce a medida que la carga se acerca al borde, considerando además un retardo
+dinámico que anticipa el frenado en función de la velocidad actual. Si la consigna suavizada
+excede la velocidad segura calculada, se satura a esta última, garantizando que el sistema nunca
+llegue a los finales de carrera a velocidad elevada.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{nivel_1/limites_suaves.png}
+    \caption{Lógica de límites suaves de velocidad en Stateflow}
+    \label{fig:n1_limites_suaves}
+\end{figure}
+
+\subsection{Supervisión de Comunicación (Watchdog Heartbeat)}
+
+Este proceso constituye un anillo de seguridad vital. Se encarga de emitir pulsos de vida
+(\textit{heartbeats}) a intervalos regulares conmutando entre los estados \texttt{PULSOS\_UP} y
+\texttt{PULSOS\_DOWN}. En el control de seguridad (Nivel 0), otro bloque observa esta señal: si
+se detecta una falta de pulsos superando un tiempo preestablecido, el sistema de seguridad asume
+una pérdida de comunicación, interrumpe cualquier movimiento en curso y lleva el sistema al
+estado de error.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{nivel_1/watchdog_heartbeat.png}
+    \caption{Watchdog Heartbeat en Stateflow}
+    \label{fig:n1_watchdog}
+\end{figure}
+
+\subsection{Modelo del Control Supervisor en Simulink}
+
+La totalidad de la lógica descrita se implementa en un único bloque Chart de Stateflow
+(\texttt{Control Nivel 1}) que concentra los procesos paralelos. Sus puertos de entrada reciben
+las señales del joystick y los botones físicos, la realimentación de sensores y las banderas de
+falla, mientras que sus puertos de salida entregan las consignas de velocidad, los comandos de
+freno, la señal de twistlocks, el límite dinámico de izaje, el pulso de vida y las banderas de
+estado de la interfaz.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{nivel_1/modelo_supervisor.png}
+    \caption{Modelo del control supervisor (Nivel 1) en Simulink}
+    \label{fig:n1_modelo}
+\end{figure}
+
+\subsection{Control del Joystick y Botones Físicos}
+
+Para operar la grúa se utiliza un joystick físico conectado a la estación de operación. Este
+dispositivo permite al operador controlar directamente las velocidades de traslación e izaje, así
+como activar comandos específicos del sistema. El bloque de manejo de entradas procesa estas
+señales para generar las referencias adecuadas para el control supervisor: el eje horizontal del
+stick izquierdo se mapea a la velocidad del carro y el eje vertical del stick derecho a la
+velocidad de izaje, mientras que los botones gobiernan el cierre de twistlocks y la selección de
+modo (manual, automático, reset y parada de emergencia).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{nivel_1/joystick.png}
+    \caption{Bloque de configuración del joystick y botones físicos}
+    \label{fig:n1_joystick}
+\end{figure}
