@@ -26,8 +26,8 @@ Para respetar la curva de potencia constante del motor, el comando de velocidad 
 \begin{equation}
     v_{h,limit}(\hat{m}_l) = 
     \begin{cases} 
-        v_{h,max} & \text{si } \hat{m}_l < M_{base} \\
-        \frac{P_{h,nom}}{\hat{m}_l \, g} & \text{si } \hat{m}_l \ge M_{base}
+        v_{h\max} & \text{si } {m}_l < M_{base} \\
+        \frac{P_{h\ nom}}{{m}_l \, g} & \text{si } {m}_l \ge M_{base}
     \end{cases}
 \end{equation}
 
@@ -170,8 +170,7 @@ sin depender de aproximaciones de ángulos pequeños. La aceleración de la refe
 perturbación acotada.
 
 \subsubsection{Sintonía por linealización local}
-Si bien la estabilidad está garantizada, para determinar analíticamente el valor óptimo de la ganancia $K_{sway}$ se evalúa el comportamiento del sistema en las cercanías del punto de equilibrio estable ($\theta_l = 0$, $\dot{\theta}_l = 0$). El error es casi despreciable para ángulos de entre $10^\circ$ y $5^\circ$, lo que permite evitar singularidades.
-
+Si bien la estabilidad está garantizada, para determinar analíticamente el valor óptimo de la ganancia $K_{sway}$ se evalúa el comportamiento del sistema en las cercanías del punto de equilibrio estable ($\theta_l = 0$, $\dot{\theta}_l = 0$). Siendo el error casi despreciable para ángulos de entre $10^\circ$ y $5^\circ$.
 Evaluando la ecuación (\ref{eq:lazo_cerrado_nolineal}) alrededor del origen ($\cos(\theta_l) \to 1$ y $\sin(\theta_l) \to \theta_l$), la dinámica local se reduce a:
 \begin{equation}
     \ddot{\theta}_l(t) + \left( \frac{K_{sway}}{l_h(t)} \right) \dot{\theta}_l(t) + \left( \frac{g}{l_h(t)} \right) \theta_l(t) = 0

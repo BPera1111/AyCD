@@ -47,22 +47,20 @@
 \contentsline {subsection}{\numberline {6.6}Modelo del controlador regulatorio en Simulink}{28}{subsection.6.6}%
 \contentsline {section}{\numberline {7}Diseño del control supervisor (Nivel 1)}{29}{section.7}%
 \contentsline {subsection}{\numberline {7.1}Autómata principal de modos de operación}{29}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Gestión de Twistlocks}{31}{subsection.7.2}%
-\contentsline {subsection}{\numberline {7.3}Suavizador de Consignas de Velocidad}{32}{subsection.7.3}%
-\contentsline {subsection}{\numberline {7.4}Análisis Espacial, Perfil de Obstáculos e Índices}{33}{subsection.7.4}%
-\contentsline {subsection}{\numberline {7.5}Límites Suaves de Velocidad}{35}{subsection.7.5}%
-\contentsline {subsection}{\numberline {7.6}Supervisión de Comunicación (Watchdog Heartbeat)}{37}{subsection.7.6}%
-\contentsline {subsection}{\numberline {7.7}Modelo del Control Supervisor en Simulink}{37}{subsection.7.7}%
-\contentsline {subsection}{\numberline {7.8}Control del Joystick y Botones Físicos}{39}{subsection.7.8}%
-\contentsline {section}{\numberline {8}Diseño del Control de Seguridad (Nivel 0)}{39}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Autómata de Estados de Seguridad}{39}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2}Monitor de Comunicaciones (Watchdog)}{40}{subsection.8.2}%
-\contentsline {subsection}{\numberline {8.3}Modelo del Control de Seguridad en Simulink}{41}{subsection.8.3}%
-\contentsline {section}{\numberline {9}Comunicacion y Animación con Python}{42}{section.9}%
-\contentsline {section}{\numberline {10}CODESYS codificación manual}{44}{section.10}%
-\contentsline {subsection}{\numberline {10.1}Control regulatorio en simil ST}{45}{subsection.10.1}%
-\contentsline {subsection}{\numberline {10.2}Control supervisor en CODESYS}{48}{subsection.10.2}%
-\contentsline {subsection}{\numberline {10.3}Control de protección en CODESYS}{52}{subsection.10.3}%
-\contentsline {subsection}{\numberline {10.4}Comunicación OPC Simulink/CODESYS}{53}{subsection.10.4}%
-\contentsline {section}{\numberline {11}Generación Automática de Código ST}{55}{section.11}%
-\contentsline {section}{\numberline {12}Conclusiones}{57}{section.12}%
+\contentsline {subsection}{\numberline {7.2}Gestión de twistlocks}{31}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Suavizador de consignas de velocidad}{32}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Análisis espacial, perfil de obstáculos e índices}{33}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}Límites suaves de velocidad}{35}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}Supervisión de comunicación (Watchdog Heartbeat)}{37}{subsection.7.6}%
+\contentsline {subsection}{\numberline {7.7}Control del joystick}{37}{subsection.7.7}%
+\contentsline {section}{\numberline {8}Diseño del control de seguridad (Nivel 0)}{38}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Autómata de estados de seguridad}{38}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Monitor de comunicaciones}{39}{subsection.8.2}%
+\contentsline {section}{\numberline {9}Comunicacion y animación con python}{40}{section.9}%
+\contentsline {section}{\numberline {10}CODESYS codificación manual}{42}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Control regulatorio en simil ST}{43}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Control supervisor en CODESYS}{45}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}Control de protección en CODESYS}{49}{subsection.10.3}%
+\contentsline {subsection}{\numberline {10.4}Comunicación OPC Simulink/CODESYS}{50}{subsection.10.4}%
+\contentsline {section}{\numberline {11}Generación Automática de Código ST}{52}{section.11}%
+\contentsline {section}{\numberline {12}Conclusiones}{54}{section.12}%

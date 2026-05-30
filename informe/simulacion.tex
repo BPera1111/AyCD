@@ -1,13 +1,15 @@
-\section{Comunicacion y Animación con Python}
+\section{Comunicacion y animación con python}
 
-Para la visualización en tiempo real de la grúa y su entorno, se implementó un bloque de comunicación UDP que transmite los estados crítico del sistema a un programa de python que lo comunica con la simulación. Este programa muestra en una ventana del navegador una representación 2D de la grúa, contenedores, barco y parametros clave que permiten al operador monitorear visualemnte la operación.
+Para la visualización en tiempo real de la grúa y su entorno, se implementó un bloque de comunicación UDP que transmite los estados 
+crítico del sistema a un programa de python que lo comunica con la simulación. Este programa muestra en una ventana del navegador 
+una representación 2D de la grúa, contenedores, barco y parámetros clave que permiten al operador monitorear visualemnte la operación.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.48\textwidth]{simulacion/sim_udp.png}
     \hfill
     \includegraphics[width=0.48\textwidth]{simulacion/sim_udp2.png}
-    \caption{Bloque de comunicación Simulink - Python.}
+    \caption{Diagrama de la comunicación UDP entre Simulink y el programa de python}
 \end{figure}
 
 A continuacion se presentan algunas capturas de diferentes estados de la grúa, mostrando la posición del spredder, la carga y el entorno.
