@@ -1,28 +1,24 @@
-\section{Diseño del Control Supervisor (Nivel 1)}
+\section{Diseño del control supervisor (Nivel 1)}
 
 El control supervisor actúa como el cerebro lógico-operativo de la grúa. Se ejecuta a un
 tiempo de muestreo $T_{s1} = 20$ ms y su objetivo es tomar decisiones lógicas, coordinar la
 operación de ambos ejes y garantizar la seguridad funcional del sistema, habilitando o
-bloqueando las consignas que luego procesa el control regulatorio (Nivel 2). A diferencia del
+bloqueando las consignas que luego procesa el control regulatorio. A diferencia del
 Nivel 2, que opera con variables continuas muestreadas, el Nivel 1 es un sistema de eventos
 discretos (DEDS) implementado como una máquina de estados en Stateflow.
 
 Este nivel recibe como entradas la realimentación de los sensores de la planta (posiciones de
-encoder $x_{t}$ e $y_{h}$, velocidades estimadas, tensión de cable $F_{hw}$, ángulo de
+encoder $x_{t}$ e $y_{h}$, velocidades estimadas por los observadores, tensión de cable $F_{hw}$, ángulo de
 balanceo $\theta_l$), las señales del joystick del operador, los finales de carrera y las
-banderas de falla provenientes del Nivel 0. Como salidas genera las consignas de velocidad
-\textcolor{signalcolor}{vx\_cmd} y \textcolor{signalcolor}{vy\_cmd} hacia el regulatorio, los
+señales de falla provenientes del Nivel 0. Como salidas genera las consignas de velocidad
+$v_{x\ suave}$ y $v_{y\ suave}$, los
 comandos de freno de operación \textcolor{signalcolor}{$BRK_t$} y \textcolor{signalcolor}{$BRK_h$},
-la señal de twistlocks \textcolor{signalcolor}{TLK}, el límite dinámico de velocidad de izaje
-\textcolor{signalcolor}{vh\_lim}, el pulso de vida \textcolor{signalcolor}{heartbeat} y diversas
-banderas de estado de la interfaz.
+la señal de twistlocks \textcolor{signalcolor}{TLK}, el \textit{heartbeat} y diversas
+señales de estado de la interfaz. 
+Para organizar esta lógica, la arquitectura se divide en múltiples procesos paralelos
+que el autómata evalúa simultáneamente en cada paso.
 
-Para organizar esta lógica, la arquitectura se dividió en múltiples \textit{procesos paralelos}
-que el autómata evalúa simultáneamente en cada paso: el autómata principal de modos, la gestión
-de twistlocks, el suavizado de consignas, el análisis espacial del entorno, los límites suaves
-de velocidad y la supervisión de comunicación.
-
-\subsection{Autómata Principal de Modos de Operación}
+\subsection{Autómata principal de modos de operación}
 
 Como bloque principal se desarrolla la máquina de estados \texttt{AUTOMATA\_PRINCIPAL}. Este es
 el hilo de ejecución primario que dicta el comportamiento global de la grúa, gestionando de
@@ -30,18 +26,15 @@ manera segura las transiciones entre los distintos modos de operación.
 
 \begin{itemize}
     \item \textbf{Reposo (\texttt{REPOSO}):} estado inicial y de espera de comandos. La grúa
-    permanece detenida con los frenos cerrados. Es el estado al que se regresa tras una
-    operación completa o ante inactividad, garantizando que el sistema no quede en una posición
-    vulnerable.
+    permanece detenida con los frenos cerrados. Es el estado al que se regresa cuando finaliza el movimiento.
 
     \item \textbf{Manual (\texttt{MANUAL}):} permite al operador tomar el control directo de las
     velocidades de ambos ejes mediante el joystick. Las consignas del joystick se traducen a
     referencias de velocidad para el control regulatorio, permitiendo movimientos precisos y
-    suaves. Se activa al detectarse una consigna en el joystick o al presionar el botón
-    correspondiente.
+    suaves. Se activa al detectarse una consigna en el joystick.
 
-    \item \textbf{Modo Automático (\texttt{MODO\_AUTO}):} es el estado más complejo, ya que debe
-    controlar la grúa sin intervención del operador. Posee subestados internos que gestionan el
+    \item \textbf{Modo automático (\texttt{MODO\_AUTO}):} es el estado más complejo, ya que debe
+    controlar la grúa temporalmente sin intervención del operador. Posee subestados internos que gestionan el
     ciclo completo de movimiento de un contenedor desde un punto de origen hasta un punto de
     destino:
     \begin{itemize}
@@ -53,24 +46,32 @@ manera segura las transiciones entre los distintos modos de operación.
         o retorno), elige el índice objetivo que se utilizará en la planificación.
         \item \texttt{MOVIMIENTO\_CURVO} y \texttt{MOVIMIENTO\_CURVO\_FINAL}: ejecutan el
         movimiento coordinado. Una función planificadora de trayectoria genera las consignas de
-        velocidad seguras (\textcolor{signalcolor}{vx\_target}, \textcolor{signalcolor}{vy\_target})
-        evitando colisiones con la pila de contenedores, abriendo los frenos solo cuando se
-        requiere torque de movimiento.
-        \item \texttt{MODO\_MANUAL\_SIMPLE}: etapa de ajuste fino que permite correcciones
-        puntuales del operador dentro de la secuencia automática.
+        velocidad seguras ($vx\ target$, $vy\ target$), según un controlador PD de seguimiento de posición (Ec. \ref{eq:control_pd}) y
+        evitando colisiones con la pila de contenedores. Durante este modo, el sistema vigila la consigna del joystick: 
+        si el operador interviene, se habilita el modo manual con la posibilidad de continuar la maniobra automática.
+        \begin{equation}
+            v_{target}(k) = K_{p} \, \bigl(pos_{target}(k) - pos_{med}(k)\bigr) - K_{d} \, v_{obs}(k)
+            \label{eq:control_pd}
+        \end{equation}
+        \item \texttt{MODO\_MANUAL\_SIMPLE}: etapa final de aproximación con o sin contenedor
+        realizada por el operador.
     \end{itemize}
-    Durante el modo automático, el sistema vigila la consigna del joystick: si el operador
-    interviene, se habilita el retorno seguro al control manual.
-
-    \item \textbf{Recuperación (\texttt{RECUPERACION}):} estado de resguardo que limita la
-    velocidad y dirección del movimiento manual para que el operador pueda llevar la grúa a una
-    condición segura tras una falla. Se activa y se abandona mediante el botón de reset.
 
     \item \textbf{Estados de error:} ante una falla propia del supervisor o detectada por el
     Nivel 0, el autómata aborta la operación en curso y fuerza al sistema a un estado seguro con
     los frenos aplicados. Los errores se discriminan según su origen: \texttt{ERROR\_FC\_sup\_inf}
     para fallas de finales de carrera de izaje, \texttt{ERROR\_FC\_izq\_der} para los del carro y
-    \texttt{ERROR\_OTRO} para el resto de las condiciones críticas.
+    \texttt{ERROR\_OTRO} para el resto de las condiciones críticas. Dependiendo del tipo de error, se
+    cierran los frenos correspondientes, \texttt{ERROR\_FC\_sup\_inf} bloquea el movimiento de izaje, \texttt{ERROR\_FC\_izq\_der} 
+    bloquea el movimiento del carro y \texttt{ERROR\_OTRO} bloquea ambos. 
+
+
+    \item \textbf{Recuperación (\texttt{RECUPERACION}):} estado de resguardo que limita la
+    velocidad y dirección del movimiento manual para que el operador pueda llevar la grúa a una
+    condición segura tras una falla. Se activa con el botón de reset después de una falla y se
+    abandona cuando la posición se aleja del fin de carrera correspondiente, si no hay uno se abandona inmediatamente.
+
+
 \end{itemize}
 
 \begin{figure}[H]
