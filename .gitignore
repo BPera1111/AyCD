@@ -1,0 +1,24 @@
+# === MATLAB / Simulink generados ===
+slprj/
+*.slxc
+*.slxc.tmw
+sl_proj.tmw
+*.autosave
+*.asv
+
+# === CODESYS generados / temporales ===
+*.precompilecache
+*.compileinfo
+*.bootinfo
+*.bootinfo_guids
+*.~u
+*.opt
+
+# === Python ===
+__pycache__/
+*.pyc
+*.pyo
+venv/
+
+# === Sistema ===
+C:/Temp/
