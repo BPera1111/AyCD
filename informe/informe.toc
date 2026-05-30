@@ -60,3 +60,4 @@
 \contentsline {subsection}{\numberline {9.2}Control supervisor en CODESYS}{45}{subsection.9.2}%
 \contentsline {subsection}{\numberline {9.3}Control de protección en CODESYS}{49}{subsection.9.3}%
 \contentsline {subsection}{\numberline {9.4}Comunicación OPC Simulink/CODESYS}{50}{subsection.9.4}%
+\contentsline {section}{\numberline {10}Generación Automática de Código ST}{52}{section.10}%
