@@ -190,3 +190,17 @@ A continuación se muestra una captura de la simulación funcionando a través d
 %     \includegraphics[width=1\textwidth]{ejemplo_UDP.png}
 %     \caption{Simulación funcionando a través de UDP.}
 % \end{figure}
+
+\section{Generación Automática de Código ST}
+Simulink ofrece una herramienta llamada PLC Coder, que ofrece la capacidad de traducir automáticamente diagramas Stateflow a Texto Estructurado (ST) bajo la norma IEC 61131-3. Se procedió a analizar el código ST resultante de esta autogeneración. Se puede observar que el traductor implementa el autómata de forma ``plana'' y monolítica. Para lograrlo, recurre a una estructura de control \texttt{CASE} global que evalúa una variable entera representativa del estado actual, combinada con una densa red de sentencias \texttt{IF/ELSIF} anidadas para resolver las transiciones y acciones correspondientes.
+
+A nivel de eficiencia computacional y carga de CPU, el rendimiento del código autogenerado es comparable al de una implementación manual. Los compiladores modernos de los PLC optimizan ambas estructuras a un código máquina de ejecución sumamente rápida, por lo que el tiempo de ciclo del autómata no se ve significativamente alterado por la elección de uno u otro método.
+
+Sin embargo, la divergencia crítica entre ambos enfoques radica en la legibilidad, la mantenibilidad y el diagnóstico de fallas en el entorno industrial. El código ST autogenerado carece de trazabilidad visual; resulta ser una estructura de difícil interpretación para los operarios de planta. Por este motivo, en el proyecto se optó por utilizar solamente la traducción manual, utilizando SFC para la arquitectura general de los autómatas y reservando el Texto Estructurado exclusivamente para las acciones matemáticas subyacentes.
+
+Esta estrategia mantiene la potencia de cálculo del ST para las leyes de control cinemático, mientras que el entorno SFC proporciona un diagnóstico más visual. A continuación se muestran fragmentos del código autogenerado para el control de seguridad, evidenciando la complejidad y falta de claridad que presenta:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{codesys/st_generado.png}
+    \caption{Fragmento de código ST autogenerado por Simulink PLC Coder.}
+\end{figure}

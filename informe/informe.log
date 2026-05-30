@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.17)  29 MAY 2026 22:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.17)  29 MAY 2026 22:48
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -475,51 +475,51 @@ l.52 ... seguridad en CODESYS}{39}{subsection.8.3}
 \openout4 = `informe.toc'.
 
  [2] [3] [4]
-<./figs/vista_lateral.jpg, id=302, 299.9205pt x 225.0006pt>
+<./figs/vista_lateral.jpg, id=307, 299.9205pt x 225.0006pt>
 File: ./figs/vista_lateral.jpg Graphic file (type jpg)
 <use ./figs/vista_lateral.jpg>
 Package pdftex.def Info: ./figs/vista_lateral.jpg  used on input line 163.
 (pdftex.def)             Requested size: 318.70712pt x 239.10373pt.
-<./figs/vista_frontal.jpg, id=303, 297.0297pt x 199.2243pt>
+<./figs/vista_frontal.jpg, id=308, 297.0297pt x 199.2243pt>
 File: ./figs/vista_frontal.jpg Graphic file (type jpg)
 <use ./figs/vista_frontal.jpg>
 Package pdftex.def Info: ./figs/vista_frontal.jpg  used on input line 172.
 (pdftex.def)             Requested size: 318.70712pt x 213.78195pt.
  [5 <./figs/vista_lateral.jpg> <./figs/vista_frontal.jpg>]
-<./figs/ubicacion_casa_maquinas.jpg, id=318, 239.9364pt x 145.0218pt>
+<./figs/ubicacion_casa_maquinas.jpg, id=323, 239.9364pt x 145.0218pt>
 File: ./figs/ubicacion_casa_maquinas.jpg Graphic file (type jpg)
 <use ./figs/ubicacion_casa_maquinas.jpg>
 Package pdftex.def Info: ./figs/ubicacion_casa_maquinas.jpg  used on input line 191.
 (pdftex.def)             Requested size: 238.55556pt x 144.1833pt.
-<./figs/casa_maquinas.jpg, id=319, 207.4149pt x 144.7809pt>
+<./figs/casa_maquinas.jpg, id=324, 207.4149pt x 144.7809pt>
 File: ./figs/casa_maquinas.jpg Graphic file (type jpg)
 <use ./figs/casa_maquinas.jpg>
 Package pdftex.def Info: ./figs/casa_maquinas.jpg  used on input line 198.
 (pdftex.def)             Requested size: 206.57884pt x 144.1833pt.
-<./figs/accionamiento_carro.jpg, id=320, 239.6955pt x 102.3825pt>
+<./figs/accionamiento_carro.jpg, id=325, 239.6955pt x 102.3825pt>
 File: ./figs/accionamiento_carro.jpg Graphic file (type jpg)
 <use ./figs/accionamiento_carro.jpg>
 Package pdftex.def Info: ./figs/accionamiento_carro.jpg  used on input line 207.
 (pdftex.def)             Requested size: 241.11032pt x 102.98059pt.
-<./figs/accionamiento_izaje.jpg, id=321, 209.8239pt x 103.1052pt>
+<./figs/accionamiento_izaje.jpg, id=326, 209.8239pt x 103.1052pt>
 File: ./figs/accionamiento_izaje.jpg Graphic file (type jpg)
 <use ./figs/accionamiento_izaje.jpg>
 Package pdftex.def Info: ./figs/accionamiento_izaje.jpg  used on input line 214.
 (pdftex.def)             Requested size: 209.57684pt x 102.98059pt.
  [6 <./figs/ubicacion_casa_maquinas.jpg> <./figs/casa_maquinas.jpg> <./figs/accionamiento_carro.jpg> <./figs/accionamiento_izaje.jpg>]
-<./figs/cuerpo_libre.jpg, id=334, 269.0853pt x 203.8014pt>
+<./figs/cuerpo_libre.jpg, id=339, 269.0853pt x 203.8014pt>
 File: ./figs/cuerpo_libre.jpg Graphic file (type jpg)
 <use ./figs/cuerpo_libre.jpg>
 Package pdftex.def Info: ./figs/cuerpo_libre.jpg  used on input line 289.
 (pdftex.def)             Requested size: 303.53706pt x 229.9135pt.
  [7] [8 <./figs/cuerpo_libre.jpg>]
-<./figs/freno_carro.png, id=357, 1325.70282pt x 347.79938pt>
+<./figs/freno_carro.png, id=362, 1325.70282pt x 347.79938pt>
 File: ./figs/freno_carro.png Graphic file (type png)
 <use ./figs/freno_carro.png>
 Package pdftex.def Info: ./figs/freno_carro.png  used on input line 373.
 (pdftex.def)             Requested size: 303.53706pt x 79.63129pt.
  [9 <./figs/freno_carro.png>]
-<./figs/modelo_carro.png, id=380, 596.98032pt x 578.16pt>
+<./figs/modelo_carro.png, id=385, 596.98032pt x 578.16pt>
 File: ./figs/modelo_carro.png Graphic file (type png)
 <use ./figs/modelo_carro.png>
 Package pdftex.def Info: ./figs/modelo_carro.png  used on input line 447.
@@ -530,159 +530,159 @@ Overfull \hbox (6.77756pt too wide) in paragraph at lines 458--461
  []
 
 [11] [12] [13]
-<./figs/modelo_izaje.png, id=434, 846.16125pt x 585.68813pt>
+<./figs/modelo_izaje.png, id=439, 846.16125pt x 585.68813pt>
 File: ./figs/modelo_izaje.png Graphic file (type png)
 <use ./figs/modelo_izaje.png>
 Package pdftex.def Info: ./figs/modelo_izaje.png  used on input line 674.
 (pdftex.def)             Requested size: 404.71352pt x 280.12617pt.
  [14 <./figs/modelo_izaje.png>]
-<./figs/perfil_obstaculos.png, id=444, 1102.1175pt x 366.61969pt>
+<./figs/perfil_obstaculos.png, id=449, 1102.1175pt x 366.61969pt>
 File: ./figs/perfil_obstaculos.png Graphic file (type png)
 <use ./figs/perfil_obstaculos.png>
 Package pdftex.def Info: ./figs/perfil_obstaculos.png  used on input line 705.
 (pdftex.def)             Requested size: 404.71352pt x 134.62901pt.
  [15 <./figs/perfil_obstaculos.png>]
-<./figs/sensores_carro.png, id=453, 854.44218pt x 577.40718pt>
+<./figs/sensores_carro.png, id=458, 854.44218pt x 577.40718pt>
 File: ./figs/sensores_carro.png Graphic file (type png)
 <use ./figs/sensores_carro.png>
 Package pdftex.def Info: ./figs/sensores_carro.png  used on input line 800.
 (pdftex.def)             Requested size: 318.70712pt x 215.37299pt.
-<./figs/sensores_izaje.png, id=454, 509.65407pt x 581.17125pt>
+<./figs/sensores_izaje.png, id=459, 509.65407pt x 581.17125pt>
 File: ./figs/sensores_izaje.png Graphic file (type png)
 <use ./figs/sensores_izaje.png>
 Package pdftex.def Info: ./figs/sensores_izaje.png  used on input line 805.
 (pdftex.def)             Requested size: 318.70712pt x 363.44397pt.
  [16] [17 <./figs/sensores_carro.png> <./figs/sensores_izaje.png>]
-<./figs/modulador_carro.png, id=472, 1373.13pt x 335.75438pt>
+<./figs/modulador_carro.png, id=477, 1373.13pt x 335.75438pt>
 File: ./figs/modulador_carro.png Graphic file (type png)
 <use ./figs/modulador_carro.png>
 Package pdftex.def Info: ./figs/modulador_carro.png  used on input line 843.
 (pdftex.def)             Requested size: 404.71352pt x 98.95958pt.
-<./figs/modulador_izaje.png, id=473, 1372.37718pt x 190.46156pt>
+<./figs/modulador_izaje.png, id=478, 1372.37718pt x 190.46156pt>
 File: ./figs/modulador_izaje.png Graphic file (type png)
 <use ./figs/modulador_izaje.png>
 Package pdftex.def Info: ./figs/modulador_izaje.png  used on input line 864.
 (pdftex.def)             Requested size: 404.71352pt x 56.16823pt.
  [18 <./figs/modulador_carro.png>]
-<./figs/modelo_planta.png, id=487, 649.67719pt x 577.40718pt>
+<./figs/modelo_planta.png, id=492, 649.67719pt x 577.40718pt>
 File: ./figs/modelo_planta.png Graphic file (type png)
 <use ./figs/modelo_planta.png>
 Package pdftex.def Info: ./figs/modelo_planta.png  used on input line 873.
 (pdftex.def)             Requested size: 455.29788pt x 404.65804pt.
  [19 <./figs/modulador_izaje.png> <./figs/modelo_planta.png>] (nivel2.tex [20]
-<./figs/nivel_2/lazo_controlador_carro.png, id=509, 1036.62282pt x 418.56375pt>
+<./figs/nivel_2/lazo_controlador_carro.png, id=514, 1036.62282pt x 418.56375pt>
 File: ./figs/nivel_2/lazo_controlador_carro.png Graphic file (type png)
 <use ./figs/nivel_2/lazo_controlador_carro.png>
 Package pdftex.def Info: ./figs/nivel_2/lazo_controlador_carro.png  used on input line 115.
 (pdftex.def)             Requested size: 404.71352pt x 163.41164pt.
  [21] [22 <./figs/nivel_2/lazo_controlador_carro.png>]
-<./figs/nivel_2/control_balanceo.png, id=536, 1222.5675pt x 462.22687pt>
+<./figs/nivel_2/control_balanceo.png, id=541, 1222.5675pt x 462.22687pt>
 File: ./figs/nivel_2/control_balanceo.png Graphic file (type png)
 <use ./figs/nivel_2/control_balanceo.png>
 Package pdftex.def Info: ./figs/nivel_2/control_balanceo.png  used on input line 196.
 (pdftex.def)             Requested size: 404.71352pt x 153.00789pt.
  [23] [24 <./figs/nivel_2/control_balanceo.png>]
-<./figs/nivel_2/obs_pid_carro.png, id=559, 1372.37718pt x 524.71031pt>
+<./figs/nivel_2/obs_pid_carro.png, id=564, 1372.37718pt x 524.71031pt>
 File: ./figs/nivel_2/obs_pid_carro.png Graphic file (type png)
 <use ./figs/nivel_2/obs_pid_carro.png>
 Package pdftex.def Info: ./figs/nivel_2/obs_pid_carro.png  used on input line 389.
 (pdftex.def)             Requested size: 404.71352pt x 154.74016pt.
  [25 <./figs/nivel_2/obs_pid_carro.png>]
-<./figs/nivel_2/lazo_controlador_izaje.png, id=570, 1326.45563pt x 578.91281pt>
+<./figs/nivel_2/lazo_controlador_izaje.png, id=575, 1326.45563pt x 578.91281pt>
 File: ./figs/nivel_2/lazo_controlador_izaje.png Graphic file (type png)
 <use ./figs/nivel_2/lazo_controlador_izaje.png>
 Package pdftex.def Info: ./figs/nivel_2/lazo_controlador_izaje.png  used on input line 444.
 (pdftex.def)             Requested size: 404.71352pt x 176.62556pt.
  [26]
-<./figs/nivel_2/obs_pid_izaje.png, id=584, 1368.61313pt x 475.02469pt>
+<./figs/nivel_2/obs_pid_izaje.png, id=589, 1368.61313pt x 475.02469pt>
 File: ./figs/nivel_2/obs_pid_izaje.png Graphic file (type png)
 <use ./figs/nivel_2/obs_pid_izaje.png>
 Package pdftex.def Info: ./figs/nivel_2/obs_pid_izaje.png  used on input line 485.
 (pdftex.def)             Requested size: 404.71352pt x 140.46448pt.
-<./figs/nivel_2/controlador_carro.png, id=585, 1374.63562pt x 550.30594pt>
+<./figs/nivel_2/controlador_carro.png, id=590, 1374.63562pt x 550.30594pt>
 File: ./figs/nivel_2/controlador_carro.png Graphic file (type png)
 <use ./figs/nivel_2/controlador_carro.png>
 Package pdftex.def Info: ./figs/nivel_2/controlador_carro.png  used on input line 494.
 (pdftex.def)             Requested size: 505.88997pt x 202.5184pt.
-<./figs/nivel_2/controlador_izaje.png, id=586, 730.98094pt x 571.38469pt>
+<./figs/nivel_2/controlador_izaje.png, id=591, 730.98094pt x 571.38469pt>
 File: ./figs/nivel_2/controlador_izaje.png Graphic file (type png)
 <use ./figs/nivel_2/controlador_izaje.png>
 Package pdftex.def Info: ./figs/nivel_2/controlador_izaje.png  used on input line 499.
 (pdftex.def)             Requested size: 505.88997pt x 395.44159pt.
  [27 <./figs/nivel_2/lazo_controlador_izaje.png> <./figs/nivel_2/obs_pid_izaje.png>]) (simulacion.tex [28 <./figs/nivel_2/controlador_carro.png>]
-<./figs/simulacion/sim_udp.png, id=603, 369.63094pt x 538.26094pt>
+<./figs/simulacion/sim_udp.png, id=608, 369.63094pt x 538.26094pt>
 File: ./figs/simulacion/sim_udp.png Graphic file (type png)
 <use ./figs/simulacion/sim_udp.png>
 Package pdftex.def Info: ./figs/simulacion/sim_udp.png  used on input line 7.
 (pdftex.def)             Requested size: 242.82501pt x 353.60246pt.
-<./figs/simulacion/sim_udp2.png, id=604, 354.57469pt x 539.76656pt>
+<./figs/simulacion/sim_udp2.png, id=609, 354.57469pt x 539.76656pt>
 File: ./figs/simulacion/sim_udp2.png Graphic file (type png)
 <use ./figs/simulacion/sim_udp2.png>
 Package pdftex.def Info: ./figs/simulacion/sim_udp2.png  used on input line 9.
 (pdftex.def)             Requested size: 242.82501pt x 369.6555pt.
  [29 <./figs/nivel_2/controlador_izaje.png>]
-<./figs/simulacion/sim_manual.png, id=612, 1437.11906pt x 725.71124pt>
+<./figs/simulacion/sim_manual.png, id=617, 1437.11906pt x 725.71124pt>
 File: ./figs/simulacion/sim_manual.png Graphic file (type png)
 <use ./figs/simulacion/sim_manual.png>
 Package pdftex.def Info: ./figs/simulacion/sim_manual.png  used on input line 17.
 (pdftex.def)             Requested size: 404.71352pt x 204.37155pt.
-<./figs/simulacion/sim_auto.png, id=613, 1440.88312pt x 725.71124pt>
+<./figs/simulacion/sim_auto.png, id=618, 1440.88312pt x 725.71124pt>
 File: ./figs/simulacion/sim_auto.png Graphic file (type png)
 <use ./figs/simulacion/sim_auto.png>
 Package pdftex.def Info: ./figs/simulacion/sim_auto.png  used on input line 23.
 (pdftex.def)             Requested size: 404.71352pt x 203.82895pt.
  [30 <./figs/simulacion/sim_udp.png> <./figs/simulacion/sim_udp2.png> <./figs/simulacion/sim_manual.png>]
-<./figs/simulacion/sim_error.png, id=625, 1437.11906pt x 723.45282pt>
+<./figs/simulacion/sim_error.png, id=630, 1437.11906pt x 723.45282pt>
 File: ./figs/simulacion/sim_error.png Graphic file (type png)
 <use ./figs/simulacion/sim_error.png>
 Package pdftex.def Info: ./figs/simulacion/sim_error.png  used on input line 29.
 (pdftex.def)             Requested size: 404.71352pt x 203.73553pt.
 ) (codesys.tex
-<./figs/codesys/arbol_codesys.png, id=626, 214.55156pt x 213.79875pt>
+<./figs/codesys/arbol_codesys.png, id=631, 214.55156pt x 213.79875pt>
 File: ./figs/codesys/arbol_codesys.png Graphic file (type png)
 <use ./figs/codesys/arbol_codesys.png>
 Package pdftex.def Info: ./figs/codesys/arbol_codesys.png  used on input line 9.
 (pdftex.def)             Requested size: 252.94498pt x 252.06175pt.
  [31 <./figs/simulacion/sim_auto.png> <./figs/simulacion/sim_error.png>]
-<./figs/codesys/control_carro_funciones2.png, id=636, 764.8575pt x 547.2947pt>
+<./figs/codesys/control_carro_funciones2.png, id=641, 764.8575pt x 547.2947pt>
 File: ./figs/codesys/control_carro_funciones2.png Graphic file (type png)
 <use ./figs/codesys/control_carro_funciones2.png>
 Package pdftex.def Info: ./figs/codesys/control_carro_funciones2.png  used on input line 22.
 (pdftex.def)             Requested size: 505.88997pt x 361.99225pt.
-<./figs/codesys/control_izaje_funciones2.png, id=637, 750.55406pt x 518.6878pt>
+<./figs/codesys/control_izaje_funciones2.png, id=642, 750.55406pt x 518.6878pt>
 File: ./figs/codesys/control_izaje_funciones2.png Graphic file (type png)
 <use ./figs/codesys/control_izaje_funciones2.png>
 Package pdftex.def Info: ./figs/codesys/control_izaje_funciones2.png  used on input line 27.
 (pdftex.def)             Requested size: 505.88997pt x 349.61638pt.
  [32 <./figs/codesys/arbol_codesys.png>] [33 <./figs/codesys/control_carro_funciones2.png>]
-<./figs/codesys/matlab_function_nivel2_carro.png, id=652, 617.30624pt x 781.92125pt>
+<./figs/codesys/matlab_function_nivel2_carro.png, id=657, 617.30624pt x 781.92125pt>
 File: ./figs/codesys/matlab_function_nivel2_carro.png Graphic file (type png)
 <use ./figs/codesys/matlab_function_nivel2_carro.png>
 Package pdftex.def Info: ./figs/codesys/matlab_function_nivel2_carro.png  used on input line 36.
 (pdftex.def)             Requested size: 242.82501pt x 307.5729pt.
-<./figs/codesys/matlab_function_nivel2_izaje.png, id=653, 525.46312pt x 559.33969pt>
+<./figs/codesys/matlab_function_nivel2_izaje.png, id=658, 525.46312pt x 559.33969pt>
 File: ./figs/codesys/matlab_function_nivel2_izaje.png Graphic file (type png)
 <use ./figs/codesys/matlab_function_nivel2_izaje.png>
 Package pdftex.def Info: ./figs/codesys/matlab_function_nivel2_izaje.png  used on input line 42.
 (pdftex.def)             Requested size: 242.82501pt x 258.47717pt.
  [34 <./figs/codesys/control_izaje_funciones2.png>]
-<./figs/codesys/codesys_supervisor11.png, id=661, 995.21812pt x 277.78781pt>
+<./figs/codesys/codesys_supervisor11.png, id=666, 995.21812pt x 277.78781pt>
 File: ./figs/codesys/codesys_supervisor11.png Graphic file (type png)
 <use ./figs/codesys/codesys_supervisor11.png>
 Package pdftex.def Info: ./figs/codesys/codesys_supervisor11.png  used on input line 52.
 (pdftex.def)             Requested size: 505.88997pt x 141.20787pt.
-<./figs/codesys/codesys_supervisor12.png, id=662, 1145.02782pt x 408.77719pt>
+<./figs/codesys/codesys_supervisor12.png, id=667, 1145.02782pt x 408.77719pt>
 File: ./figs/codesys/codesys_supervisor12.png Graphic file (type png)
 <use ./figs/codesys/codesys_supervisor12.png>
 Package pdftex.def Info: ./figs/codesys/codesys_supervisor12.png  used on input line 62.
 (pdftex.def)             Requested size: 505.88997pt x 180.60477pt.
-<./figs/codesys/codesys_supervisor13.png, id=663, 944.02687pt x 167.87718pt>
+<./figs/codesys/codesys_supervisor13.png, id=668, 944.02687pt x 167.87718pt>
 File: ./figs/codesys/codesys_supervisor13.png Graphic file (type png)
 <use ./figs/codesys/codesys_supervisor13.png>
 Package pdftex.def Info: ./figs/codesys/codesys_supervisor13.png  used on input line 66.
 (pdftex.def)             Requested size: 505.88997pt x 89.96326pt.
  [35 <./figs/codesys/matlab_function_nivel2_carro.png (PNG copy)> <./figs/codesys/matlab_function_nivel2_izaje.png> <./figs/codesys/codesys_supervisor11.png>]
-<./figs/codesys/codesys_supervisor15.png, id=673, 384.6872pt x 662.475pt>
+<./figs/codesys/codesys_supervisor15.png, id=678, 384.6872pt x 662.475pt>
 File: ./figs/codesys/codesys_supervisor15.png Graphic file (type png)
 <use ./figs/codesys/codesys_supervisor15.png>
 Package pdftex.def Info: ./figs/codesys/codesys_supervisor15.png  used on input line 76.
@@ -691,67 +691,73 @@ Package pdftex.def Info: ./figs/codesys/codesys_supervisor15.png  used on input 
 Overfull \vbox (206.70007pt too high) has occurred while \output is active []
 
  [37 <./figs/codesys/codesys_supervisor15.png>]
-<./figs/codesys/codesys_supervisor4.png, id=690, 1123.19624pt x 592.46344pt>
+<./figs/codesys/codesys_supervisor4.png, id=695, 1123.19624pt x 592.46344pt>
 File: ./figs/codesys/codesys_supervisor4.png Graphic file (type png)
 <use ./figs/codesys/codesys_supervisor4.png>
 Package pdftex.def Info: ./figs/codesys/codesys_supervisor4.png  used on input line 84.
 (pdftex.def)             Requested size: 505.88997pt x 266.84113pt.
-<./figs/codesys/codesys_supervisor14.png, id=691, 703.12688pt x 491.58656pt>
+<./figs/codesys/codesys_supervisor14.png, id=696, 703.12688pt x 491.58656pt>
 File: ./figs/codesys/codesys_supervisor14.png Graphic file (type png)
 <use ./figs/codesys/codesys_supervisor14.png>
 Package pdftex.def Info: ./figs/codesys/codesys_supervisor14.png  used on input line 93.
 (pdftex.def)             Requested size: 278.24101pt x 194.52336pt.
-<./figs/codesys/codesys_seguridad1.png, id=692, 331.99031pt x 344.03531pt>
+<./figs/codesys/codesys_seguridad1.png, id=697, 331.99031pt x 344.03531pt>
 File: ./figs/codesys/codesys_seguridad1.png Graphic file (type png)
 <use ./figs/codesys/codesys_seguridad1.png>
 Package pdftex.def Info: ./figs/codesys/codesys_seguridad1.png  used on input line 105.
 (pdftex.def)             Requested size: 252.94498pt x 262.12575pt.
  [38 <./figs/codesys/codesys_supervisor4.png> <./figs/codesys/codesys_supervisor14.png>]
-<./figs/codesys/codesys_seguridad22.png, id=702, 1148.79187pt x 252.19218pt>
+<./figs/codesys/codesys_seguridad22.png, id=707, 1148.79187pt x 252.19218pt>
 File: ./figs/codesys/codesys_seguridad22.png Graphic file (type png)
 <use ./figs/codesys/codesys_seguridad22.png>
 Package pdftex.def Info: ./figs/codesys/codesys_seguridad22.png  used on input line 111.
 (pdftex.def)             Requested size: 505.88997pt x 111.05725pt.
-<./figs/codesys/codesys_seguridad3.png, id=703, 976.39781pt x 429.10312pt>
+<./figs/codesys/codesys_seguridad3.png, id=708, 976.39781pt x 429.10312pt>
 File: ./figs/codesys/codesys_seguridad3.png Graphic file (type png)
 <use ./figs/codesys/codesys_seguridad3.png>
 Package pdftex.def Info: ./figs/codesys/codesys_seguridad3.png  used on input line 117.
 (pdftex.def)             Requested size: 404.71352pt x 177.86494pt.
  [39 <./figs/codesys/codesys_seguridad1.png> <./figs/codesys/codesys_seguridad22.png>]
-<./figs/codesys/opc_ua_1.png, id=713, 843.90282pt x 491.58656pt>
+<./figs/codesys/opc_ua_1.png, id=718, 843.90282pt x 491.58656pt>
 File: ./figs/codesys/opc_ua_1.png Graphic file (type png)
 <use ./figs/codesys/opc_ua_1.png>
 Package pdftex.def Info: ./figs/codesys/opc_ua_1.png  used on input line 140.
 (pdftex.def)             Requested size: 505.88997pt x 294.69167pt.
-<./figs/codesys/opc_ua_0.png, id=714, 1175.14032pt x 466.74374pt>
+<./figs/codesys/opc_ua_0.png, id=719, 1175.14032pt x 466.74374pt>
 File: ./figs/codesys/opc_ua_0.png Graphic file (type png)
 <use ./figs/codesys/opc_ua_0.png>
 Package pdftex.def Info: ./figs/codesys/opc_ua_0.png  used on input line 145.
 (pdftex.def)             Requested size: 505.88997pt x 200.93091pt.
  [40 <./figs/codesys/codesys_seguridad3.png>]
-<./figs/codesys/com_udp_codesys.png, id=723, 155.07938pt x 71.51718pt>
+<./figs/codesys/com_udp_codesys.png, id=728, 155.07938pt x 71.51718pt>
 File: ./figs/codesys/com_udp_codesys.png Graphic file (type png)
 <use ./figs/codesys/com_udp_codesys.png>
 Package pdftex.def Info: ./figs/codesys/com_udp_codesys.png  used on input line 155.
 (pdftex.def)             Requested size: 252.94498pt x 116.64944pt.
  [41 <./figs/codesys/opc_ua_1.png> <./figs/codesys/opc_ua_0.png>]
-<./figs/codesys/com_udp_rx.png, id=733, 686.565pt x 697.8572pt>
+<./figs/codesys/com_udp_rx.png, id=738, 686.565pt x 697.8572pt>
 File: ./figs/codesys/com_udp_rx.png Graphic file (type png)
 <use ./figs/codesys/com_udp_rx.png>
 Package pdftex.def Info: ./figs/codesys/com_udp_rx.png  used on input line 164.
 (pdftex.def)             Requested size: 455.29788pt x 462.78075pt.
-<./figs/codesys/com_udp_tx.png, id=734, 949.29657pt x 695.59875pt>
+<./figs/codesys/com_udp_tx.png, id=739, 949.29657pt x 695.59875pt>
 File: ./figs/codesys/com_udp_tx.png Graphic file (type png)
 <use ./figs/codesys/com_udp_tx.png>
 Package pdftex.def Info: ./figs/codesys/com_udp_tx.png  used on input line 169.
 (pdftex.def)             Requested size: 455.29788pt x 333.61826pt.
  [42 <./figs/codesys/com_udp_codesys.png>] [43 <./figs/codesys/com_udp_rx.png>]
-<./figs/codesys/task_config.png, id=750, 155.83218pt x 102.3825pt>
+<./figs/codesys/task_config.png, id=755, 155.83218pt x 102.3825pt>
 File: ./figs/codesys/task_config.png Graphic file (type png)
 <use ./figs/codesys/task_config.png>
 Package pdftex.def Info: ./figs/codesys/task_config.png  used on input line 183.
 (pdftex.def)             Requested size: 227.64894pt x 149.56937pt.
-) [44 <./figs/codesys/com_udp_tx.png> <./figs/codesys/task_config.png>] 
+ [44 <./figs/codesys/com_udp_tx.png> <./figs/codesys/task_config.png>]
+<./figs/codesys/st_generado.png, id=765, 550.055pt x 633.36626pt>
+File: ./figs/codesys/st_generado.png Graphic file (type png)
+<use ./figs/codesys/st_generado.png>
+Package pdftex.def Info: ./figs/codesys/st_generado.png  used on input line 204.
+(pdftex.def)             Requested size: 404.71352pt x 466.02599pt.
+) [45] [46 <./figs/codesys/st_generado.png (PNG copy)>] 
 enddocument/afterlastpage (AED): lastpage setting LastPage.
 (informe.aux
 LaTeX Info: Redefining \. on input line 11.
@@ -762,20 +768,20 @@ LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `informe.out' has not changed.
-(rerunfilecheck)             Checksum: 4DFD4B8235A5103CF09A36EA112AC2F4;11909.
+(rerunfilecheck)             Checksum: 6E1AA931BC222C86CD111F9D1F5E5F45;12144.
  ) 
 Here is how much of TeX's memory you used:
- 15204 strings out of 467867
- 254378 string characters out of 5418334
- 685555 words of memory out of 5000000
- 43676 multiletter control sequences out of 15000+600000
+ 15218 strings out of 467867
+ 254745 string characters out of 5418334
+ 685556 words of memory out of 5000000
+ 43686 multiletter control sequences out of 15000+600000
  635544 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,18n,79p,1123b,806s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\bruno\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx7.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi5.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on informe.pdf (45 pages, 3346894 bytes).
+Output written on informe.pdf (47 pages, 3396183 bytes).
 PDF statistics:
- 890 PDF objects out of 1000 (max. 8388607)
- 223 named destinations out of 1000 (max. 500000)
- 665 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 907 PDF objects out of 1000 (max. 8388607)
+ 227 named destinations out of 1000 (max. 500000)
+ 678 words of extra memory for PDF output out of 10000 (max. 10000000)
 
