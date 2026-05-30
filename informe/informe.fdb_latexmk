@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1780105734.14281 "c:/Users/bruno/OneDrive - Universidad Nacional de Cuyo/Facultad/10mo Semestre/Automatas y Control Discreto/AyCD/informe/informe.tex" "informe.pdf" "informe" 1780105739.26508 0
+["pdflatex"] 1780107975.19832 "c:/Users/bruno/OneDrive - Universidad Nacional de Cuyo/Facultad/10mo Semestre/Automatas y Control Discreto/AyCD/informe/informe.tex" "informe.pdf" "informe" 1780107980.19493 0
   "C:/Users/bruno/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1773784088.68558 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/bruno/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk" 1780092045.30452 11548 0d8167a6fe69a51b5ede1d933d7a6ebc ""
   "C:/Users/bruno/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1773783819.27284 13333849 216b27706943fa64eeb32f35b18250e4 ""
@@ -18,6 +18,7 @@
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmmi6.tfm" 1136765053 1512 f21f83efb36853c0b70002322c1ab3ad ""
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmmi9.tfm" 1136765053 1524 d89e2d087a9828407a196f428428ef4a ""
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmr12.tfm" 1136765053 1288 655e228510b4c2a1abe905c368440826 ""
+  "C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmr17.tfm" 1136765053 1292 296a67155bdbfc32aa9c636f21e91433 ""
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmr6.tfm" 1136765053 1300 b62933e007d01cfd073f79b963c01526 ""
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmr9.tfm" 1136765053 1292 6b21b9c2c7bebb38aa2273f7ca0fb3af ""
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmsy6.tfm" 1136765053 1116 933a60c408fc0a863a92debe84b2d294 ""
@@ -112,7 +113,7 @@
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/tex/latex/rerunfilecheck/rerunfilecheck.sty" 1751104012 9684 a33a14b82ce60d6e77cb9be689d79ee6 ""
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
-  "c:/Users/bruno/OneDrive - Universidad Nacional de Cuyo/Facultad/10mo Semestre/Automatas y Control Discreto/AyCD/informe/informe.tex" 1780103937.48383 47206 c961a1287f4ad76dd5feed4899db1e2a ""
+  "c:/Users/bruno/OneDrive - Universidad Nacional de Cuyo/Facultad/10mo Semestre/Automatas y Control Discreto/AyCD/informe/informe.tex" 1780107950.12396 47173 f2cb0d909937974da3acf3129fc7ea5b ""
   "codesys.tex" 1780105727.42861 15469 b0936a31b604cc04aa3633fc15569096 ""
   "figs/accionamiento_carro.jpg" 1778810029.68792 85755 519ad05a97e85332dfb6490a925ded02 ""
   "figs/accionamiento_izaje.jpg" 1778810029.68992 79096 e94a628dad223c635043282cbc0b1b30 ""
@@ -139,6 +140,7 @@
   "figs/codesys/st_generado.png" 1780105644.62807 42670 b2bddadc0a2c477606e3e9314acbc968 ""
   "figs/codesys/task_config.png" 1780091479.84207 5485 0479c8611d9129bde136f9df176df2a7 ""
   "figs/cuerpo_libre.jpg" 1778810029.69293 63575 cb0bac61af06343da2f9e41740b93964 ""
+  "figs/fing.jpeg" 1780107741.24888 9846 ddb6575f644a8c0565930f69d988ce80 ""
   "figs/freno_carro.png" 1780005769.33181 40562 1971226c074391100f71500506d392a3 ""
   "figs/modelo_carro.png" 1780005769.33484 66042 3e13f7260075a642e95f3313915b1aff ""
   "figs/modelo_izaje.png" 1780005769.33685 84920 002ac49c5e7743861f66e5d66024c77d ""
@@ -163,9 +165,9 @@
   "figs/ubicacion_casa_maquinas.jpg" 1778810029.69493 165897 ae6e8f6f152080e1485db46193544f6c ""
   "figs/vista_frontal.jpg" 1778810029.69793 273554 94b4d2e4a1da81b6734796d99abef275 ""
   "figs/vista_lateral.jpg" 1778810029.69996 200746 8f4ae6d943e6764959e5fac49e528c1f ""
-  "informe.aux" 1780105738.8586 19863 a8f52567ff3570223e8ad5cb420b7c76 "pdflatex"
-  "informe.out" 1780105738.87134 12144 6e1aa931bc222c86cd111f9d1f5e5f45 "pdflatex"
-  "informe.toc" 1780105738.88233 5481 b0fa67de0d4873746a2493498aadde63 "pdflatex"
+  "informe.aux" 1780107979.72484 19863 a8f52567ff3570223e8ad5cb420b7c76 "pdflatex"
+  "informe.out" 1780107979.74325 12144 6e1aa931bc222c86cd111f9d1f5e5f45 "pdflatex"
+  "informe.toc" 1780107979.75633 5481 b0fa67de0d4873746a2493498aadde63 "pdflatex"
   "nivel2.tex" 1780091479.90456 25098 e59c209412c81f1637167827fc423ac4 ""
   "simulacion.tex" 1780103344.30566 1313 80077b47faa8e1656c836cb02802cda2 ""
   (generated)

@@ -159,6 +159,14 @@ OUTPUT informe.pdf
 INPUT .\informe.out
 INPUT .\informe.out
 OUTPUT informe.out
+INPUT .\figs\fing.jpeg
+INPUT .\figs\fing.jpeg
+INPUT .\figs\fing.jpeg
+INPUT .\figs\fing.jpeg
+INPUT .\figs\fing.jpeg
+INPUT .\figs\fing.jpeg
+INPUT C:\Users\bruno\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr17.tfm
+INPUT C:\Users\bruno\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbx12.tfm
 INPUT C:\Users\bruno\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr12.tfm
 INPUT C:\Users\bruno\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT C:\Users\bruno\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbx12.tfm
