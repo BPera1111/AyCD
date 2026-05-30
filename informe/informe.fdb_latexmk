@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1780097256.41144 "c:/Users/bruno/OneDrive - Universidad Nacional de Cuyo/Facultad/10mo Semestre/Automatas y Control Discreto/AyCD/informe/informe.tex" "informe.pdf" "informe" 1780097265.09134 0
+["pdflatex"] 1780103947.09083 "c:/Users/bruno/OneDrive - Universidad Nacional de Cuyo/Facultad/10mo Semestre/Automatas y Control Discreto/AyCD/informe/informe.tex" "informe.pdf" "informe" 1780103955.03332 0
   "C:/Users/bruno/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1773784088.68558 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/bruno/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk" 1780092045.30452 11548 0d8167a6fe69a51b5ede1d933d7a6ebc ""
   "C:/Users/bruno/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1773783819.27284 13333849 216b27706943fa64eeb32f35b18250e4 ""
@@ -112,7 +112,7 @@
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/tex/latex/rerunfilecheck/rerunfilecheck.sty" 1751104012 9684 a33a14b82ce60d6e77cb9be689d79ee6 ""
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
-  "c:/Users/bruno/OneDrive - Universidad Nacional de Cuyo/Facultad/10mo Semestre/Automatas y Control Discreto/AyCD/informe/informe.tex" 1780091479.90156 47180 9a9ce74417a63302997c53de2ba691d2 ""
+  "c:/Users/bruno/OneDrive - Universidad Nacional de Cuyo/Facultad/10mo Semestre/Automatas y Control Discreto/AyCD/informe/informe.tex" 1780103937.48383 47206 c961a1287f4ad76dd5feed4899db1e2a ""
   "codesys.tex" 1780097248.53377 13359 15ee9eacbcb57aef658bd7a5e57dd283 ""
   "figs/accionamiento_carro.jpg" 1778810029.68792 85755 519ad05a97e85332dfb6490a925ded02 ""
   "figs/accionamiento_izaje.jpg" 1778810029.68992 79096 e94a628dad223c635043282cbc0b1b30 ""
@@ -154,13 +154,19 @@
   "figs/perfil_obstaculos.png" 1780005769.36595 48657 421e57e56be11a2cbcef6e4ad4f127ad ""
   "figs/sensores_carro.png" 1780005769.36695 60910 ae562550f46f7cef682540d631c18a74 ""
   "figs/sensores_izaje.png" 1780005769.36895 55001 dab95c8cb4e3a4a559b2620fa3045d25 ""
+  "figs/simulacion/sim_auto.png" 1780098220.71794 157017 4f65630b665b0b85999fbd1b0efe8f84 ""
+  "figs/simulacion/sim_error.png" 1780101282.53604 161893 f30692803a2168a261b9cc56dc5cd167 ""
+  "figs/simulacion/sim_manual.png" 1780097974.06372 150986 f16f9f76fc287543d0111e73c2dc45a2 ""
+  "figs/simulacion/sim_udp.png" 1780101519.34289 43693 e4e0355e20f69044d0f34f75c0ea8646 ""
+  "figs/simulacion/sim_udp2.png" 1780101560.94274 42995 21cbe9c2cd3ed9e814e3395f0da6deb8 ""
   "figs/ubicacion_casa_maquinas.jpg" 1778810029.69493 165897 ae6e8f6f152080e1485db46193544f6c ""
   "figs/vista_frontal.jpg" 1778810029.69793 273554 94b4d2e4a1da81b6734796d99abef275 ""
   "figs/vista_lateral.jpg" 1778810029.69996 200746 8f4ae6d943e6764959e5fac49e528c1f ""
-  "informe.aux" 1780097264.48733 18836 db0d2f8f1fc24037d4d33b88f19e329d "pdflatex"
-  "informe.out" 1780097264.51026 11675 2c00c39d45105796fee7742b3714ccc2 "pdflatex"
-  "informe.toc" 1780097264.52926 5294 1bf3a1e2a78ae9a9d7afb34f7d7dfce2 "pdflatex"
+  "informe.aux" 1780103954.51276 19545 6c604ef64152105938a8f9851cfd11e3 "pdflatex"
+  "informe.out" 1780103954.53002 11909 4dfd4b8235a5103cf09a36ea112ac2f4 "pdflatex"
+  "informe.toc" 1780103954.54466 5387 eeb9519bf3bd1aa678b465815752669a "pdflatex"
   "nivel2.tex" 1780091479.90456 25098 e59c209412c81f1637167827fc423ac4 ""
+  "simulacion.tex" 1780103344.30566 1313 80077b47faa8e1656c836cb02802cda2 ""
   (generated)
   "informe.aux"
   "informe.log"

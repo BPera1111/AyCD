@@ -45,9 +45,10 @@
 \contentsline {subsubsection}{\numberline {6.4.3}Compensación de gravedad}{26}{subsubsection.6.4.3}%
 \contentsline {subsection}{\numberline {6.5}Anti-windup y observador de estado del izaje}{27}{subsection.6.5}%
 \contentsline {subsection}{\numberline {6.6}Modelo del controlador regulatorio en Simulink}{28}{subsection.6.6}%
-\contentsline {section}{\numberline {7}CODESYS codificación manual}{29}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Control Regulatorio (Nivel 2) en CODESYS}{30}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Control supervisor en CODESYS}{33}{subsection.7.2}%
-\contentsline {subsection}{\numberline {7.3}Control de seguridad en CODESYS}{37}{subsection.7.3}%
-\contentsline {subsection}{\numberline {7.4}Comunicación OPC Simulink/CODESYS}{38}{subsection.7.4}%
-\contentsline {subsection}{\numberline {7.5}Comunicación UDP Simulink/CODESYS}{39}{subsection.7.5}%
+\contentsline {section}{\numberline {7}Comunicacion y Animación con Python}{29}{section.7}%
+\contentsline {section}{\numberline {8}CODESYS codificación manual}{31}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Control Regulatorio (Nivel 2) en CODESYS}{32}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Control supervisor en CODESYS}{35}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Control de seguridad en CODESYS}{39}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}Comunicación OPC Simulink/CODESYS}{40}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}Comunicación UDP Simulink/CODESYS}{41}{subsection.8.5}%
