@@ -54,10 +54,14 @@
 \contentsline {subsection}{\numberline {7.6}Supervisión de Comunicación (Watchdog Heartbeat)}{37}{subsection.7.6}%
 \contentsline {subsection}{\numberline {7.7}Modelo del Control Supervisor en Simulink}{37}{subsection.7.7}%
 \contentsline {subsection}{\numberline {7.8}Control del Joystick y Botones Físicos}{39}{subsection.7.8}%
-\contentsline {section}{\numberline {8}Comunicacion y Animación con Python}{39}{section.8}%
-\contentsline {section}{\numberline {9}CODESYS codificación manual}{41}{section.9}%
-\contentsline {subsection}{\numberline {9.1}Control regulatorio en simil ST}{42}{subsection.9.1}%
-\contentsline {subsection}{\numberline {9.2}Control supervisor en CODESYS}{45}{subsection.9.2}%
-\contentsline {subsection}{\numberline {9.3}Control de protección en CODESYS}{49}{subsection.9.3}%
-\contentsline {subsection}{\numberline {9.4}Comunicación OPC Simulink/CODESYS}{50}{subsection.9.4}%
-\contentsline {section}{\numberline {10}Generación Automática de Código ST}{52}{section.10}%
+\contentsline {section}{\numberline {8}Diseño del Control de Seguridad (Nivel 0)}{39}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Autómata de Estados de Seguridad}{39}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Monitor de Comunicaciones (Watchdog)}{40}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Modelo del Control de Seguridad en Simulink}{41}{subsection.8.3}%
+\contentsline {section}{\numberline {9}Comunicacion y Animación con Python}{42}{section.9}%
+\contentsline {section}{\numberline {10}CODESYS codificación manual}{44}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Control regulatorio en simil ST}{45}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Control supervisor en CODESYS}{48}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}Control de protección en CODESYS}{52}{subsection.10.3}%
+\contentsline {subsection}{\numberline {10.4}Comunicación OPC Simulink/CODESYS}{53}{subsection.10.4}%
+\contentsline {section}{\numberline {11}Generación Automática de Código ST}{55}{section.11}%

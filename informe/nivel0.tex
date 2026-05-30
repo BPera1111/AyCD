@@ -1,0 +1,105 @@
+\section{Diseño del Control de Seguridad (Nivel 0)}
+
+El Nivel 0 representa la capa de protección más baja, pero con mayor jerarquía dentro de la
+arquitectura de control. Su función exclusiva es salvaguardar la integridad de la grúa, la carga
+y el personal. Este nivel tiene la autoridad para sobrescribir cualquier comando proveniente del
+Nivel 1, cortando la energía de los actuadores y aplicando los frenos mecánicos ante cualquier
+anomalía.
+
+A diferencia de los niveles superiores, el control de seguridad opera de forma permanente y
+supervisa la planta mediante la redundancia de sensores (finales de carrera de emergencia,
+detectores de sobrevelocidad, botón físico de emergencia y el latido de comunicación). La lógica
+se modeló mediante dos procesos paralelos: el autómata de estados de seguridad, que decide qué
+frenos aplicar ante cada falla, y el monitor de comunicaciones (watchdog), que vigila el enlace
+con el control supervisor.
+
+\subsection{Autómata de Estados de Seguridad}
+
+La máquina de estados \texttt{ESTADOS\_SEGURIDAD} supervisa constantemente el estado físico de la
+grúa. Durante la operación normal permanece en el estado \texttt{SISTEMA\_OK}, con ambos frenos
+energizados (abiertos): el de operación del carro (\textcolor{signalcolor}{$BRK_t$} $= 1$) y el de
+emergencia de izaje (\textcolor{signalcolor}{$BRK_{hE}$} $= 1$).
+
+Dentro de este estado nominal, el bloque realiza además un cálculo de seguridad redundante:
+recomputa en tiempo real el límite de velocidad de izaje permitido (\textcolor{signalcolor}{vh\_lim})
+en función de la masa de la carga, según la curva de potencia constante del motor. De esta forma,
+la restricción de sobrevelocidad por debilitamiento de campo queda garantizada de manera
+independiente al cálculo que realiza el Nivel 1 (defensa en profundidad).
+
+Ante la detección de una condición crítica, el autómata transiciona a un estado de emergencia
+específico, aplicando inmediatamente los frenos correspondientes. Una característica de diseño es
+el \textit{frenado selectivo}: solo se detiene el eje afectado por la falla, dejando libre el otro
+para no introducir esfuerzos innecesarios. Las condiciones de falla contempladas son:
+
+\begin{itemize}
+    \item \textbf{Emergencia de izaje:} se activa uno de tres estados según corresponda
+    (\texttt{EMERGENCIA\_IZAJE\_SUP}, \texttt{EMERGENCIA\_IZAJE\_INF} o \texttt{EMERGENCIA\_IZAJE\_SV}):
+    si se accionan los finales de carrera de emergencia superior o inferior del izaje, o si la
+    velocidad observada supera en un 15\,\% al límite dinámico calculado (sobrevelocidad). En todos
+    los casos se cierra el freno de emergencia del izaje (\textcolor{signalcolor}{$BRK_{hE}$} $= 0$),
+    manteniendo el carro libre (\textcolor{signalcolor}{$BRK_t$} $= 1$).
+
+    \item \textbf{Emergencia de carro:} se activa uno de tres estados (\texttt{EMERGENCIA\_CARRO\_DER},
+    \texttt{EMERGENCIA\_CARRO\_IZQ} o \texttt{EMERGENCIA\_CARRO\_SV}): si el carro acciona los finales
+    de carrera de emergencia izquierdo o derecho, o si supera el umbral de sobrevelocidad. Se cierra
+    el freno de operación del carro (\textcolor{signalcolor}{$BRK_t$} $= 0$), dejando libre el izaje
+    (\textcolor{signalcolor}{$BRK_{hE}$} $= 1$).
+
+    \item \textbf{Emergencia manual:} detención forzada accionada por el operador mediante el botón
+    físico de emergencia. En este caso se cierran ambos frenos
+    (\textcolor{signalcolor}{$BRK_t$} $= 0$, \textcolor{signalcolor}{$BRK_{hE}$} $= 0$), llevando la
+    grúa a una parada total.
+
+    \item \textbf{Emergencia de comunicación:} disparada por la pérdida de comunicación con el
+    control supervisor (\textcolor{signalcolor}{FALLA\_WD}), detectada por el proceso watchdog.
+\end{itemize}
+
+Una vez mitigada la causa de la parada, el sistema exige un rearme manual mediante el botón de
+reset, que hace transicionar la máquina al estado \texttt{MODO\_RECUPERACION} (con los frenos
+nuevamente energizados) antes de permitir el regreso a la operación nominal.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{nivel_0/estados_seguridad.png}
+    \caption{Máquina de estados de seguridad en Stateflow}
+    \label{fig:n0_estados_seguridad}
+\end{figure}
+
+\subsection{Monitor de Comunicaciones (Watchdog)}
+
+Este segundo proceso paralelo funciona como un supervisor de la integridad del enlace de datos
+con el Nivel 1. El control supervisor debe emitir una señal  \textit{heartbeat} que
+alterna su estado constantemente.
+
+La máquina de estados \texttt{WATCHDOG} alterna entre \texttt{HEARTBEAT\_DOWN} y
+\texttt{HEARTBEAT\_UP} persiguiendo dicha señal, reiniciando un contador de ciclos
+(\textcolor{signalcolor}{WD\_counter}) en cada conmutación válida. Si la señal se congela y el
+sistema permanece en un solo estado durante una cantidad de ciclos que supere el límite seguro
+(\textcolor{signalcolor}{counter\_limit}), se transiciona al estado \texttt{DETECCION\_FALLO} y se
+declara una falla de red (\textcolor{signalcolor}{FALLA\_WD} $= 1$). Esta bandera dispara la parada
+de emergencia en el autómata principal, evitando que la grúa continúe moviéndose con el último
+comando recibido ante una pérdida de comunicación.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{nivel_0/watchdog.png}
+    \caption{Monitor de comunicaciones (watchdog) en Stateflow}
+    \label{fig:n0_watchdog}
+\end{figure}
+
+\subsection{Modelo del Control de Seguridad en Simulink}
+
+La lógica de seguridad se concentra en un único bloque Chart (\texttt{Control Nivel 0}). Sus
+puertos de entrada reciben el botón de emergencia y de reset, los finales de carrera de
+emergencia de ambos ejes, la velocidad observada del izaje, la masa estimada del contenedor, la
+señal de recuperación del supervisor y el latido de comunicación. Como salidas entrega los
+comandos de freno \textcolor{signalcolor}{$BRK_{hE}$} y \textcolor{signalcolor}{$BRK_t$} (que
+sobrescriben a los del Nivel 1) y el conjunto de banderas de falla que informan al supervisor y a
+la interfaz el motivo de la parada.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{nivel_0/modelo_seguridad.png}
+    \caption{Modelo del control de seguridad (Nivel 0) en Simulink}
+    \label{fig:n0_modelo}
+\end{figure}
