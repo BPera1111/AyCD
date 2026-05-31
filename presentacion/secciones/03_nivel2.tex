@@ -1,0 +1,94 @@
+\section{Nivel 2 --- Control regulatorio}
+
+\begin{frame}{Nivel 2: objetivo}
+  \begin{itemize}
+    \item Genera los comandos de \textbf{torque} $T^\ast$ a partir de referencias de
+          \textbf{velocidad} del supervisor.
+    \item Control en cascada: \textbf{velocidad} (PI) $\to$ modulador de torque.
+    \item Atenúa perturbaciones: balanceo de la carga y variaciones de masa.
+    \item Opera muestreado en tiempo discreto.
+  \end{itemize}
+  \begin{block}{Componentes diseñados}
+    Lazo PI de velocidad \quad$\bullet$\quad Observador de estado \quad$\bullet$\quad
+    Control anti-balanceo \quad$\bullet$\quad Anti-windup \quad$\bullet$\quad
+    Compensación de gravedad
+  \end{block}
+\end{frame}
+
+\begin{frame}{Lazo de velocidad: PI por asignación de polos}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      Planta simplificada del carro:
+      \[ G_{vel,t}(s)=\frac{V_t(s)}{T_{tm}(s)}=\frac{K_f}{M_t\,s+b_t}\approx\frac{K_f}{M_t\,s} \]
+      Controlador:
+      \[ C_{vel}(s)=K_p+\frac{K_i}{s} \]
+      Comparando con $s^2+2\zeta\omega_n s+\omega_n^2$:
+      \[ K_p=\frac{2\zeta\omega_n M_t}{K_f},\quad K_i=\frac{\omega_n^2 M_t}{K_f} \]
+      \footnotesize $\omega_n=0.8$ rad/s, $\zeta=1$ (sin sobrepaso).
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{nivel_2/lazo_controlador_carro.png}\\[0.2cm]
+      \footnotesize \textbf{Anti-windup}: la señal de freno resetea el integrador mientras el
+      freno está cerrado.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Control anti-balanceo (\textit{anti-sway})}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      Estrategia \textbf{desacoplada}: la velocidad del carro inyecta amortiguamiento sobre el
+      péndulo.
+      \[ v_{sway}(t)=K_{sway}\,\theta_l(t) \]
+      Sintonía por linealización local ($\omega_n=\sqrt{g/l_h}$):
+      \[ \boxed{\,K_{sway}(l_h)=2\sqrt{g\,l_h}\,} \]
+      \begin{itemize}
+        \item \textbf{Gain scheduling} con la altura de izaje $l_h$.
+        \item Válido sin aproximación de ángulos pequeños ($\cos\theta_l>0$).
+        \item Se subamortigua ($\zeta=0.5$) para no sobrecorregir la posición.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{nivel_2/control_balanceo.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Observador de estado con acción integral}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item Solo se mide \textbf{posición} (encoder); el PI necesita la \textbf{velocidad}.
+        \item Observador que estima $\tilde\omega$ a partir de $\theta$.
+        \item \textbf{Acción integral} sobre el error de observación $\Rightarrow$ elimina el
+              error en régimen ante perturbaciones constantes (balanceo).
+        \item Sintonía por separación de anchos de banda: $20\times$ más rápido que la planta.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{nivel_2/obs_pid_carro.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Izaje: gravedad y límite de potencia}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Compensación de gravedad (feedforward)}
+        \[ T_{g,ff}=\frac{m_l\,g\,r_{hd}}{2\,i_h} \]
+        El PI sólo corrige errores de modelo; el peso estático lo sostiene el feedforward.
+      \end{block}
+      \begin{block}{Operación a potencia constante}
+        El límite de velocidad de izaje se reduce con la masa estimada para no exceder la
+        potencia nominal.
+      \end{block}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{nivel_2/lazo_controlador_izaje.png}
+    \end{column}
+  \end{columns}
+\end{frame}

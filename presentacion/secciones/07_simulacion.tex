@@ -1,0 +1,43 @@
+\section{Simulación y resultados}
+
+\begin{frame}{Visualización: animación 2D en tiempo real}
+  \begin{columns}[T]
+    \begin{column}{0.45\textwidth}
+      \begin{itemize}
+        \item Bloque \textbf{UDP} envía el estado de la planta a un programa en \textbf{Python}.
+        \item Animación 2D en el navegador: grúa, contenedores, barco y parámetros clave.
+        \item Permite \textbf{monitorear y operar} la grúa en los distintos modos.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{simulacion/sim_auto.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Modos de operación verificados}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{simulacion/sim_manual.png}\\
+      \footnotesize Modo manual
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{simulacion/sim_error.png}\\
+      \footnotesize Estado de error (parada de emergencia)
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Desempeño}
+  \begin{itemize}
+    \item Ciclos completos de carga/descarga \textbf{autónomos} y \textbf{sin colisiones}.
+    \item Seguimiento de velocidad sin sobrepaso; balanceo residual despreciable al posicionar.
+    \item Transferencia manual$\leftrightarrow$automático \textbf{sin golpe} (\textit{bumpless}).
+    \item Estimación de masa $\Rightarrow$ velocidad a \textbf{potencia constante} y bloqueo por
+          sobrecarga.
+    \item Objetivo de productividad: \textbf{$\geq 30$ contenedores/hora}.
+  \end{itemize}
+\end{frame}

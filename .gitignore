@@ -20,5 +20,28 @@ __pycache__/
 *.pyo
 venv/
 
+# === LaTeX generados ===
+*.aux
+*.log
+*.toc
+*.out
+*.nav
+*.snm
+*.vrb
+*.synctex.gz
+*.synctex(busy)
+*.fdb_latexmk
+*.fls
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.lof
+*.lot
+*.idx
+*.ind
+*.ilg
+*.xdv
+
 # === Sistema ===
 C:/Temp/

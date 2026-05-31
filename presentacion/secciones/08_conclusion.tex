@@ -1,0 +1,24 @@
+\section{Conclusiones}
+
+\begin{frame}{Conclusiones}
+  Se desarrolló un \textbf{sistema híbrido de control jerárquico} que coordina ambos ejes de
+  forma semi-automática y segura.
+  \begin{itemize}
+    \item \textbf{Nivel 2}: lazos PI + observador + compensación de gravedad y anti-sway
+          desacoplado $\Rightarrow$ seguimiento preciso y balanceo amortiguado.
+    \item \textbf{Nivel 1}: autómata DEDS que coordina modos, twistlocks, perfil y planificación
+          de trayectorias con evasión de colisiones.
+    \item \textbf{Nivel 0}: protección con frenado selectivo y watchdog $\Rightarrow$ seguridad
+          con máxima autoridad.
+    \item \textbf{Implementación}: validada en simulación/animación y trasladada a un PLC
+          (CODESYS, SFC/ST) vía OPC-UA.
+  \end{itemize}
+  \begin{block}{Trabajos futuros}
+    Hardware real, enlace de menor latencia que OPC-UA, y mejoras de planificación/anti-balanceo
+    para optimizar el tiempo de ciclo.
+  \end{block}
+\end{frame}
+
+\begin{frame}[standout]
+  ¿Preguntas?
+\end{frame}
