@@ -1,6 +1,19 @@
 \section{Comunicacion y animación con python}
 
-Para la visualización en tiempo real de la grúa y su entorno, se implementó un bloque de comunicación UDP que transmite los estados 
+Una vez modelados la planta física y los tres niveles de control, se integran todos los
+subsistemas en un único modelo de Simulink que constituye el sistema completo a simular. En él se
+interconectan la planta con las capas de control regulatorio, supervisor y de
+protección, junto con el bloque de comunicación que enlaza la simulación con la
+animación. La Fig. \ref{fig:planta_completa} muestra esta integración general.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{simulacion/planta_completa.png}
+    \caption{Modelo completo del sistema en Simulink: planta física e integración de los tres niveles de control.}
+    \label{fig:planta_completa}
+\end{figure}
+
+Para la visualización en tiempo real de la grúa y su entorno, se implementó un bloque de comunicación UDP que transmite los estados
 crítico del sistema a un programa de python que lo comunica con la simulación. Este programa muestra en una ventana del navegador 
 una representación 2D de la grúa, contenedores, barco y parámetros clave que permiten al operador monitorear visualemnte la operación.
 
@@ -24,6 +37,12 @@ A continuacion se presentan algunas capturas de diferentes estados de la grúa, 
     \centering
     \includegraphics[width=0.8\textwidth]{simulacion/sim_auto.png}
     \caption{Modo automático.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{simulacion/sim_auto_leave.png}
+    \caption{Modo automático: liberación de la carga.}
 \end{figure}
 
 \begin{figure}[H]

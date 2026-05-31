@@ -7,26 +7,23 @@ coordina la traslación del carro y el izaje de la carga de forma semi-automáti
 segura. La estrategia combina un control de eventos discretos con un control regulatorio en
 tiempo discreto, integrando las capas de desempeño y de seguridad en un único modelo.
 
-El control regulatorio (Nivel 2) cumple el seguimiento de las consignas de velocidad de ambos
-ejes mediante lazos PI sintonizados por asignación de polos, complementados con observadores de
-estado para estimar la velocidad a partir de la sola medición de posición y con una compensación
-de gravedad que descarga el término integral del izaje. El control de balanceo (\textit{anti-sway})
-desacoplado amortigua eficazmente la oscilación pendular de la carga, transformando la cinemática
-del carro en un amortiguamiento viscoso sin depender de la aproximación de ángulos pequeños.
+En el Nivel 2 se obtiene un seguimiento de velocidad preciso y sin sobrepaso en ambos ejes, con
+rechazo de las perturbaciones de carga: el izaje sostiene el peso del contenedor sin caída
+apreciable de velocidad gracias a la compensación de gravedad, y el observador entrega una
+estimación de velocidad limpia que evita el ruido de derivar la señal del encoder. El control
+\textit{anti-sway} reduce el balanceo de la carga a valores despreciables al finalizar cada
+maniobra, lo que permite posicionar el contenedor con la exactitud necesaria para apilarlo.
 
-El control supervisor (Nivel 1) se implementa como un autómata de procesos paralelos que coordina
-los modos de operación (reposo, manual y automático), gestiona la lógica de toma y liberación de
-la carga mediante los \textit{twistlocks}, releva el perfil de obstáculos con el LIDAR y planifica
-trayectorias con evasión de colisiones. Sus límites suaves de velocidad y el suavizado de
-consignas garantizan movimientos graduales y dentro del área de trabajo válida, evitando que la
-operación alcance los límites físicos de forma abrupta.
+En el Nivel 1 se logra que la grúa ejecute ciclos completos de carga y descarga de forma
+autónoma, coordinando ambos ejes sin colisionar con la pila de contenedores relevada por el
+LIDAR. La estimación de masa y el límite de velocidad por curva de potencia impiden la operación
+en sobrecarga, mientras que el suavizado y los límites suaves logran trayectorias fluidas que
+nunca alcanzan los finales de carrera de forma abrupta.
 
-El control de protección (Nivel 0) constituye la capa de mayor autoridad: supervisa de forma
-permanente la planta y, ante cualquier anomalía, sobrescribe a los niveles superiores aplicando
-los frenos mecánicos. Su frenado selectivo detiene únicamente el eje afectado, mientras que el
-monitor de comunicaciones (\textit{watchdog}) detecta la pérdida de enlace con el supervisor y
-fuerza la parada de emergencia, garantizando que la grúa nunca quede operando con un comando
-desactualizado.
+En el Nivel 0 se verifica que, ante las distintas fallas inducidas en simulación (sobrevelocidad,
+finales de carrera de emergencia, parada manual y pérdida del \textit{heartbeat}), el sistema se
+lleva a un estado seguro deteniendo únicamente el eje afectado y sin que la grúa continúe operando, 
+confirmando la prioridad de la capa de protección sobre los niveles inferiores.
 
 El comportamiento del sistema se valida satisfactoriamente mediante simulación, apoyada en una
 animación 2D en tiempo real que permite observar la operación en los distintos modos. Asimismo, la
@@ -34,7 +31,7 @@ lógica de control se traslada a un PLC virtual programado en CODESYS (combinand
 estructurado) y se comunica con la simulación de la planta a través del protocolo OPC-UA,
 comprobándose que el controlador implementado responde de igual manera que el modelo original.
 
-Como trabajos futuros se propone llevar el control a hardware real sobre un PLC físico, sustituir
+Para trabajos futuros se propone llevar el control a hardware real sobre un PLC físico, sustituir
 la comunicación OPC-UA por un enlace de menor latencia apto para control en tiempo real, y
 profundizar en las estrategias de planificación de trayectorias y de control anti-balanceo para
 optimizar los tiempos de ciclo de la grúa.

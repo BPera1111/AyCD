@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.17)  30 MAY 2026 19:29
-=======
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.5.12)  30 MAY 2026 21:07
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.17)  30 MAY 2026 21:35
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -457,11 +453,7 @@ Package hyperref Info: Link coloring ON on input line 61.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-<<<<<<< HEAD
-<./figs/fing.jpeg, id=271, 602.25pt x 70.2625pt>
-=======
 <./figs/fing.jpeg, id=247, 602.25pt x 70.2625pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/fing.jpeg Graphic file (type jpg)
 <use ./figs/fing.jpeg>
 Package pdftex.def Info: ./figs/fing.jpeg  used on input line 68.
@@ -482,308 +474,131 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-<<<<<<< HEAD
-l.53 ...s Suaves de Velocidad}{35}{subsection.7.5}
-=======
-l.53 ... estados de seguridad}{37}{subsection.7.1}
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+l.53 ... estados de seguridad}{38}{subsection.7.1}
                                                   % [1])
 \tf@toc=\write4
 \openout4 = `informe.toc'.
 
-<<<<<<< HEAD
  [2] (resumen_introduccion.tex [3]) [4]
-<./figs/vista_lateral.jpg, id=374, 299.9205pt x 225.0006pt>
-=======
-
-
-[2] (resumen_introduccion.tex
-
-[3])
-
-[4]
 <./figs/vista_lateral.jpg, id=344, 299.9205pt x 225.0006pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/vista_lateral.jpg Graphic file (type jpg)
 <use ./figs/vista_lateral.jpg>
 Package pdftex.def Info: ./figs/vista_lateral.jpg  used on input line 104.
 (pdftex.def)             Requested size: 318.70712pt x 239.10373pt.
-<<<<<<< HEAD
-<./figs/vista_frontal.jpg, id=375, 297.0297pt x 199.2243pt>
-=======
 <./figs/vista_frontal.jpg, id=345, 297.0297pt x 199.2243pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/vista_frontal.jpg Graphic file (type jpg)
 <use ./figs/vista_frontal.jpg>
 Package pdftex.def Info: ./figs/vista_frontal.jpg  used on input line 113.
 (pdftex.def)             Requested size: 318.70712pt x 213.78195pt.
-<<<<<<< HEAD
  [5 <./figs/vista_lateral.jpg> <./figs/vista_frontal.jpg>]
-<./figs/ubicacion_casa_maquinas.jpg, id=389, 239.9364pt x 145.0218pt>
-=======
-
-
-[5 <./figs/vista_lateral.jpg> <./figs/vista_frontal.jpg>]
 <./figs/ubicacion_casa_maquinas.jpg, id=359, 239.9364pt x 145.0218pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/ubicacion_casa_maquinas.jpg Graphic file (type jpg)
 <use ./figs/ubicacion_casa_maquinas.jpg>
 Package pdftex.def Info: ./figs/ubicacion_casa_maquinas.jpg  used on input line 132.
 (pdftex.def)             Requested size: 238.55556pt x 144.1833pt.
-<<<<<<< HEAD
-<./figs/casa_maquinas.jpg, id=390, 207.4149pt x 144.7809pt>
-=======
 <./figs/casa_maquinas.jpg, id=360, 207.4149pt x 144.7809pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/casa_maquinas.jpg Graphic file (type jpg)
 <use ./figs/casa_maquinas.jpg>
 Package pdftex.def Info: ./figs/casa_maquinas.jpg  used on input line 139.
 (pdftex.def)             Requested size: 206.57884pt x 144.1833pt.
-<<<<<<< HEAD
-<./figs/accionamiento_carro.jpg, id=391, 239.6955pt x 102.3825pt>
-=======
 <./figs/accionamiento_carro.jpg, id=361, 239.6955pt x 102.3825pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/accionamiento_carro.jpg Graphic file (type jpg)
 <use ./figs/accionamiento_carro.jpg>
 Package pdftex.def Info: ./figs/accionamiento_carro.jpg  used on input line 148.
 (pdftex.def)             Requested size: 241.11032pt x 102.98059pt.
-<<<<<<< HEAD
-<./figs/accionamiento_izaje.jpg, id=392, 209.8239pt x 103.1052pt>
-=======
 <./figs/accionamiento_izaje.jpg, id=362, 209.8239pt x 103.1052pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/accionamiento_izaje.jpg Graphic file (type jpg)
 <use ./figs/accionamiento_izaje.jpg>
 Package pdftex.def Info: ./figs/accionamiento_izaje.jpg  used on input line 155.
 (pdftex.def)             Requested size: 209.57684pt x 102.98059pt.
-<<<<<<< HEAD
  [6 <./figs/ubicacion_casa_maquinas.jpg> <./figs/casa_maquinas.jpg> <./figs/accionamiento_carro.jpg> <./figs/accionamiento_izaje.jpg>]
-<./figs/cuerpo_libre.jpg, id=405, 269.0853pt x 203.8014pt>
-=======
-
-
-[6 <./figs/ubicacion_casa_maquinas.jpg> <./figs/casa_maquinas.jpg> <./figs/accionamiento_carro.jpg> <./figs/accionamiento_izaje.jpg>]
 <./figs/cuerpo_libre.jpg, id=374, 269.0853pt x 203.8014pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/cuerpo_libre.jpg Graphic file (type jpg)
 <use ./figs/cuerpo_libre.jpg>
 Package pdftex.def Info: ./figs/cuerpo_libre.jpg  used on input line 230.
 (pdftex.def)             Requested size: 303.53706pt x 229.9135pt.
-<<<<<<< HEAD
  [7] [8 <./figs/cuerpo_libre.jpg>]
-<./figs/freno_carro.png, id=428, 1325.70282pt x 347.79938pt>
-=======
-
-
-[7]
-
-[8 <./figs/cuerpo_libre.jpg>]
 <./figs/freno_carro.png, id=397, 1325.70282pt x 347.79938pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/freno_carro.png Graphic file (type png)
 <use ./figs/freno_carro.png>
 Package pdftex.def Info: ./figs/freno_carro.png  used on input line 314.
 (pdftex.def)             Requested size: 303.53706pt x 79.63129pt.
-<<<<<<< HEAD
  [9 <./figs/freno_carro.png>]
-<./figs/modelo_carro.png, id=451, 596.98032pt x 578.16pt>
-=======
-
-
-[9 <./figs/freno_carro.png>]
 <./figs/modelo_carro.png, id=420, 596.98032pt x 578.16pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/modelo_carro.png Graphic file (type png)
 <use ./figs/modelo_carro.png>
 Package pdftex.def Info: ./figs/modelo_carro.png  used on input line 388.
 (pdftex.def)             Requested size: 303.53706pt x 293.96667pt.
-<<<<<<< HEAD
  [10 <./figs/modelo_carro.png>]
-Overfull \hbox (6.77756pt too wide) in paragraph at lines 401--404
-[]\OT1/cmr/m/n/10 La car-ga se mo-de-la co-mo una ma-sa pun-tual con-cen-tra-da en el cen-tro de gra-ve-dad del con-jun-to Sprea-der/Contenedor,
- []
-
-[11] [12] [13]
-<./figs/modelo_izaje.png, id=505, 846.16125pt x 585.68813pt>
-=======
-
-
-[10 <./figs/modelo_carro.png>]
 Overfull \hbox (6.77756pt too wide) in paragraph at lines 399--402
 []\OT1/cmr/m/n/10 La car-ga se mo-de-la co-mo una ma-sa pun-tual con-cen-tra-da en el cen-tro de gra-ve-dad del con-jun-to Sprea-der/Contenedor,
  []
 
-
-
-[11]
-
-[12]
-
-[13]
+[11] [12] [13]
 <./figs/modelo_izaje.png, id=474, 846.16125pt x 585.68813pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/modelo_izaje.png Graphic file (type png)
 <use ./figs/modelo_izaje.png>
 Package pdftex.def Info: ./figs/modelo_izaje.png  used on input line 615.
 (pdftex.def)             Requested size: 404.71352pt x 280.12617pt.
-<<<<<<< HEAD
  [14 <./figs/modelo_izaje.png>]
-<./figs/perfil_obstaculos.png, id=515, 1102.1175pt x 366.61969pt>
-=======
-
-
-[14 <./figs/modelo_izaje.png>]
 <./figs/perfil_obstaculos.png, id=484, 1102.1175pt x 366.61969pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/perfil_obstaculos.png Graphic file (type png)
 <use ./figs/perfil_obstaculos.png>
 Package pdftex.def Info: ./figs/perfil_obstaculos.png  used on input line 646.
 (pdftex.def)             Requested size: 404.71352pt x 134.62901pt.
-<<<<<<< HEAD
  [15 <./figs/perfil_obstaculos.png>]
-<./figs/sensores_carro.png, id=524, 854.44218pt x 577.40718pt>
-=======
-
-
-[15 <./figs/perfil_obstaculos.png>]
 <./figs/sensores_carro.png, id=493, 854.44218pt x 577.40718pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/sensores_carro.png Graphic file (type png)
 <use ./figs/sensores_carro.png>
 Package pdftex.def Info: ./figs/sensores_carro.png  used on input line 741.
 (pdftex.def)             Requested size: 318.70712pt x 215.37299pt.
-<<<<<<< HEAD
-<./figs/sensores_izaje.png, id=525, 509.65407pt x 581.17125pt>
-=======
 <./figs/sensores_izaje.png, id=494, 509.65407pt x 581.17125pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/sensores_izaje.png Graphic file (type png)
 <use ./figs/sensores_izaje.png>
 Package pdftex.def Info: ./figs/sensores_izaje.png  used on input line 746.
 (pdftex.def)             Requested size: 318.70712pt x 363.44397pt.
-<<<<<<< HEAD
  [16] [17 <./figs/sensores_carro.png> <./figs/sensores_izaje.png>]
-<./figs/modulador_carro.png, id=543, 1373.13pt x 335.75438pt>
-=======
-
-
-[16]
-
-[17 <./figs/sensores_carro.png> <./figs/sensores_izaje.png>]
 <./figs/modulador_carro.png, id=512, 1373.13pt x 335.75438pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/modulador_carro.png Graphic file (type png)
 <use ./figs/modulador_carro.png>
 Package pdftex.def Info: ./figs/modulador_carro.png  used on input line 784.
 (pdftex.def)             Requested size: 404.71352pt x 98.95958pt.
-<<<<<<< HEAD
-<./figs/modulador_izaje.png, id=544, 1372.37718pt x 190.46156pt>
-=======
 <./figs/modulador_izaje.png, id=513, 1372.37718pt x 190.46156pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/modulador_izaje.png Graphic file (type png)
 <use ./figs/modulador_izaje.png>
 Package pdftex.def Info: ./figs/modulador_izaje.png  used on input line 805.
 (pdftex.def)             Requested size: 404.71352pt x 56.16823pt.
-<<<<<<< HEAD
  [18 <./figs/modulador_carro.png>]
-<./figs/modelo_planta.png, id=558, 649.67719pt x 577.40718pt>
-=======
-
-
-[18 <./figs/modulador_carro.png>]
 <./figs/modelo_planta.png, id=527, 649.67719pt x 577.40718pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/modelo_planta.png Graphic file (type png)
 <use ./figs/modelo_planta.png>
 Package pdftex.def Info: ./figs/modelo_planta.png  used on input line 814.
 (pdftex.def)             Requested size: 455.29788pt x 404.65804pt.
-<<<<<<< HEAD
  [19 <./figs/modulador_izaje.png> <./figs/modelo_planta.png>] (nivel2.tex [20]
-<./figs/nivel_2/lazo_controlador_carro.png, id=580, 1036.62282pt x 418.56375pt>
-=======
-
-
-[19 <./figs/modulador_izaje.png> <./figs/modelo_planta.png>] (nivel2.tex
-
-[20]
 <./figs/nivel_2/lazo_controlador_carro.png, id=551, 1036.62282pt x 418.56375pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
 File: ./figs/nivel_2/lazo_controlador_carro.png Graphic file (type png)
 <use ./figs/nivel_2/lazo_controlador_carro.png>
 Package pdftex.def Info: ./figs/nivel_2/lazo_controlador_carro.png  used on input line 73.
 (pdftex.def)             Requested size: 404.71352pt x 163.41164pt.
-<<<<<<< HEAD
- [21] [22 <./figs/nivel_2/lazo_controlador_carro.png>]
-<./figs/nivel_2/control_balanceo.png, id=607, 1222.5675pt x 462.22687pt>
-File: ./figs/nivel_2/control_balanceo.png Graphic file (type png)
-<use ./figs/nivel_2/control_balanceo.png>
-Package pdftex.def Info: ./figs/nivel_2/control_balanceo.png  used on input line 196.
-(pdftex.def)             Requested size: 404.71352pt x 153.00789pt.
- [23] [24 <./figs/nivel_2/control_balanceo.png>]
-<./figs/nivel_2/obs_pid_carro.png, id=630, 1372.37718pt x 524.71031pt>
-File: ./figs/nivel_2/obs_pid_carro.png Graphic file (type png)
-<use ./figs/nivel_2/obs_pid_carro.png>
-Package pdftex.def Info: ./figs/nivel_2/obs_pid_carro.png  used on input line 389.
-(pdftex.def)             Requested size: 404.71352pt x 154.74016pt.
- [25 <./figs/nivel_2/obs_pid_carro.png>]
-<./figs/nivel_2/lazo_controlador_izaje.png, id=641, 1326.45563pt x 578.91281pt>
-File: ./figs/nivel_2/lazo_controlador_izaje.png Graphic file (type png)
-<use ./figs/nivel_2/lazo_controlador_izaje.png>
-Package pdftex.def Info: ./figs/nivel_2/lazo_controlador_izaje.png  used on input line 444.
-(pdftex.def)             Requested size: 404.71352pt x 176.62556pt.
- [26]
-<./figs/nivel_2/obs_pid_izaje.png, id=655, 1368.61313pt x 475.02469pt>
-File: ./figs/nivel_2/obs_pid_izaje.png Graphic file (type png)
-<use ./figs/nivel_2/obs_pid_izaje.png>
-Package pdftex.def Info: ./figs/nivel_2/obs_pid_izaje.png  used on input line 485.
-(pdftex.def)             Requested size: 404.71352pt x 140.46448pt.
-<./figs/nivel_2/controlador_carro.png, id=656, 1374.63562pt x 550.30594pt>
-File: ./figs/nivel_2/controlador_carro.png Graphic file (type png)
-<use ./figs/nivel_2/controlador_carro.png>
-Package pdftex.def Info: ./figs/nivel_2/controlador_carro.png  used on input line 494.
-(pdftex.def)             Requested size: 505.88997pt x 202.5184pt.
-<./figs/nivel_2/controlador_izaje.png, id=657, 730.98094pt x 571.38469pt>
-File: ./figs/nivel_2/controlador_izaje.png Graphic file (type png)
-<use ./figs/nivel_2/controlador_izaje.png>
-Package pdftex.def Info: ./figs/nivel_2/controlador_izaje.png  used on input line 499.
-(pdftex.def)             Requested size: 505.88997pt x 395.44159pt.
- [27 <./figs/nivel_2/lazo_controlador_izaje.png> <./figs/nivel_2/obs_pid_izaje.png>]) (nivel1.tex [28 <./figs/nivel_2/controlador_carro.png>]
-LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 28.
- [29 <./figs/nivel_2/controlador_izaje.png>]
-<./figs/nivel_1/automata_principal.png, id=683, 913.91437pt x 602.25pt>
-=======
-
-
-[21 <./figs/nivel_2/lazo_controlador_carro.png>]
-
-[22]
+ [21 <./figs/nivel_2/lazo_controlador_carro.png>] [22]
 <./figs/nivel_2/control_balanceo.png, id=577, 1222.5675pt x 462.22687pt>
 File: ./figs/nivel_2/control_balanceo.png Graphic file (type png)
 <use ./figs/nivel_2/control_balanceo.png>
 Package pdftex.def Info: ./figs/nivel_2/control_balanceo.png  used on input line 153.
 (pdftex.def)             Requested size: 404.71352pt x 153.00789pt.
-
-
-[23 <./figs/nivel_2/control_balanceo.png>]
+ [23 <./figs/nivel_2/control_balanceo.png>]
 <./figs/nivel_2/obs_pid_carro.png, id=588, 1372.37718pt x 524.71031pt>
 File: ./figs/nivel_2/obs_pid_carro.png Graphic file (type png)
 <use ./figs/nivel_2/obs_pid_carro.png>
 Package pdftex.def Info: ./figs/nivel_2/obs_pid_carro.png  used on input line 346.
 (pdftex.def)             Requested size: 404.71352pt x 154.74016pt.
-
-
-[24 <./figs/nivel_2/obs_pid_carro.png>]
+ [24 <./figs/nivel_2/obs_pid_carro.png>]
 <./figs/nivel_2/lazo_controlador_izaje.png, id=600, 1326.45563pt x 578.91281pt>
 File: ./figs/nivel_2/lazo_controlador_izaje.png Graphic file (type png)
 <use ./figs/nivel_2/lazo_controlador_izaje.png>
 Package pdftex.def Info: ./figs/nivel_2/lazo_controlador_izaje.png  used on input line 401.
 (pdftex.def)             Requested size: 404.71352pt x 176.62556pt.
-
-
-[25]
+ [25]
 <./figs/nivel_2/obs_pid_izaje.png, id=614, 1368.61313pt x 475.02469pt>
 File: ./figs/nivel_2/obs_pid_izaje.png Graphic file (type png)
 <use ./figs/nivel_2/obs_pid_izaje.png>
@@ -799,435 +614,215 @@ File: ./figs/nivel_2/controlador_izaje.png Graphic file (type png)
 <use ./figs/nivel_2/controlador_izaje.png>
 Package pdftex.def Info: ./figs/nivel_2/controlador_izaje.png  used on input line 456.
 (pdftex.def)             Requested size: 505.88997pt x 395.44159pt.
-
-
-[26 <./figs/nivel_2/lazo_controlador_izaje.png> <./figs/nivel_2/obs_pid_izaje.png>]) (nivel1.tex
-
-[27 <./figs/nivel_2/controlador_carro.png>]
+ [26 <./figs/nivel_2/lazo_controlador_izaje.png> <./figs/nivel_2/obs_pid_izaje.png>]) (nivel1.tex [27 <./figs/nivel_2/controlador_carro.png>]
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
 (Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 28.
-
-
-[28 <./figs/nivel_2/controlador_izaje.png>]
-<./figs/nivel_1/automata_principal.png, id=642, 913.91437pt x 602.25pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+ [28 <./figs/nivel_2/controlador_izaje.png>]
+<./figs/nivel_1/automata_principal.png, id=642, 617.30624pt x 609.02531pt>
 File: ./figs/nivel_1/automata_principal.png Graphic file (type png)
 <use ./figs/nivel_1/automata_principal.png>
-Package pdftex.def Info: ./figs/nivel_1/automata_principal.png  used on input line 79.
-(pdftex.def)             Requested size: 455.29788pt x 300.03069pt.
-<<<<<<< HEAD
- [30]
-<./figs/nivel_1/twistlocks.png, id=691, 532.23843pt x 660.21657pt>
-=======
-
-
-[29]
-<./figs/nivel_1/twistlocks.png, id=649, 532.23843pt x 660.21657pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+Package pdftex.def Info: ./figs/nivel_1/automata_principal.png  used on input line 77.
+(pdftex.def)             Requested size: 455.29788pt x 449.20338pt.
+ [29] [30 <./figs/nivel_1/automata_principal.png>]
+<./figs/nivel_1/twistlocks.png, id=657, 532.23843pt x 660.21657pt>
 File: ./figs/nivel_1/twistlocks.png Graphic file (type png)
 <use ./figs/nivel_1/twistlocks.png>
-Package pdftex.def Info: ./figs/nivel_1/twistlocks.png  used on input line 113.
+Package pdftex.def Info: ./figs/nivel_1/twistlocks.png  used on input line 118.
 (pdftex.def)             Requested size: 455.29788pt x 564.79324pt.
-<<<<<<< HEAD
- [31 <./figs/nivel_1/automata_principal.png>]
-<./figs/nivel_1/suavizado_velocidad.png, id=699, 428.35031pt x 177.66376pt>
-=======
-
-
-[30 <./figs/nivel_1/automata_principal.png>]
-<./figs/nivel_1/suavizado_velocidad.png, id=659, 428.35031pt x 177.66376pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+ [31]
+<./figs/nivel_1/suavizado_velocidad.png, id=664, 428.35031pt x 177.66376pt>
 File: ./figs/nivel_1/suavizado_velocidad.png Graphic file (type png)
 <use ./figs/nivel_1/suavizado_velocidad.png>
-Package pdftex.def Info: ./figs/nivel_1/suavizado_velocidad.png  used on input line 131.
+Package pdftex.def Info: ./figs/nivel_1/suavizado_velocidad.png  used on input line 135.
 (pdftex.def)             Requested size: 354.12143pt x 146.87802pt.
-<<<<<<< HEAD
  [32 <./figs/nivel_1/twistlocks.png>]
-<./figs/nivel_1/indices_perfil.png, id=707, 335.00156pt x 554.07pt>
-=======
-
-
-[31 <./figs/nivel_1/twistlocks.png>]
-<./figs/nivel_1/indices_perfil.png, id=667, 335.00156pt x 554.07pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/nivel_1/indices_perfil.png, id=672, 335.00156pt x 554.07pt>
 File: ./figs/nivel_1/indices_perfil.png Graphic file (type png)
 <use ./figs/nivel_1/indices_perfil.png>
-Package pdftex.def Info: ./figs/nivel_1/indices_perfil.png  used on input line 155.
+Package pdftex.def Info: ./figs/nivel_1/indices_perfil.png  used on input line 154.
 (pdftex.def)             Requested size: 455.29788pt x 753.02643pt.
-<<<<<<< HEAD
  [33 <./figs/nivel_1/suavizado_velocidad.png>]
 Overfull \vbox (88.4612pt too high) has occurred while \output is active []
 
  [34 <./figs/nivel_1/indices_perfil.png>]
-<./figs/nivel_1/limites_suaves.png, id=722, 254.45062pt x 671.50874pt>
-=======
-
-
-[32 <./figs/nivel_1/suavizado_velocidad.png>]
-Overfull \vbox (88.4612pt too high) has occurred while \output is active []
-
-
-
-[33 <./figs/nivel_1/indices_perfil.png>]
-<./figs/nivel_1/limites_suaves.png, id=682, 254.45062pt x 671.50874pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/nivel_1/limites_suaves.png, id=687, 254.45062pt x 671.50874pt>
 File: ./figs/nivel_1/limites_suaves.png Graphic file (type png)
 <use ./figs/nivel_1/limites_suaves.png>
-Package pdftex.def Info: ./figs/nivel_1/limites_suaves.png  used on input line 177.
+Package pdftex.def Info: ./figs/nivel_1/limites_suaves.png  used on input line 174.
 (pdftex.def)             Requested size: 354.12143pt x 934.58305pt.
-<<<<<<< HEAD
  [35]
 Overfull \vbox (270.01782pt too high) has occurred while \output is active []
 
  [36 <./figs/nivel_1/limites_suaves.png>]
-<./figs/nivel_1/watchdog_heartbeat.png, id=736, 647.41875pt x 359.84438pt>
-=======
-
-
-[34]
-Overfull \vbox (270.01782pt too high) has occurred while \output is active []
-
-
-
-[35 <./figs/nivel_1/limites_suaves.png>]
-<./figs/nivel_1/watchdog_heartbeat.png, id=695, 647.41875pt x 359.84438pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/nivel_1/watchdog_heartbeat.png, id=701, 647.41875pt x 359.84438pt>
 File: ./figs/nivel_1/watchdog_heartbeat.png Graphic file (type png)
 <use ./figs/nivel_1/watchdog_heartbeat.png>
-Package pdftex.def Info: ./figs/nivel_1/watchdog_heartbeat.png  used on input line 193.
+Package pdftex.def Info: ./figs/nivel_1/watchdog_heartbeat.png  used on input line 190.
 (pdftex.def)             Requested size: 252.94498pt x 140.59131pt.
-<<<<<<< HEAD
-<./figs/nivel_1/modelo_supervisor.png, id=737, 299.61937pt x 543.53062pt>
-File: ./figs/nivel_1/modelo_supervisor.png Graphic file (type png)
-<use ./figs/nivel_1/modelo_supervisor.png>
-Package pdftex.def Info: ./figs/nivel_1/modelo_supervisor.png  used on input line 209.
-(pdftex.def)             Requested size: 455.29788pt x 826.00925pt.
- [37 <./figs/nivel_1/watchdog_heartbeat.png>]
-Overfull \vbox (161.44402pt too high) has occurred while \output is active []
-
- [38 <./figs/nivel_1/modelo_supervisor.png>]
-<./figs/nivel_1/joystick.png, id=752, 1003.49907pt x 557.08125pt>
-=======
-<./figs/nivel_1/joystick.png, id=696, 1003.49907pt x 557.08125pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/nivel_1/joystick.png, id=702, 1003.49907pt x 557.08125pt>
 File: ./figs/nivel_1/joystick.png Graphic file (type png)
 <use ./figs/nivel_1/joystick.png>
-Package pdftex.def Info: ./figs/nivel_1/joystick.png  used on input line 226.
+Package pdftex.def Info: ./figs/nivel_1/joystick.png  used on input line 210.
 (pdftex.def)             Requested size: 404.71352pt x 224.67313pt.
-) (nivel0.tex
-<<<<<<< HEAD
-Overfull \hbox (39.27296pt too wide) in paragraph at lines 35--41
-[]\OT1/cmr/bx/n/10 Emergencia de iza-je: \OT1/cmr/m/n/10 se ac-ti-va uno de tres es-ta-dos seg^^Sun co-rres-pon-da (\OT1/cmtt/m/n/10 EMERGENCIA[]IZAJE[]SUP\OT1/cmr/m/n/10 , \OT1/cmtt/m/n/10 EMERGENCIA[]IZAJE[]INF
- []
-
-[39 <./figs/nivel_1/joystick.png>]
-<./figs/nivel_0/estados_seguridad.png, id=760, 1091.57813pt x 541.27219pt>
-=======
-
-[36 <./figs/nivel_1/watchdog_heartbeat.png> <./figs/nivel_1/joystick.png>]
+) (nivel0.tex [37 <./figs/nivel_1/watchdog_heartbeat.png> <./figs/nivel_1/joystick.png>]
 Overfull \hbox (15.44339pt too wide) in paragraph at lines 50--52
 []\OT1/cmr/bx/n/10 Emergencia de co-mu-ni-ca-ci^^Son: \OT1/cmr/m/n/10 dis-pa-ra-da por la p^^Serdi-da de co-mu-ni-ca-ci^^Son con el con-trol su-per-vi-sor ($\OML/cmm/m/it/10 FALLA[]$\OT1/cmr/m/n/10 ),
  []
 
-<./figs/nivel_0/estados_seguridad.png, id=707, 1091.57813pt x 541.27219pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/nivel_0/estados_seguridad.png, id=712, 1091.57813pt x 541.27219pt>
 File: ./figs/nivel_0/estados_seguridad.png Graphic file (type png)
 <use ./figs/nivel_0/estados_seguridad.png>
-Package pdftex.def Info: ./figs/nivel_0/estados_seguridad.png  used on input line 63.
+Package pdftex.def Info: ./figs/nivel_0/estados_seguridad.png  used on input line 62.
 (pdftex.def)             Requested size: 455.29788pt x 225.76352pt.
-<<<<<<< HEAD
-<./figs/nivel_0/watchdog.png, id=761, 440.39531pt x 325.96782pt>
-=======
-
-
-[37]
-<./figs/nivel_0/watchdog.png, id=713, 440.39531pt x 325.96782pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+[38]
+<./figs/nivel_0/watchdog.png, id=718, 440.39531pt x 325.96782pt>
 File: ./figs/nivel_0/watchdog.png Graphic file (type png)
 <use ./figs/nivel_0/watchdog.png>
-Package pdftex.def Info: ./figs/nivel_0/watchdog.png  used on input line 85.
+Package pdftex.def Info: ./figs/nivel_0/watchdog.png  used on input line 83.
 (pdftex.def)             Requested size: 354.12143pt x 262.11754pt.
-<<<<<<< HEAD
- [40 <./figs/nivel_0/estados_seguridad.png>]
-<./figs/nivel_0/modelo_seguridad.png, id=769, 501.37312pt x 466.74374pt>
-File: ./figs/nivel_0/modelo_seguridad.png Graphic file (type png)
-<use ./figs/nivel_0/modelo_seguridad.png>
-Package pdftex.def Info: ./figs/nivel_0/modelo_seguridad.png  used on input line 102.
-(pdftex.def)             Requested size: 455.29788pt x 423.86859pt.
-) (simulacion.tex [41 <./figs/nivel_0/watchdog.png>]
-<./figs/simulacion/sim_udp.png, id=777, 369.63094pt x 538.26094pt>
-=======
-) (simulacion.tex
-
-[38 <./figs/nivel_0/estados_seguridad.png> <./figs/nivel_0/watchdog.png>]
-<./figs/simulacion/sim_udp.png, id=723, 369.63094pt x 538.26094pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+) (simulacion.tex [39 <./figs/nivel_0/estados_seguridad.png> <./figs/nivel_0/watchdog.png>]
+<./figs/simulacion/planta_completa.png, id=729, 1373.13pt x 688.07062pt>
+File: ./figs/simulacion/planta_completa.png Graphic file (type png)
+<use ./figs/simulacion/planta_completa.png>
+Package pdftex.def Info: ./figs/simulacion/planta_completa.png  used on input line 11.
+(pdftex.def)             Requested size: 505.88997pt x 253.49023pt.
+<./figs/simulacion/sim_udp.png, id=730, 384.6872pt x 668.4975pt>
 File: ./figs/simulacion/sim_udp.png Graphic file (type png)
 <use ./figs/simulacion/sim_udp.png>
-Package pdftex.def Info: ./figs/simulacion/sim_udp.png  used on input line 7.
-(pdftex.def)             Requested size: 242.82501pt x 353.60246pt.
-<<<<<<< HEAD
-<./figs/simulacion/sim_udp2.png, id=778, 354.57469pt x 539.76656pt>
-=======
-<./figs/simulacion/sim_udp2.png, id=724, 354.57469pt x 539.76656pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+Package pdftex.def Info: ./figs/simulacion/sim_udp.png  used on input line 22.
+(pdftex.def)             Requested size: 242.82501pt x 421.98189pt.
+<./figs/simulacion/sim_udp2.png, id=731, 420.82219pt x 673.76718pt>
 File: ./figs/simulacion/sim_udp2.png Graphic file (type png)
 <use ./figs/simulacion/sim_udp2.png>
-Package pdftex.def Info: ./figs/simulacion/sim_udp2.png  used on input line 9.
-(pdftex.def)             Requested size: 242.82501pt x 369.6555pt.
-<<<<<<< HEAD
- [42 <./figs/nivel_0/modelo_seguridad.png>]
-<./figs/simulacion/sim_manual.png, id=787, 1437.11906pt x 725.71124pt>
-=======
-<./figs/simulacion/sim_manual.png, id=725, 1437.11906pt x 725.71124pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+Package pdftex.def Info: ./figs/simulacion/sim_udp2.png  used on input line 24.
+(pdftex.def)             Requested size: 242.82501pt x 388.78047pt.
+ [40 <./figs/simulacion/planta_completa.png>]
+<./figs/simulacion/sim_manual.png, id=739, 1437.11906pt x 725.71124pt>
 File: ./figs/simulacion/sim_manual.png Graphic file (type png)
 <use ./figs/simulacion/sim_manual.png>
-Package pdftex.def Info: ./figs/simulacion/sim_manual.png  used on input line 17.
+Package pdftex.def Info: ./figs/simulacion/sim_manual.png  used on input line 32.
 (pdftex.def)             Requested size: 404.71352pt x 204.37155pt.
-<<<<<<< HEAD
-<./figs/simulacion/sim_auto.png, id=788, 1440.88312pt x 725.71124pt>
-=======
-
-
-[39 <./figs/simulacion/sim_udp.png> <./figs/simulacion/sim_udp2.png>]
-<./figs/simulacion/sim_auto.png, id=734, 1440.88312pt x 725.71124pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+ [41 <./figs/simulacion/sim_udp.png> <./figs/simulacion/sim_udp2.png>]
+<./figs/simulacion/sim_auto.png, id=748, 1440.88312pt x 725.71124pt>
 File: ./figs/simulacion/sim_auto.png Graphic file (type png)
 <use ./figs/simulacion/sim_auto.png>
-Package pdftex.def Info: ./figs/simulacion/sim_auto.png  used on input line 23.
+Package pdftex.def Info: ./figs/simulacion/sim_auto.png  used on input line 38.
 (pdftex.def)             Requested size: 404.71352pt x 203.82895pt.
-<<<<<<< HEAD
- [43 <./figs/simulacion/sim_udp.png> <./figs/simulacion/sim_udp2.png> <./figs/simulacion/sim_manual.png>]
-<./figs/simulacion/sim_error.png, id=799, 1437.11906pt x 723.45282pt>
-=======
-<./figs/simulacion/sim_error.png, id=735, 1437.11906pt x 723.45282pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/simulacion/sim_auto_leave.png, id=749, 1440.13031pt x 691.83469pt>
+File: ./figs/simulacion/sim_auto_leave.png Graphic file (type png)
+<use ./figs/simulacion/sim_auto_leave.png>
+Package pdftex.def Info: ./figs/simulacion/sim_auto_leave.png  used on input line 44.
+(pdftex.def)             Requested size: 404.71352pt x 194.41968pt.
+ [42 <./figs/simulacion/sim_manual.png> <./figs/simulacion/sim_auto.png>]
+<./figs/simulacion/sim_error.png, id=760, 1437.11906pt x 723.45282pt>
 File: ./figs/simulacion/sim_error.png Graphic file (type png)
 <use ./figs/simulacion/sim_error.png>
-Package pdftex.def Info: ./figs/simulacion/sim_error.png  used on input line 29.
+Package pdftex.def Info: ./figs/simulacion/sim_error.png  used on input line 50.
 (pdftex.def)             Requested size: 404.71352pt x 203.73553pt.
-<<<<<<< HEAD
 ) (codesys.tex
-<./figs/codesys/arbol_codesys.png, id=800, 214.55156pt x 213.79875pt>
-=======
-
-
-[40 <./figs/simulacion/sim_manual.png> <./figs/simulacion/sim_auto.png>]) (codesys.tex
-<./figs/codesys/arbol_codesys.png, id=745, 214.55156pt x 213.79875pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/codesys/arbol_codesys.png, id=761, 214.55156pt x 213.79875pt>
 File: ./figs/codesys/arbol_codesys.png Graphic file (type png)
 <use ./figs/codesys/arbol_codesys.png>
 Package pdftex.def Info: ./figs/codesys/arbol_codesys.png  used on input line 9.
 (pdftex.def)             Requested size: 252.94498pt x 252.06175pt.
-<<<<<<< HEAD
- [44 <./figs/simulacion/sim_auto.png> <./figs/simulacion/sim_error.png>]
-<./figs/codesys/control_carro_funciones2.png, id=810, 764.8575pt x 547.2947pt>
-=======
-
-
-[41 <./figs/simulacion/sim_error.png> <./figs/codesys/arbol_codesys.png>]
-<./figs/codesys/control_carro_funciones2.png, id=755, 764.8575pt x 547.2947pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+ [43 <./figs/simulacion/sim_auto_leave.png> <./figs/simulacion/sim_error.png>]
+<./figs/codesys/control_carro_funciones2.png, id=771, 764.8575pt x 547.2947pt>
 File: ./figs/codesys/control_carro_funciones2.png Graphic file (type png)
 <use ./figs/codesys/control_carro_funciones2.png>
 Package pdftex.def Info: ./figs/codesys/control_carro_funciones2.png  used on input line 23.
 (pdftex.def)             Requested size: 505.88997pt x 361.99225pt.
-<<<<<<< HEAD
-<./figs/codesys/control_izaje_funciones2.png, id=811, 750.55406pt x 518.6878pt>
-=======
-<./figs/codesys/control_izaje_funciones2.png, id=756, 750.55406pt x 518.6878pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/codesys/control_izaje_funciones2.png, id=772, 750.55406pt x 518.6878pt>
 File: ./figs/codesys/control_izaje_funciones2.png Graphic file (type png)
 <use ./figs/codesys/control_izaje_funciones2.png>
 Package pdftex.def Info: ./figs/codesys/control_izaje_funciones2.png  used on input line 28.
 (pdftex.def)             Requested size: 505.88997pt x 349.61638pt.
-<<<<<<< HEAD
- [45 <./figs/codesys/arbol_codesys.png>] [46 <./figs/codesys/control_carro_funciones2.png>]
-<./figs/codesys/matlab_function_nivel2_carro.png, id=826, 617.30624pt x 781.92125pt>
-=======
-
-
-[42 <./figs/codesys/control_carro_funciones2.png>]
-<./figs/codesys/matlab_function_nivel2_carro.png, id=765, 617.30624pt x 781.92125pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+ [44 <./figs/codesys/arbol_codesys.png>] [45 <./figs/codesys/control_carro_funciones2.png>]
+<./figs/codesys/matlab_function_nivel2_carro.png, id=787, 617.30624pt x 781.92125pt>
 File: ./figs/codesys/matlab_function_nivel2_carro.png Graphic file (type png)
 <use ./figs/codesys/matlab_function_nivel2_carro.png>
 Package pdftex.def Info: ./figs/codesys/matlab_function_nivel2_carro.png  used on input line 37.
 (pdftex.def)             Requested size: 242.82501pt x 307.5729pt.
-<<<<<<< HEAD
-<./figs/codesys/matlab_function_nivel2_izaje.png, id=827, 525.46312pt x 559.33969pt>
-=======
-<./figs/codesys/matlab_function_nivel2_izaje.png, id=766, 525.46312pt x 559.33969pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/codesys/matlab_function_nivel2_izaje.png, id=788, 525.46312pt x 559.33969pt>
 File: ./figs/codesys/matlab_function_nivel2_izaje.png Graphic file (type png)
 <use ./figs/codesys/matlab_function_nivel2_izaje.png>
 Package pdftex.def Info: ./figs/codesys/matlab_function_nivel2_izaje.png  used on input line 43.
 (pdftex.def)             Requested size: 242.82501pt x 258.47717pt.
-<<<<<<< HEAD
- [47 <./figs/codesys/control_izaje_funciones2.png>]
-<./figs/codesys/codesys_supervisor11.png, id=835, 995.21812pt x 277.78781pt>
-=======
-
-
-[43 <./figs/codesys/control_izaje_funciones2.png>]
-<./figs/codesys/codesys_supervisor11.png, id=774, 995.21812pt x 277.78781pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+ [46 <./figs/codesys/control_izaje_funciones2.png>]
+<./figs/codesys/codesys_supervisor11.png, id=796, 995.21812pt x 277.78781pt>
 File: ./figs/codesys/codesys_supervisor11.png Graphic file (type png)
 <use ./figs/codesys/codesys_supervisor11.png>
 Package pdftex.def Info: ./figs/codesys/codesys_supervisor11.png  used on input line 54.
 (pdftex.def)             Requested size: 505.88997pt x 141.20787pt.
-<<<<<<< HEAD
-<./figs/codesys/codesys_supervisor12.png, id=836, 1145.02782pt x 408.77719pt>
-=======
-<./figs/codesys/codesys_supervisor12.png, id=775, 1145.02782pt x 408.77719pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/codesys/codesys_supervisor12.png, id=797, 1145.02782pt x 408.77719pt>
 File: ./figs/codesys/codesys_supervisor12.png Graphic file (type png)
 <use ./figs/codesys/codesys_supervisor12.png>
 Package pdftex.def Info: ./figs/codesys/codesys_supervisor12.png  used on input line 64.
 (pdftex.def)             Requested size: 505.88997pt x 180.60477pt.
-<<<<<<< HEAD
-<./figs/codesys/codesys_supervisor13.png, id=837, 944.02687pt x 167.87718pt>
-=======
-<./figs/codesys/codesys_supervisor13.png, id=776, 944.02687pt x 167.87718pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/codesys/codesys_supervisor13.png, id=798, 944.02687pt x 167.87718pt>
 File: ./figs/codesys/codesys_supervisor13.png Graphic file (type png)
 <use ./figs/codesys/codesys_supervisor13.png>
 Package pdftex.def Info: ./figs/codesys/codesys_supervisor13.png  used on input line 68.
 (pdftex.def)             Requested size: 505.88997pt x 89.96326pt.
-<<<<<<< HEAD
- [48 <./figs/codesys/matlab_function_nivel2_carro.png (PNG copy)> <./figs/codesys/matlab_function_nivel2_izaje.png> <./figs/codesys/codesys_supervisor11.png>]
-<./figs/codesys/codesys_supervisor15.png, id=848, 384.6872pt x 662.475pt>
-=======
-
-
-[44 <./figs/codesys/matlab_function_nivel2_carro.png (PNG copy)> <./figs/codesys/matlab_function_nivel2_izaje.png> <./figs/codesys/codesys_supervisor11.png>]
-<./figs/codesys/codesys_supervisor15.png, id=786, 384.6872pt x 662.475pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+ [47 <./figs/codesys/matlab_function_nivel2_carro.png (PNG copy)> <./figs/codesys/matlab_function_nivel2_izaje.png> <./figs/codesys/codesys_supervisor11.png>]
+<./figs/codesys/codesys_supervisor15.png, id=808, 384.6872pt x 662.475pt>
 File: ./figs/codesys/codesys_supervisor15.png Graphic file (type png)
 <use ./figs/codesys/codesys_supervisor15.png>
 Package pdftex.def Info: ./figs/codesys/codesys_supervisor15.png  used on input line 78.
 (pdftex.def)             Requested size: 505.88997pt x 871.2653pt.
-<<<<<<< HEAD
- [49 <./figs/codesys/codesys_supervisor12.png> <./figs/codesys/codesys_supervisor13.png>]
+ [48 <./figs/codesys/codesys_supervisor12.png> <./figs/codesys/codesys_supervisor13.png>]
 Overfull \vbox (206.70007pt too high) has occurred while \output is active []
 
- [50 <./figs/codesys/codesys_supervisor15.png>]
-<./figs/codesys/codesys_supervisor4.png, id=864, 1123.19624pt x 592.46344pt>
-=======
-
-
-[45 <./figs/codesys/codesys_supervisor12.png> <./figs/codesys/codesys_supervisor13.png>]
-Overfull \vbox (206.70007pt too high) has occurred while \output is active []
-
-
-
-[46 <./figs/codesys/codesys_supervisor15.png>]
-<./figs/codesys/codesys_supervisor4.png, id=802, 1123.19624pt x 592.46344pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+ [49 <./figs/codesys/codesys_supervisor15.png>]
+<./figs/codesys/codesys_supervisor4.png, id=825, 1123.19624pt x 592.46344pt>
 File: ./figs/codesys/codesys_supervisor4.png Graphic file (type png)
 <use ./figs/codesys/codesys_supervisor4.png>
 Package pdftex.def Info: ./figs/codesys/codesys_supervisor4.png  used on input line 86.
 (pdftex.def)             Requested size: 505.88997pt x 266.84113pt.
-<<<<<<< HEAD
-<./figs/codesys/codesys_supervisor14.png, id=865, 703.12688pt x 491.58656pt>
-=======
-<./figs/codesys/codesys_supervisor14.png, id=803, 703.12688pt x 491.58656pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/codesys/codesys_supervisor14.png, id=826, 703.12688pt x 491.58656pt>
 File: ./figs/codesys/codesys_supervisor14.png Graphic file (type png)
 <use ./figs/codesys/codesys_supervisor14.png>
 Package pdftex.def Info: ./figs/codesys/codesys_supervisor14.png  used on input line 95.
 (pdftex.def)             Requested size: 278.24101pt x 194.52336pt.
-<<<<<<< HEAD
-<./figs/codesys/codesys_seguridad1.png, id=866, 331.99031pt x 344.03531pt>
-=======
-<./figs/codesys/codesys_seguridad1.png, id=804, 331.99031pt x 344.03531pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/codesys/codesys_seguridad1.png, id=827, 331.99031pt x 344.03531pt>
 File: ./figs/codesys/codesys_seguridad1.png Graphic file (type png)
 <use ./figs/codesys/codesys_seguridad1.png>
 Package pdftex.def Info: ./figs/codesys/codesys_seguridad1.png  used on input line 107.
 (pdftex.def)             Requested size: 252.94498pt x 262.12575pt.
-<<<<<<< HEAD
- [51 <./figs/codesys/codesys_supervisor4.png> <./figs/codesys/codesys_supervisor14.png>]
-<./figs/codesys/codesys_seguridad22.png, id=876, 1148.79187pt x 252.19218pt>
-=======
-
-
-[47 <./figs/codesys/codesys_supervisor4.png> <./figs/codesys/codesys_supervisor14.png>]
-<./figs/codesys/codesys_seguridad22.png, id=814, 1148.79187pt x 252.19218pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+ [50 <./figs/codesys/codesys_supervisor4.png> <./figs/codesys/codesys_supervisor14.png>]
+<./figs/codesys/codesys_seguridad22.png, id=837, 1148.79187pt x 252.19218pt>
 File: ./figs/codesys/codesys_seguridad22.png Graphic file (type png)
 <use ./figs/codesys/codesys_seguridad22.png>
 Package pdftex.def Info: ./figs/codesys/codesys_seguridad22.png  used on input line 113.
 (pdftex.def)             Requested size: 505.88997pt x 111.05725pt.
-<<<<<<< HEAD
-<./figs/codesys/codesys_seguridad3.png, id=877, 976.39781pt x 429.10312pt>
-=======
-<./figs/codesys/codesys_seguridad3.png, id=815, 976.39781pt x 429.10312pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/codesys/codesys_seguridad3.png, id=838, 976.39781pt x 429.10312pt>
 File: ./figs/codesys/codesys_seguridad3.png Graphic file (type png)
 <use ./figs/codesys/codesys_seguridad3.png>
 Package pdftex.def Info: ./figs/codesys/codesys_seguridad3.png  used on input line 119.
 (pdftex.def)             Requested size: 404.71352pt x 177.86494pt.
-<<<<<<< HEAD
- [52 <./figs/codesys/codesys_seguridad1.png> <./figs/codesys/codesys_seguridad22.png>]
-<./figs/codesys/opc_ua_1.png, id=887, 889.07156pt x 484.81125pt>
-=======
-
-
-[48 <./figs/codesys/codesys_seguridad1.png> <./figs/codesys/codesys_seguridad22.png>]
-<./figs/codesys/opc_ua_1.png, id=826, 889.07156pt x 484.81125pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+ [51 <./figs/codesys/codesys_seguridad1.png> <./figs/codesys/codesys_seguridad22.png>]
+<./figs/codesys/opc_ua_1.png, id=848, 889.07156pt x 484.81125pt>
 File: ./figs/codesys/opc_ua_1.png Graphic file (type png)
 <use ./figs/codesys/opc_ua_1.png>
 Package pdftex.def Info: ./figs/codesys/opc_ua_1.png  used on input line 144.
 (pdftex.def)             Requested size: 505.88997pt x 275.85704pt.
-<<<<<<< HEAD
-<./figs/codesys/opc_ua_0.png, id=888, 1271.5003pt x 421.575pt>
-=======
-<./figs/codesys/opc_ua_0.png, id=827, 1271.5003pt x 421.575pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+<./figs/codesys/opc_ua_0.png, id=849, 1271.5003pt x 421.575pt>
 File: ./figs/codesys/opc_ua_0.png Graphic file (type png)
 <use ./figs/codesys/opc_ua_0.png>
 Package pdftex.def Info: ./figs/codesys/opc_ua_0.png  used on input line 149.
 (pdftex.def)             Requested size: 505.88997pt x 167.73285pt.
-<<<<<<< HEAD
- [53 <./figs/codesys/codesys_seguridad3.png>]
-<./figs/codesys/codesys_interfaz.png, id=896, 1444.64719pt x 812.28468pt>
-=======
-
-
-[49 <./figs/codesys/codesys_seguridad3.png>]
-<./figs/codesys/codesys_interfaz.png, id=835, 1444.64719pt x 812.28468pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+ [52 <./figs/codesys/codesys_seguridad3.png>]
+<./figs/codesys/codesys_interfaz.png, id=857, 1444.64719pt x 812.28468pt>
 File: ./figs/codesys/codesys_interfaz.png Graphic file (type png)
 <use ./figs/codesys/codesys_interfaz.png>
 Package pdftex.def Info: ./figs/codesys/codesys_interfaz.png  used on input line 157.
 (pdftex.def)             Requested size: 505.88997pt x 284.44023pt.
-<<<<<<< HEAD
- [54 <./figs/codesys/opc_ua_1.png> <./figs/codesys/opc_ua_0.png>]
-<./figs/codesys/st_generado.png, id=907, 550.055pt x 633.36626pt>
-=======
-
-
-[50 <./figs/codesys/opc_ua_1.png> <./figs/codesys/opc_ua_0.png>]
-<./figs/codesys/st_generado.png, id=845, 550.055pt x 633.36626pt>
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+ [53 <./figs/codesys/opc_ua_1.png> <./figs/codesys/opc_ua_0.png>]
+<./figs/codesys/st_generado.png, id=867, 550.055pt x 633.36626pt>
 File: ./figs/codesys/st_generado.png Graphic file (type png)
 <use ./figs/codesys/st_generado.png>
 Package pdftex.def Info: ./figs/codesys/st_generado.png  used on input line 177.
 (pdftex.def)             Requested size: 404.71352pt x 466.02599pt.
-<<<<<<< HEAD
-) [55 <./figs/codesys/codesys_interfaz.png>] (conclusiones.tex [56 <./figs/codesys/st_generado.png (PNG copy)>]) [57] 
-=======
-)
-
-[51 <./figs/codesys/codesys_interfaz.png>] (conclusiones.tex
-
-[52 <./figs/codesys/st_generado.png (PNG copy)>])
-
-[53] 
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+) [54 <./figs/codesys/codesys_interfaz.png>] (conclusiones.tex [55 <./figs/codesys/st_generado.png (PNG copy)>]) [56] 
 enddocument/afterlastpage (AED): lastpage setting LastPage.
 (informe.aux
 LaTeX Info: Redefining \. on input line 11.
@@ -1238,39 +833,20 @@ LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `informe.out' has not changed.
-<<<<<<< HEAD
-(rerunfilecheck)             Checksum: 55904FE0F2B1BB3F6F40DDF19D17AB0B;15399.
- ) 
-Here is how much of TeX's memory you used:
- 15385 strings out of 467867
- 259642 string characters out of 5418334
- 686528 words of memory out of 5000000
- 43807 multiletter control sequences out of 15000+600000
- 636150 words of font info for 72 fonts, out of 8000000 for 9000
- 1141 hyphenation exceptions out of 8191
- 75i,18n,79p,1123b,806s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\bruno\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx7.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi5.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on informe.pdf (58 pages, 4460504 bytes).
-PDF statistics:
- 1063 PDF objects out of 1200 (max. 8388607)
- 260 named destinations out of 1000 (max. 500000)
- 827 words of extra memory for PDF output out of 10000 (max. 10000000)
-=======
 (rerunfilecheck)             Checksum: F0162202883DE769B6E2EB6C6B356B7B;13645.
  ) 
 Here is how much of TeX's memory you used:
- 15346 strings out of 469941
- 258178 string characters out of 5469430
- 662196 words of memory out of 5000000
- 41705 multiletter control sequences out of 15000+600000
- 634909 words of font info for 71 fonts, out of 8000000 for 9000
+ 15365 strings out of 467867
+ 259381 string characters out of 5418334
+ 686443 words of memory out of 5000000
+ 43799 multiletter control sequences out of 15000+600000
+ 635805 words of font info for 71 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,18n,79p,1023b,790s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\lauta\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx7.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi5.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/lauta/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on informe.pdf (54 pages, 4311665 bytes).
+ 75i,18n,79p,1087b,806s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\bruno\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx7.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi5.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/bruno/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on informe.pdf (57 pages, 4579371 bytes).
 PDF statistics:
- 993 PDF objects out of 1000 (max. 8388607)
- 244 named destinations out of 1000 (max. 500000)
- 769 words of extra memory for PDF output out of 10000 (max. 10000000)
->>>>>>> 5f671cd58078944c2bf529fbfcadca0b8f8690de
+ 1017 PDF objects out of 1200 (max. 8388607)
+ 249 named destinations out of 1000 (max. 500000)
+ 779 words of extra memory for PDF output out of 10000 (max. 10000000)
 
