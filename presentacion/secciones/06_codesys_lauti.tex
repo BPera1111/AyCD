@@ -1,0 +1,71 @@
+\section{Implementación en CODESYS}
+
+\begin{frame}{De Stateflow a un PLC (IEC 61131)}
+  Para llevar el control a hardware real se traduce la lógica a CODESYS. La consigna pide
+  \textbf{dos métodos} y compararlos:
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{block}{1 --- Codificación manual}
+        Estructura en \textbf{SFC} (Sequential Function Charts) + cálculos en \textbf{ST}
+        (Structured Text).
+      \end{block}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{2 --- Generación automática}
+        \textbf{PLC Coder} de Simulink: todo a \textbf{ST} desde los Statecharts.
+      \end{block}
+    \end{column}
+  \end{columns}
+  \centering
+  \footnotesize Niveles 0 y 1 como POUs cíclicos en paralelo; Nivel 2 en Simulink (simil ST).
+\end{frame}
+
+\begin{frame}{Codificación manual: SFC + ST}
+  \begin{columns}[T]
+    \begin{column}{0.32\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{codesys/arbol_codesys.png}\\
+      \footnotesize Árbol del proyecto
+    \end{column}
+    \begin{column}{0.68\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{codesys/codesys_supervisor11.png}\\
+      \footnotesize Supervisor en SFC (mismos estados y transiciones que Stateflow)
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Manual (SFC) vs. autogenerado (ST)}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item Rendimiento y carga de CPU \textbf{comparables}.
+        \item El ST autogenerado es \textbf{monolítico} (un \texttt{CASE} global + \texttt{IF}
+              anidados) $\Rightarrow$ poca trazabilidad para diagnóstico en planta.
+        \item Se eligió \textbf{SFC manual} para la arquitectura (visual) y ST sólo para los
+              cálculos.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{codesys/st_generado.png}\\
+      \footnotesize Fragmento de ST autogenerado (PLC Coder)
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Co-simulación CODESYS $\leftrightarrow$ Simulink (OPC-UA)}
+  \begin{columns}[T]
+    \begin{column}{0.45\textwidth}
+      \begin{itemize}
+        \item PLC virtual (CODESYS) + planta (Simulink) comunicados por \textbf{OPC-UA}.
+        \item Software-in-the-Loop: el controlador real maneja la planta simulada.
+        \item Se verifica que responde igual que el modelo original.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{codesys/codesys_interfaz.png}
+    \end{column}
+  \end{columns}
+\end{frame}

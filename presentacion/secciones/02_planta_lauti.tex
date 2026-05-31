@@ -1,0 +1,54 @@
+\section{La planta (provista)}
+
+\begin{frame}{Modelo dinámico híbrido de la planta}
+  La cátedra entrega el modelo completo. Es \textbf{híbrido}: combina dinámicas continuas con
+  cambios discretos de estado.
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Variables continuas (\textit{flow})}
+        \begin{itemize}
+          \item Posición/velocidad de carro $x_t,v_t$ e izaje $y_h,v_h$.
+          \item Ángulo de balanceo $\theta_l$, tensión de cable $F_{hw}$.
+          \item Torques, fuerzas de contacto.
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Estados discretos (\textit{jump})}
+        \begin{itemize}
+          \item Twistlocks \sig{TLK}: abierto/cerrado.
+          \item Contacto: suspendido/apoyado.
+          \item Cable: tenso/flojo.
+          \item Frenos NC \sig{$BRK$}: abierto/cerrado.
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{0.3cm}
+  \centering
+  \footnotesize Carro e izaje acoplados por la carga pendular; interacción con el perfil de
+  obstáculos del entorno.
+\end{frame}
+
+\begin{frame}{Implementación de la planta en Simulink}
+  \begin{columns}[T]
+    \begin{column}{0.62\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{modelo_planta.png}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \footnotesize
+      \begin{block}{Parámetros (dados)}
+        \begin{tabular}{ll}
+          $M_t$ & $30\,000$ kg \\
+          $M_s$ & $15\,000$ kg \\
+          $M_{c\max}$ & $50\,000$ kg \\
+          $i_t / i_h$ & $30 / 22$ \\
+          $v_{t\max}$ & $4$ m/s \\
+          $v_{h}$ & $1.5$--$3$ m/s \\
+        \end{tabular}
+      \end{block}
+      Sensores: encoders, fines de carrera, celda de carga, ángulo de spreader, LIDAR.
+    \end{column}
+  \end{columns}
+\end{frame}
