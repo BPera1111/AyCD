@@ -1,9 +1,9 @@
 \section{Resumen}
 Este documento presentará el diseño e implementación de un sistema híbrido de control y
-automatización para una Grúa Portacontenedores Portuaria de Muelle tipo Pórtico
+automatización para una grúa portacontenedores portuaria de muelle tipo pórtico
 (\textit{STS: Ship-to-Shore}), orientado a la operación semi-automática coordinada de sus dos
 movimientos principales: la traslación del carro (\textit{Trolley}) y el izaje de la carga
-(\textit{Hoist}). El proyecto integrará los conocimientos del espacio curricular de Autómatas y
+(\textit{Hoist}). El proyecto integrará los conocimientos del espacio curricular Autómatas y
 Control Discreto, combinando un control de eventos discretos (DEDS) con un control regulatorio
 en tiempo discreto, modelados y simulados en Matlab/Simulink/Stateflow.
 
@@ -22,18 +22,18 @@ estado seguro ante cualquier anomalía.
 
 Finalmente, el comportamiento del sistema se validará mediante simulación, incorporando una
 animación 2D en tiempo real desarrollada en Python para visualizar la operación, y se trasladará
-la lógica de control a un PLC virtual programado en CODESYS, comunicado con la simulación
+la lógica de control a un PLC virtual programado en CODESYS, comunicado con Simulink
 mediante el protocolo industrial OPC-UA.
 
 
 \newpage
 \section{Introducción}
 Este trabajo tiene como objetivo el control de los accionamientos eléctricos y la operación
-semi-automática coordinada de una Grúa Portacontenedores Portuaria de Muelle tipo Pórtico (STS),
+semi-automática coordinada de una grúa portacontenedores STS,
 empleada para la carga y descarga de contenedores en grandes barcos de transporte marítimo. Se
 consideran los dos movimientos principales, continuos y simultáneos, de la grúa en un plano
 vertical (2D): la traslación horizontal del carro y el izaje vertical de la carga bajo su
-posición. Ambos movimientos están acoplados entre sí por la carga suspendida, que se comporta
+posición. Ambos movimientos se encuentran dinámicamente acoplados a través de la carga suspendida, que se comporta
 como un péndulo, y deben respetar restricciones de posición, velocidad y aceleración.
 
 El sistema físico se acciona mediante cables de acero impulsados desde mecanismos rotativos con
@@ -41,16 +41,20 @@ tambores, cajas de engranajes, frenos mecánicos y motores eléctricos, gobernad
 accionamientos de velocidad variable. La carga (\textit{headblock/spreader}, con o sin
 contenedor) se modela como una masa concentrada con dos grados de libertad, cuya dinámica es
 híbrida: cambia discretamente según el estado de los \textit{twistlocks} y según su interacción
-de contacto con el perfil de obstáculos del entorno. La grúa dispone, además, de un conjunto de
-sensores de realimentación (encoders, finales de carrera, detectores de sobrevelocidad, celda de
-carga, sensor de ángulo de balanceo y un LIDAR para relevar el perfil de obstáculos) que
-sostienen la operación y la protección.
+de contacto con el perfil de obstáculos del entorno. La grúa dispone, además, de un conjunto de 
+sensores de realimentación que incluyen encoders, finales de carrera, detectores de sobrevelocidad, 
+una celda de carga, un sensor de ángulo de balanceo y un LIDAR para relevar el perfil de obstáculos. 
+Estos dispositivos proporcionan la información necesaria para la operación y las funciones de protección.
+
+Sobre esta planta física se implementa una arquitectura de control jerárquica compuesta por tres niveles: 
+un nivel regulatorio encargado de los lazos de control discretos, un nivel supervisor responsable de la 
+coordinación de las maniobras de manera segura y un nivel de protección dedicado a llevar al sistema a estado seguro
+ante situaciones de emergencia.
 
 El proyecto se organiza en distintas etapas: el modelado matemático de la planta física, el
-diseño de una arquitectura de control jerárquica de tres niveles (regulatorio, supervisor y de
-protección), la validación del sistema mediante simulación con una animación 2D en tiempo real, y
-la traducción de la lógica de control a un PLC programado en CODESYS para su implementación en un
-entorno de ejecución realista.
+diseño e implementación de la arquitectura de control, la validación del sistema mediante simulación con una animación 2D en tiempo real
+y la traducción de la lógica de control a un PLC programado en CODESYS para su ejecución en un
+entorno realista.
 
 % \begin{figure}[ht]
 %     \centering
