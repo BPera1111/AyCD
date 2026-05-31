@@ -8,7 +8,7 @@ animación. La Fig. \ref{fig:planta_completa} muestra esta integración general.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{simulacion/planta_completa.png}
+    \includegraphics[width=0.85\textwidth]{simulacion/planta_completa.png}
     \caption{Modelo completo del sistema en Simulink: planta física e integración de los tres niveles de control.}
     \label{fig:planta_completa}
 \end{figure}
@@ -19,9 +19,9 @@ una representación 2D de la grúa, contenedores, barco y parámetros clave que 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.48\textwidth]{simulacion/sim_udp.png}
+    \includegraphics[width=0.3\textwidth]{simulacion/sim_udp.png}
     \hfill
-    \includegraphics[width=0.48\textwidth]{simulacion/sim_udp2.png}
+    \includegraphics[width=0.3\textwidth]{simulacion/sim_udp2.png}
     \caption{Diagrama de la comunicación UDP entre Simulink y el programa de python}
 \end{figure}
 
@@ -29,25 +29,33 @@ A continuación se presentan algunas capturas de diferentes estados de la grúa,
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{simulacion/sim_manual.png}
-    \caption{Modo manual.}
-\end{figure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{simulacion/sim_manual.png}
+        \caption{Modo manual.}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{simulacion/sim_auto.png}
+        \caption{Modo automático.}
+    \end{subfigure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{simulacion/sim_auto.png}
-    \caption{Modo automático.}
-\end{figure}
+    \vspace{0.4cm}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{simulacion/sim_auto_leave.png}
-    \caption{Modo automático: liberación de la carga.}
-\end{figure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{simulacion/sim_auto_leave.png}
+        \caption{Modo automático: liberación de la carga.}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{simulacion/sim_error.png}
+        \caption{Estado de error.}
+    \end{subfigure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{simulacion/sim_error.png}
-    \caption{Estado de error.}
+    \caption{Capturas de la animación en distintos estados de operación de la grúa.}
+    \label{fig:sim_estados}
 \end{figure}
 

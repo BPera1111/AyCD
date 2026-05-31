@@ -6,7 +6,7 @@ cada bloque funcional a funciones y estructuras de control equivalentes en SFC y
 intacta durante la transición al entorno de ejecución real. Puede verse a continuación la estructura resultante:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{codesys/arbol_codesys.png}
+    \includegraphics[width=0.35\textwidth]{codesys/arbol_codesys.png}
     \caption{Árbol de componentes del programa en CODESYS}
 \end{figure}
 
@@ -20,12 +20,12 @@ a tal velocidad que, a fines prácticos, el comportamiento es idéntico al de un
 Se rediseña el modelo del Nivel 2 usando la misma lógica pero representándola con bloques de función de Matlab (simil ST):
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{codesys/control_carro_funciones2.png}
+    \includegraphics[width=0.65\textwidth]{codesys/control_carro_funciones2.png}
     \caption{Diagrama de control del carro con funciones de Matlab}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{codesys/control_izaje_funciones2.png}
+    \includegraphics[width=0.65\textwidth]{codesys/control_izaje_funciones2.png}
     \caption{Diagrama de control de izaje con funciones de Matlab}
 \end{figure}
 Se agregan varios bloques \textit{Delay} para solucionar problemas de loops algebráicos en la simulación.
@@ -34,13 +34,13 @@ El código de cada controlador queda de la siguiente forma:
     \centering
     \begin{subfigure}{0.48\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{codesys/matlab_function_nivel2_carro.png}
+        \includegraphics[width=\linewidth]{codesys/matlab_function_nivel2_carro.png}
         \caption{Control del carro simil ST}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.48\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{codesys/matlab_function_nivel2_izaje.png}
+        \includegraphics[width=\linewidth]{codesys/matlab_function_nivel2_izaje.png}
         \caption{Control de izaje simil ST}
     \end{subfigure}
     \caption{Código de los controladores del Nivel 2 en simil ST}
@@ -75,7 +75,7 @@ Además, al finalizar el movimiento de \textit{homing}, en Stateflow la transici
 En la siguiente imágen se puede ver la implementación utilizada:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{codesys/codesys_supervisor15.png}
+    \includegraphics[width=0.5\textwidth]{codesys/codesys_supervisor15.png}
     \caption{Diagrama del modo automático en CODESYS}
 \end{figure}
 
