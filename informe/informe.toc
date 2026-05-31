@@ -52,7 +52,7 @@
 \contentsline {section}{\numberline {7}Diseño del control de seguridad (Nivel 0)}{38}{section.7}%
 \contentsline {subsection}{\numberline {7.1}Autómata de estados de seguridad}{38}{subsection.7.1}%
 \contentsline {subsection}{\numberline {7.2}Monitor de comunicaciones}{39}{subsection.7.2}%
-\contentsline {section}{\numberline {8}Comunicacion y animación con python}{40}{section.8}%
+\contentsline {section}{\numberline {8}Comunicación y animación con Python}{40}{section.8}%
 \contentsline {section}{\numberline {9}CODESYS codificación manual}{43}{section.9}%
 \contentsline {subsection}{\numberline {9.1}Control regulatorio en simil ST}{44}{subsection.9.1}%
 \contentsline {subsection}{\numberline {9.2}Control supervisor en CODESYS}{47}{subsection.9.2}%

@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1780187701.7215 "c:/Users/bruno/OneDrive - Universidad Nacional de Cuyo/Facultad/10mo Semestre/Automatas y Control Discreto/AyCD/informe/informe.tex" "informe.pdf" "informe" 1780187714.5951 0
+["pdflatex"] 1780188571.02229 "c:/Users/bruno/OneDrive - Universidad Nacional de Cuyo/Facultad/10mo Semestre/Automatas y Control Discreto/AyCD/informe/informe.tex" "informe.pdf" "informe" 1780188576.92656 0
   "C:/Users/bruno/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1773784088.68558 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/bruno/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk" 1780092045.30452 11548 0d8167a6fe69a51b5ede1d933d7a6ebc ""
   "C:/Users/bruno/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1773783819.27284 13333849 216b27706943fa64eeb32f35b18250e4 ""
@@ -111,9 +111,9 @@
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/tex/latex/rerunfilecheck/rerunfilecheck.sty" 1751104012 9684 a33a14b82ce60d6e77cb9be689d79ee6 ""
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/bruno/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
-  "c:/Users/bruno/OneDrive - Universidad Nacional de Cuyo/Facultad/10mo Semestre/Automatas y Control Discreto/AyCD/informe/informe.tex" 1780186446.48003 42914 49b3ea988acdeefe372d536cce776b3a ""
+  "c:/Users/bruno/OneDrive - Universidad Nacional de Cuyo/Facultad/10mo Semestre/Automatas y Control Discreto/AyCD/informe/informe.tex" 1780188063.72948 42913 c60c2b7485b7f4782f7ce0c4e1cce494 ""
   "codesys.tex" 1780186446.42383 11511 141bdb41c1e66ef46aa03bfee7934ad8 ""
-  "conclusiones.tex" 1780187701.30185 2688 13ac98f93392cef7c5b5258b428b7e5e ""
+  "conclusiones.tex" 1780188570.29129 2687 97cbae1edd1d7b8b01182d8f435be20e ""
   "figs/accionamiento_carro.jpg" 1778810029.68792 85755 519ad05a97e85332dfb6490a925ded02 ""
   "figs/accionamiento_izaje.jpg" 1778810029.68992 79096 e94a628dad223c635043282cbc0b1b30 ""
   "figs/casa_maquinas.jpg" 1778810029.69193 127725 b92011d4118a98a56f0555a6dbfaaa86 ""
@@ -172,14 +172,14 @@
   "figs/ubicacion_casa_maquinas.jpg" 1778810029.69493 165897 ae6e8f6f152080e1485db46193544f6c ""
   "figs/vista_frontal.jpg" 1778810029.69793 273554 94b4d2e4a1da81b6734796d99abef275 ""
   "figs/vista_lateral.jpg" 1778810029.69996 200746 8f4ae6d943e6764959e5fac49e528c1f ""
-  "informe.aux" 1780187711.88358 23739 32d7b3864d05b6ef15b6dbf14480c89a "pdflatex"
-  "informe.out" 1780187712.0001 13645 f0162202883de769b6e2eb6c6b356b7b "pdflatex"
-  "informe.toc" 1780187712.12263 6125 8d6ed81d058ec0782358caecad7ab928 "pdflatex"
+  "informe.aux" 1780188576.52831 23740 9146759493e62d1447a3689650c95324 "pdflatex"
+  "informe.out" 1780188576.54332 13648 71d0d2f3b7f6d9a7a92debd3e8968e28 "pdflatex"
+  "informe.toc" 1780188576.55387 6126 c30a481e1ace6569383a43e143339998 "pdflatex"
   "nivel0.tex" 1780183470.78378 5252 c65c7b9f7ca932c951900956ca21a46e ""
   "nivel1.tex" 1780183470.78618 12358 e41a24fc72f164be823ec6a3463ce228 ""
   "nivel2.tex" 1780186446.48418 21748 e7d2d7bc83e9d645d42327782eca99cb ""
   "resumen_introduccion.tex" 1780186446.48523 4492 c354268afa9ccea083d83a395c97a54e ""
-  "simulacion.tex" 1780186367.64729 2241 73ef64029b48d8aad7e004a8dbcd4cc6 ""
+  "simulacion.tex" 1780188100.06169 2244 088ef3c99c161d494f0745643a415a32 ""
   (generated)
   "informe.aux"
   "informe.log"

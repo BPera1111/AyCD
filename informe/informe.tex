@@ -91,7 +91,7 @@
 \newpage
 
 \section{Descripción del sistema}
-El sistema físico a controlar y automatizar es una grúa portacontenedores STS, (Fig. \ref{fig:grua}).
+El sistema físico a controlar y automatizar es una grúa portacontenedores STS (Fig. \ref{fig:grua}).
 Este proyecto considera el control de accionamientos eléctricos y operación semi-automática coordinada de los dos movimientos principales continuos y 
 simultáneos de la grúa en un plano vertical (2D): traslación horizontal del carro (Trolley) sobre las vigas principal y móvil (paralelo al eje $x$); e 
 izaje/descenso, o traslación vertical, de la carga (Hoist) bajo la posición del carro (paralelo al eje $y$), Fig. \ref{fig:vista_lateral}.
@@ -122,7 +122,7 @@ izaje/descenso, o traslación vertical, de la carga (Hoist) bajo la posición de
 Ambos movimientos son impulsados mediante cables de acero (wireropes) desde mecanismos rotativos con tambores, cajas de engranajes, frenos mecánicos y 
 motores eléctricos, ubicados en una Casa de Máquinas (Machinery House) fija (Fig. \ref{fig:mecanismos}), con sus correspondientes accionamientos electrónicos de velocidad variable; 
 dichos movimientos tienen restricciones de operación: posiciones límite de recorrido, velocidades máximas y aceleraciones máximas. Están acoplados 
-entre sí por la carga (headblock/descender con o sin contenedor, Fig. \ref{fig:vista_frontal}), que se balancea suspendida del carro que la traslada mediante los cables de izaje.
+entre sí por la carga (headblock/spreader con o sin contenedor, Fig. \ref{fig:vista_frontal}), que se balancea suspendida del carro que la traslada mediante los cables de izaje.
 
 \begin{figure}[H]
     \centering
@@ -164,7 +164,7 @@ entre sí por la carga (headblock/descender con o sin contenedor, Fig. \ref{fig:
 \subsection{Hipótesis simplificativas y sensores}
 
 \begin{itemize}
-    \item \textbf{Estructura} esbelta y algo flexible de vigas principal y móvil (main and boom girders) y del pórtico con ruedas sobre rieles de muele. Pero se asume estructura totalmente rígida, sin deformación ni vibración.
+    \item \textbf{Estructura} esbelta y algo flexible de vigas principal y móvil (main and boom girders) y del pórtico con ruedas sobre rieles de muelle. Pero se asume estructura totalmente rígida, sin deformación ni vibración.
     
     \item \textbf{Carro} soportado por la estructura rígida, con desplazamiento solo horizontal con 4 ruedas libres (no accionadas) sobre rieles en las vigas principal y móvil; el carro es accionado o tirado por cables (rope-towed trolley) desde el mecanismo de carro (tambor, reductor, freno y motor) en la casa de máquinas (Fig. \ref{fig:trolley_drive}) mediante despliegue cerrado de 2 cables de acero en paralelo de carro, uno por cada lado del carro, desde el tambor con poleas de reenvío en los extremos de las vigas y terminando a ambos extremos del carro. Se asume mecanismo con transmisión rígida y 1 cable de acero equivalente de carro siempre tensado (tracción), con elasticidad longitudinal amortiguada.
     
@@ -186,7 +186,7 @@ entre sí por la carga (headblock/descender con o sin contenedor, Fig. \ref{fig:
         
         \item Sensor de ángulo de spreader (cámara CCD en carro y emisor infrarrojo en headblock) para medir el ángulo vertical instantáneo (y velocidad angular) entre la carga y el carro.
         
-        \item Sensor LIDAR de obstáculos (laser scanner infrarrojo 1D) en el carro (3 m hacia adelante del spreader) para medir la distancia vertical instantánea desde el carro en movimiento hasta la pila de obstáculos y apoyo abajo, y así relevear el perfil topográfico de obstáculos $y_{c0}(x,t)$, Fig. \ref{fig:cuerpo_libre}.
+        \item Sensor LIDAR de obstáculos (laser scanner infrarrojo 1D) en el carro (3 m hacia adelante del spreader) para medir la distancia vertical instantánea desde el carro en movimiento hasta la pila de obstáculos y apoyo abajo, y así relevar el perfil topográfico de obstáculos $y_{c0}(x,t)$, Fig. \ref{fig:cuerpo_libre}.
     \end{enumerate}
 \end{itemize}
 
@@ -251,12 +251,12 @@ Donde:
     
     \item $b_t = 90$ Ns/m: Coeficiente de fricción viscosa del carro sobre los rieles.
     
-    \item $2F_{hw}\sin\theta_t$: Fuerza horizontal perturbadora debida al balanceo de la carga.
+    \item $2F_{hw}\sin\theta_l$: Fuerza horizontal perturbadora debida al balanceo de la carga.
 \end{itemize}
 
 \subsubsection{Acoplamiento elástico del cable}
 
-El cable transmite la fuerza entre el tambor y el carro. Se modela como un resorte con rigidez $K_{tw} = 480 \times 10^3$ N/m y un amortiguación $b_{tw} = 3 \times 10^3$ Ns/m:
+El cable transmite la fuerza entre el tambor y el carro. Se modela como un resorte con rigidez $K_{tw} = 480 \times 10^3$ N/m y una amortiguación $b_{tw} = 3 \times 10^3$ Ns/m:
 
 
 \begin{equation}
@@ -598,7 +598,7 @@ El modelo dinámico del subsistema de izaje, implementado posteriormente en Simu
         \frac{d\,l_h(t)}{dt}
         = -\,\frac{r_{hd}}{2\,i_h}\,\omega_{hm}(t)
     \end{equation}
-    El signo negatico indica que una velocidad positiva del motor ($\omega_{hm}(t) > 0$) enrolla el cable, reduciendo su longitud desenrollada $l_h(t)$.
+    El signo negativo indica que una velocidad positiva del motor ($\omega_{hm}(t) > 0$) enrolla el cable, reduciendo su longitud desenrollada $l_h(t)$.
 \end{itemize}
 \textbf{Variables auxiliares:}
 \begin{itemize}

@@ -1,4 +1,4 @@
-\section{Comunicacion y animación con python}
+\section{Comunicación y animación con Python}
 
 Una vez modelados la planta física y los tres niveles de control, se integran todos los
 subsistemas en un único modelo de Simulink que constituye el sistema completo a simular. En él se
@@ -14,8 +14,8 @@ animación. La Fig. \ref{fig:planta_completa} muestra esta integración general.
 \end{figure}
 
 Para la visualización en tiempo real de la grúa y su entorno, se implementó un bloque de comunicación UDP que transmite los estados
-crítico del sistema a un programa de python que lo comunica con la simulación. Este programa muestra en una ventana del navegador 
-una representación 2D de la grúa, contenedores, barco y parámetros clave que permiten al operador monitorear visualemnte la operación.
+críticos del sistema a un programa de python que lo comunica con la simulación. Este programa muestra en una ventana del navegador 
+una representación 2D de la grúa, contenedores, barco y parámetros clave que permiten al operador monitorear visualmente la operación.
 
 \begin{figure}[H]
     \centering
@@ -25,7 +25,7 @@ una representación 2D de la grúa, contenedores, barco y parámetros clave que 
     \caption{Diagrama de la comunicación UDP entre Simulink y el programa de python}
 \end{figure}
 
-A continuacion se presentan algunas capturas de diferentes estados de la grúa, mostrando la posición del spredder, la carga y el entorno.
+A continuación se presentan algunas capturas de diferentes estados de la grúa, mostrando la posición del spreader, la carga y el entorno.
 
 \begin{figure}[H]
     \centering
