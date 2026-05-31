@@ -215,7 +215,7 @@ Referidos al sistema inercial de coordenadas cartesianas globales $x$--$y$ fijo 
     
     \item Aceleración: $a_{h\max} = \pm 0.75$ m/s$^2$ (cargado o sin carga).
 \end{itemize}
-
+\newpage
 \section{Modelado de la planta}
 
 El modelo de la planta se puede dividir en dos subsistemas principales: el subsistema de traslación del carro y el subsistema de izaje, acoplados entre 
@@ -385,7 +385,7 @@ El modelo dinámico del subsistema del carro, implementado posteriormente en Sim
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{modelo_carro.png}
+    \includegraphics[width=0.48\textwidth]{modelo_carro.png}
     \caption{Diagrama de bloques del modelo dinámico del subsistema del carro}
     \label{fig:modelo_carro}   
 \end{figure}
@@ -634,6 +634,7 @@ y que $W_c = 2.44\,\text{m}$ (ancho de contenedor estándar ISO). Así se obtien
 \begin{equation}
     i = 1, 2, 3, \ldots, 33
 \end{equation}
+\newpage
 Luego, la última posición discreta corresponde a:
 
 \begin{equation}
@@ -735,19 +736,14 @@ sensores detectan la cantidad de cable desenrollado.
 \subsubsection{Modelo sensores Simulink}
 \begin{figure}[H]
     \centering
-    
-    \begin{subfigure}{0.8\textwidth}
+    \includegraphics[width=0.6\textwidth]{sensores_izaje.png}
+    \caption{Diagrama de bloques del modelo de sensores del izaje}
+\end{figure}
+\begin{figure}[H]
+    \centering
         \centering
-        \includegraphics[width=0.7\textwidth]{sensores_carro.png}
-        \caption{Sensores del carro}
-    \end{subfigure}    
-    \begin{subfigure}{0.9\textwidth}
-        \centering
-        \includegraphics[width=0.6\textwidth]{sensores_izaje.png}
-        \caption{Sensores de izaje}
-    \end{subfigure}
-    
-    \caption{Diagramas de bloques del modelo de sensores de la planta}
+        \includegraphics[width=0.6\textwidth]{sensores_carro.png}
+        \caption{Diagrama de bloques del modelo de sensores del carro}   
 \end{figure}
 
 \subsection{Moduladores de torque (accionamientos)}
@@ -811,7 +807,7 @@ T_{hm\ Lim}^*(k \, T_{s2} \leq t < (k+1) \, T_{s2}) = \text{min}\left(+T_{hm\max
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{modelo_planta.png}
+    \includegraphics[width=0.82\textwidth]{modelo_planta.png}
     \caption{Diagrama de bloques del modelo completo de la planta física en Simulink}
     \label{fig:modelo_planta}
 \end{figure}

@@ -9,12 +9,8 @@ anomalía.
 A diferencia de los niveles superiores, el control de seguridad opera de forma permanente y
 supervisa la planta mediante la redundancia de sensores (finales de carrera de emergencia,
 detectores de sobrevelocidad, botón físico de emergencia y el \textit{heartbeat}). La lógica
-se modeló mediante dos procesos paralelos: el autómata de estados de seguridad, que decide qué
-frenos aplicar ante cada falla, y el monitor de comunicaciones, que vigila el enlace
-con el control supervisor.
-
+se modeló mediante dos procesos paralelos que se describen a continuación.
 \subsection{Autómata de estados de seguridad}
-
 La máquina de estados \texttt{ESTADOS\_SEGURIDAD} supervisa constantemente el estado físico de la
 grúa. Durante la operación normal permanece en el estado \texttt{SISTEMA\_OK}, con ambos frenos
 abiertos: el de operación del carro (\textcolor{signalcolor}{$BRK_t$} $= 1$) y el de
@@ -59,7 +55,7 @@ manual, de comunicación o de sobrevelocidad.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{nivel_0/estados_seguridad.png}
+    \includegraphics[width=0.73\textwidth]{nivel_0/estados_seguridad.png}
     \caption{Máquina de estados de seguridad en Stateflow}
     \label{fig:n0_estados_seguridad}
 \end{figure}
@@ -80,7 +76,7 @@ comando recibido ante una pérdida de comunicación.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{nivel_0/watchdog.png}
+    \includegraphics[width=0.6\textwidth]{nivel_0/watchdog.png}
     \caption{Monitor de comunicaciones en Stateflow}
     \label{fig:n0_watchdog}
 \end{figure}

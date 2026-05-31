@@ -1,3 +1,4 @@
+\newpage
 \section{CODESYS codificación manual}
 Los Niveles 0 y 1 se han diseñado en Stateflow y el Nivel 2 en Simulink como diagrama de bloques discretos, sin embargo, 
 para la implementación en hardware real, se debe traducir la lógica desarrollada a un programa en CODESYS utilizando una mezcla de los lenguajes
@@ -20,7 +21,7 @@ a tal velocidad que, a fines prácticos, el comportamiento es idéntico al de un
 Se rediseña el modelo del Nivel 2 usando la misma lógica pero representándola con bloques de función de Matlab (simil ST):
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.65\textwidth]{codesys/control_carro_funciones2.png}
+    \includegraphics[width=0.6\textwidth]{codesys/control_carro_funciones2.png}
     \caption{Diagrama de control del carro con funciones de Matlab}
 \end{figure}
 \begin{figure}[H]
@@ -32,13 +33,13 @@ Se agregan varios bloques \textit{Delay} para solucionar problemas de loops alge
 El código de cada controlador queda de la siguiente forma:
 \begin{figure}[H]
     \centering
-    \begin{subfigure}{0.48\textwidth}
+    \begin{subfigure}{0.49\textwidth}
         \centering
         \includegraphics[width=\linewidth]{codesys/matlab_function_nivel2_carro.png}
         \caption{Control del carro simil ST}
     \end{subfigure}
     \hfill
-    \begin{subfigure}{0.48\textwidth}
+    \begin{subfigure}{0.49\textwidth}
         \centering
         \includegraphics[width=\linewidth]{codesys/matlab_function_nivel2_izaje.png}
         \caption{Control de izaje simil ST}
@@ -75,7 +76,7 @@ Además, al finalizar el movimiento de \textit{homing}, en Stateflow la transici
 En la siguiente imágen se puede ver la implementación utilizada:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{codesys/codesys_supervisor15.png}
+    \includegraphics[width=0.45\textwidth]{codesys/codesys_supervisor15.png}
     \caption{Diagrama del modo automático en CODESYS}
 \end{figure}
 
@@ -83,7 +84,7 @@ En la siguiente imágen se puede ver la implementación utilizada:
 Sin modificaciones notorias, se replica el bloque encargado de la lógica de los Twistlocks. Como es un SFC cíclico, el último paso regresa al inicial al cumplir su transición:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{codesys/codesys_supervisor4.png}
+    \includegraphics[width=0.75\textwidth]{codesys/codesys_supervisor4.png}
     \caption{Diagrama de la lógica de los Twistlocks en CODESYS}
 \end{figure}
 
@@ -92,7 +93,7 @@ obstáculos, información que es fundamental para la generación de trayectorias
 escaneo del muelle:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.55\textwidth]{codesys/codesys_supervisor14.png}
+    \includegraphics[width=0.6\textwidth]{codesys/codesys_supervisor14.png}
     \caption{Diagrama del bloque indices perfil en CODESYS}
 \end{figure}
 
@@ -116,7 +117,7 @@ sintaxis y estructura de SFC.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{codesys/codesys_seguridad3.png}
+    \includegraphics[width=0.83\textwidth]{codesys/codesys_seguridad3.png}
     \caption{Diagrama del watchdog en CODESYS}
 \end{figure}
 
@@ -137,24 +138,22 @@ de lecturas/escrituras por segundo, disminuyendo la carga en la red y permitiend
 
 Con el uso de los bloques de comunicación con mayor tiempo de muestreo, se mejora significativamente la fluidez de la simulación, manteniendo una comunicación efectiva entre Simulink y CODESYS. Además, se comprueba de forma satisfactoria que el controlador responde de la misma manera que el modelo en Simulink.
 
-A continuación, los bloques de escritura/lectura de las variables de control supervisor y protección, respectivamente:
+A continuación, los bloques de escritura/lectura de las variables de control supervisor y protección y una captura de la simulación 
+con la comunicación OPC-UA funcionando, respectivamente:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{codesys/opc_ua_1.png}
+    \includegraphics[width=0.79\textwidth]{codesys/opc_ua_1.png}
     \caption{Diagrama de bloques de comunicación OPC-UA para el control supervisor en Simulink}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{codesys/opc_ua_0.png}
+    \includegraphics[width=0.79\textwidth]{codesys/opc_ua_0.png}
     \caption{Diagrama de bloques de comunicación OPC-UA para el control de protección en Simulink}
 \end{figure}
-
-
-Se muestra una captura de la simulación con la comunicación OPC-UA en funcionamiento:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{codesys/codesys_interfaz.png}
+    \includegraphics[width=0.8\textwidth]{codesys/codesys_interfaz.png}
     \caption{Simulación con comunicación OPC-UA en funcionamiento.}
 \end{figure}
 

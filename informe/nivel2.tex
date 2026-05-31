@@ -70,7 +70,7 @@ El torque de referencia en tiempo discreto es:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{nivel_2/lazo_controlador_carro.png}
+    \includegraphics[width=0.65\textwidth]{nivel_2/lazo_controlador_carro.png}
     \caption{Controlador PI del carro}
 \end{figure}
 
@@ -150,7 +150,7 @@ adicionales pequeñas, pero a cambio la posición de la carga se mantiene más c
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{nivel_2/control_balanceo.png}
+    \includegraphics[width=0.65\textwidth]{nivel_2/control_balanceo.png}
     \caption{Controlador del balanceo del carro}
 \end{figure}
 
@@ -398,7 +398,7 @@ $T_{hm}^\ast(k) = T_{PI}(k) + T_{g,ff}$.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{nivel_2/lazo_controlador_izaje.png}
+    \includegraphics[width=0.82\textwidth]{nivel_2/lazo_controlador_izaje.png}
     \caption{Controlador PI del izaje con compensación de gravedad}
 \end{figure}
 
@@ -437,22 +437,23 @@ Quedando así las ecuaciones implementadas en Simulink como:
 \right.
 \]
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{nivel_2/obs_pid_izaje.png}
-    \caption{Observador de estado del izaje con ganancia integral}
-\end{figure}
+Ya que el observador es análogo al caso del carro, el diagrama de bloques es el mismo, pero con las señales y ganancias correspondientes al izaje.
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{nivel_2/obs_pid_izaje.png}
+%     \caption{Observador de estado del izaje con ganancia integral}
+% \end{figure}
 
 
 
 \subsection{Modelo del controlador regulatorio en Simulink}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{nivel_2/controlador_carro.png}
+    \includegraphics[width=0.85\textwidth]{nivel_2/controlador_carro.png}
     \caption{Diagrama del controlador regulatorio del carro}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{nivel_2/controlador_izaje.png}
+    \includegraphics[width=0.45\textwidth]{nivel_2/controlador_izaje.png}
     \caption{Diagrama del controlador regulatorio del izaje}
 \end{figure}

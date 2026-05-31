@@ -151,11 +151,10 @@ pasar por zonas donde pudiera colisionar. Esto es usado en la planificación de 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.45\textwidth]{nivel_1/indices_perfil.png}
+    \includegraphics[width=0.46\textwidth]{nivel_1/indices_perfil.png}
     \caption{Cálculo de índice y actualización del perfil de obstáculos en Stateflow}
     \label{fig:n1_indices_perfil}
 \end{figure}
-
 \subsection{Límites suaves de velocidad}
 
 Este proceso actúa como una barrera de seguridad preventiva. Antes de que el carro o el izaje
@@ -168,13 +167,15 @@ disponible se reduce a medida que la carga se acerca al borde, considerando adem
 dinámico que anticipa el frenado en función de la velocidad actual. Si la consigna suavizada
 excede la velocidad segura calculada, se satura a esta última, garantizando que el sistema nunca
 llegue a los finales de carrera a velocidad elevada.
-
+\newpage
+%\thispagestyle{empty}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.55\textwidth]{nivel_1/limites_suaves.png}
+    \includegraphics[width=0.5\textwidth]{nivel_1/limites_suaves.png}
     \caption{Lógica de límites suaves de velocidad en Stateflow}
     \label{fig:n1_limites_suaves}
 \end{figure}
+\newpage
 
 \subsection{Supervisión de comunicación (Watchdog Heartbeat)}
 
@@ -187,7 +188,7 @@ estado de error.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{nivel_1/watchdog_heartbeat.png}
+    \includegraphics[width=0.65\textwidth]{nivel_1/watchdog_heartbeat.png}
     \caption{Watchdog Heartbeat en Stateflow}
     \label{fig:n1_watchdog}
 \end{figure}
@@ -207,7 +208,7 @@ y no volver a apagado hasta que se pulse nuevamente el botón.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{nivel_1/joystick.png}
+    \includegraphics[width=0.85\textwidth]{nivel_1/joystick.png}
     \caption{Bloque de configuración del joystick}
     \label{fig:n1_joystick}
 \end{figure}
