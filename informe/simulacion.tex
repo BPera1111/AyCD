@@ -20,7 +20,7 @@ una representación 2D de la grúa, contenedores, barco y parámetros clave que 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.3\textwidth]{simulacion/sim_udp.png}
-    \hfill
+    \hspace{0.8cm}
     \includegraphics[width=0.3\textwidth]{simulacion/sim_udp2.png}
     \caption{Diagrama de la comunicación UDP entre Simulink y el programa de python}
 \end{figure}
@@ -29,33 +29,41 @@ A continuación se presentan algunas capturas de diferentes estados de la grúa,
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}{0.49\textwidth}
+    \begin{subfigure}{0.95\textwidth}
         \centering
         \includegraphics[width=\linewidth]{simulacion/sim_manual.png}
         \caption{Modo manual.}
     \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.49\textwidth}
+
+    \vspace{0.4cm}
+
+    \begin{subfigure}{0.95\textwidth}
         \centering
         \includegraphics[width=\linewidth]{simulacion/sim_auto.png}
         \caption{Modo automático.}
     \end{subfigure}
 
-    \vspace{0.4cm}
+    \caption{Capturas de la animación: modos manual y automático.}
+    \label{fig:sim_estados1}
+\end{figure}
 
-    \begin{subfigure}{0.49\textwidth}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.95\textwidth}
         \centering
         \includegraphics[width=\linewidth]{simulacion/sim_auto_leave.png}
         \caption{Modo automático: liberación de la carga.}
     \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.49\textwidth}
+
+    \vspace{0.4cm}
+
+    \begin{subfigure}{0.95\textwidth}
         \centering
         \includegraphics[width=\linewidth]{simulacion/sim_error.png}
         \caption{Estado de error.}
     \end{subfigure}
 
-    \caption{Capturas de la animación en distintos estados de operación de la grúa.}
-    \label{fig:sim_estados}
+    \caption{Capturas de la animación: liberación de la carga y estado de error.}
+    \label{fig:sim_estados2}
 \end{figure}
 
