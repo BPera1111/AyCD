@@ -82,6 +82,7 @@ crane_state = {
     # Perfil de obstáculos (metros, 33 columnas de xt_min a xt_max)
     'yc0_vec': [0.0] * 33,
     '_udp_n': 0,   # debug: cantidad de doubles en último paquete UDP
+    't_sim': 0.0,  # tiempo de simulación [s] — Clock Mux input 39
     # Derivados
     'modo_nombre': 'REPOSO',
     'any_falla': False,
@@ -202,6 +203,10 @@ def _udp_receiver():
                         idx = freno_h_n1_idx + 1 + j
                         if N > idx:
                             crane_state[key] = float(values[idx])
+                    # t_sim: Clock Mux input 39 (índice 70)
+                    t_sim_idx = freno_h_n1_idx + 5
+                    if N > t_sim_idx:
+                        crane_state['t_sim'] = float(values[t_sim_idx])
                     crane_state['connected'] = True
                     _derive_mode_state()
             except socket.timeout:

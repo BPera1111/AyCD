@@ -98,7 +98,7 @@ yc0_vec_inicial = [ 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, alt_borde,...
 %yc0_vec_inicial = h_vec_inicial;  % Perfil inicial efectivamente medido (zona aún no escaneada = 0)
 x_LIDAR = 3;                                                % [m] Offset del sensor lidar respecto al carro hacia +xt
 
-envolvent = [ones(1,N_xt)]*10;
+envolvent = [ones(1,N_xt)]*30;
 
 %% CN2 - Controlador de movimiento - Carro
 Kf = it/rtd;                                        % Ganancia de conversión torque motor a fuerza lineal en el carro
@@ -174,23 +174,23 @@ counter_limit = timeout/(Ts0*1000); % Pulsos a contar antes de detectar error
 %% Fin
 fprintf('Parámetros de la planta cargados correctamente.\n');
 
-%% Cargar modelo y compilar Accelerator
-model_name = 'planta';
-script_dir = fileparts(mfilename('fullpath'));
-model_path = fullfile(script_dir, [model_name '.slx']);
+% %% Cargar modelo y compilar Accelerator
+% model_name = 'planta';
+% script_dir = fileparts(mfilename('fullpath'));
+% model_path = fullfile(script_dir, [model_name '.slx']);
 
-if ~bdIsLoaded(model_name)
-    load_system(model_path);
-    fprintf('Modelo ''%s'' cargado.\n', model_name);
-else
-    fprintf('Modelo ''%s'' ya estaba cargado.\n', model_name);
-end
+% if ~bdIsLoaded(model_name)
+%     load_system(model_path);
+%     fprintf('Modelo ''%s'' cargado.\n', model_name);
+% else
+%     fprintf('Modelo ''%s'' ya estaba cargado.\n', model_name);
+% end
 
-set_param(model_name, 'SimulationMode', 'accelerator');
-fprintf('Compilando Accelerator (puede tardar ~30s la primera vez)...\n');
-try
-    accelbuild(model_name);
-    fprintf('Accelerator compilado. Listo para simular.\n');
-catch e
-    fprintf('[WARN] accelbuild: %s\n', e.message);
-end
+% set_param(model_name, 'SimulationMode', 'accelerator');
+% fprintf('Compilando Accelerator (puede tardar ~30s la primera vez)...\n');
+% try
+%     accelbuild(model_name);
+%     fprintf('Accelerator compilado. Listo para simular.\n');
+% catch e
+%     fprintf('[WARN] accelbuild: %s\n', e.message);
+% end

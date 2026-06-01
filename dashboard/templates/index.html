@@ -6,6 +6,7 @@
 <title>Grúa STS — Dashboard</title>
 <link rel="stylesheet" href="/static/goldenlayout-base.css">
 <link rel="stylesheet" href="/static/style.css">
+<script>(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.dataset.theme=t;})();</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -23,9 +24,15 @@
       <button id="btn-paneles" title="Reabrir paneles cerrados">◉ Paneles</button>
       <div id="paneles-dropdown" class="paneles-dropdown hidden"></div>
     </div>
+    <label class="theme-switch" title="Alternar modo claro/oscuro">
+      <input type="checkbox" id="theme-toggle">
+      <span class="theme-slider"></span>
+    </label>
     <div id="connection-badge" class="badge badge-off">SIN DATOS</div>
     <div id="modo-badge" class="badge badge-mode">REPOSO</div>
     <div id="fps-counter" class="fps">-- Hz</div>
+    <div id="rtf-display" class="fps rtf-badge">RTF: --</div>
+    <div id="tsim-display" class="fps">t: --s</div>
   </div>
 </header>
 
@@ -153,19 +160,19 @@
 
       <div class="buttons-panel">
         <button class="ctrl-btn btn-manual" data-name="MANUAL" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
-          <span class="btn-main">MANUAL</span><span class="btn-sub">B</span>
+          <span class="btn-main">MANUAL</span><span class="btn-sub">M | B</span>
         </button>
         <button class="ctrl-btn btn-auto" data-name="AUTO" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
-          <span class="btn-main">AUTO</span><span class="btn-sub">X</span>
+          <span class="btn-main">AUTO</span><span class="btn-sub">A | X</span>
         </button>
         <button class="ctrl-btn btn-tlk" data-name="TLK" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
-          <span class="btn-main">TLK</span><span class="btn-sub">A</span>
+          <span class="btn-main">TLK</span><span class="btn-sub">T | A</span>
         </button>
         <button class="ctrl-btn btn-reset" data-name="RESET" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
-          <span class="btn-main">RESET</span><span class="btn-sub">Y</span>
+          <span class="btn-main">RESET</span><span class="btn-sub">R | Y</span>
         </button>
         <button class="ctrl-btn btn-emerg" data-name="EMERG" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
-          <span class="btn-main">EMERG</span><span class="btn-sub">Back</span>
+          <span class="btn-main">EMERG</span><span class="btn-sub">Esp | Back</span>
         </button>
       </div>
 

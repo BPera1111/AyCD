@@ -18,6 +18,79 @@
   --font-mono: 'Consolas', 'Courier New', monospace;
 }
 
+/* ── Tema claro ────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:       #eef1f6;
+  --surface:  #ffffff;
+  --surface2: #f0f3f8;
+  --border:   #c8d0e0;
+  --text:     #1a2040;
+  --text-dim: #5a6a8a;
+}
+
+[data-theme="light"] .badge-off  { background: #ffe0e0; color: var(--danger); }
+[data-theme="light"] .badge-on   { background: #d0f0d8; color: #1a6b30; border-color: #1a6b30; }
+[data-theme="light"] .badge-mode { background: #dce8ff; color: #2040a0; border-color: #2040a0; }
+
+[data-theme="light"] #craneCanvas { background: #b8ccd8; }
+
+[data-theme="light"] .ind-dot { background: #b8c8d8; border-color: #90a0b8; }
+
+[data-theme="light"] .flag-item { color: #8090a8; background: #e8edf5; }
+[data-theme="light"] .flag-item.flag-on { color: #1a2848; background: #dce8ff; }
+
+[data-theme="light"] .falla-item         { color: #8090a8; background: #e8edf5; }
+[data-theme="light"] .falla-item.falla-on { color: #cc0000; background: #ffe8e8; }
+[data-theme="light"] .falla-item.falla-n1 { color: #908040; }
+[data-theme="light"] .falla-item.falla-n1.falla-on { color: #a06000; background: #fff0c0; }
+[data-theme="light"] .falla-banner        { background: #ffe0e0; }
+
+[data-theme="light"] .fc-item          { color: #8090a8; background: #e8edf5; }
+[data-theme="light"] .fc-item.fc-on    { color: #906000; background: #fff3c0; }
+[data-theme="light"] .fc-item.fce      { color: #a07070; }
+[data-theme="light"] .fc-item.fce.fc-on { color: #cc0000; background: #ffe0e0; }
+
+[data-theme="light"] .ctrl-btn { background: #edf0f8; }
+[data-theme="light"] .btn-manual.pressed, [data-theme="light"] .btn-manual:active { background: #fce0e0; }
+[data-theme="light"] .btn-auto.pressed,   [data-theme="light"] .btn-auto:active   { background: #f0e0f8; }
+[data-theme="light"] .btn-tlk.pressed,    [data-theme="light"] .btn-tlk:active    { background: #d8e8fc; }
+[data-theme="light"] .btn-reset.pressed,  [data-theme="light"] .btn-reset:active  { background: #d8f0e0; }
+[data-theme="light"] .btn-emerg           { background: #fce0e0; }
+[data-theme="light"] .btn-emerg.pressed,  [data-theme="light"] .btn-emerg:active  { background: #fcc0c0; }
+
+[data-theme="light"] .modo-badge-large.modo-error       { background: #ffe0e0; }
+[data-theme="light"] .modo-badge-large.modo-muerto      { background: #ffe4e4; }
+[data-theme="light"] .modo-badge-large.modo-recuperacion{ background: #fff3d0; }
+[data-theme="light"] .modo-badge-large.modo-auto        { background: #ede0ff; }
+[data-theme="light"] .modo-badge-large.modo-manual      { background: #d8f0e8; }
+
+[data-theme="light"] .gp-ok  { background: #d0f0d8; color: #1a7a30; }
+[data-theme="light"] .gp-off { background: #f0e0e0; }
+
+/* ── Toggle de tema ─────────────────────────────────────────────────────── */
+.theme-switch { cursor: pointer; display: inline-flex; align-items: center; }
+.theme-switch input { display: none; }
+.theme-slider {
+  width: 34px; height: 18px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  position: relative;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+.theme-slider::before {
+  content: '';
+  position: absolute;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  top: 2px; left: 2px;
+  transition: transform 0.2s, background 0.2s;
+}
+.theme-switch input:checked + .theme-slider { background: #c8a800; border-color: #a08000; }
+.theme-switch input:checked + .theme-slider::before { transform: translateX(16px); background: #fff8d0; }
+
 html { height: 100%; overflow: hidden; }
 
 body {
@@ -47,6 +120,10 @@ header {
 
 .header-right { display: flex; align-items: center; gap: 0.6rem; }
 .fps { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim); }
+.rtf-badge { font-weight: 700; }
+.rtf-ok   { color: var(--green); }
+.rtf-warn { color: var(--warn); }
+.rtf-slow { color: var(--danger); }
 
 .badge {
   padding: 0.25rem 0.7rem;
@@ -124,7 +201,12 @@ header {
   flex-wrap: wrap;
   flex-shrink: 0;
 }
-.crane-info strong { color: var(--accent2); }
+.crane-info strong {
+  color: var(--accent2);
+  display: inline-block;
+  min-width: 7ch;
+  text-align: right;
+}
 
 /* ── Status section ──────────────────────────────────────────────────── */
 .status-section { overflow-y: auto; }

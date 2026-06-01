@@ -22,9 +22,10 @@ const STICK_RING  = '#2e3e5e';
 const THUMB_CLR   = '#4a90e2';
 const CROSS_CLR   = '#2e3a50';
 
-// ── FPS counter ───────────────────────────────────────────────────────────────
+// ── FPS counter + RTF ─────────────────────────────────────────────────────────
 let lastTelemetryTime = 0;
 let fpsAccum = [];
+let _rtfPrevTSim = null, _rtfPrevTWall = null, _rtfEma = null;
 
 // ── Socket.IO ─────────────────────────────────────────────────────────────────
 const socket = io({ transports: ['websocket', 'polling'] });
@@ -52,6 +53,7 @@ socket.on('telemetry', (data) => {
   SelectorViz.update(data);
   updateUI(data);
   updateCharts(data);
+  updateRTF(data.t_sim);
 });
 
 // ── Actualizar UI de estado ───────────────────────────────────────────────────
@@ -157,6 +159,31 @@ function updateFCs(data) {
   for (const [id, key] of Object.entries(FC_MAP)) {
     const el = document.getElementById(id);
     if (el) el.className = 'fc-item' + (data[key] ? ' fc-on' : '');
+  }
+}
+
+// ── RTF (Real-Time Factor) ────────────────────────────────────────────────────
+function updateRTF(t_sim) {
+  if (t_sim === undefined || t_sim === null) return;
+  const tWall = performance.now() / 1000;
+  if (_rtfPrevTSim !== null && t_sim > _rtfPrevTSim) {
+    const dtSim  = t_sim  - _rtfPrevTSim;
+    const dtWall = tWall  - _rtfPrevTWall;
+    if (dtWall > 0 && dtWall < 2.0) {
+      const rtf = dtSim / dtWall;
+      _rtfEma = _rtfEma === null ? rtf : _rtfEma * 0.85 + rtf * 0.15;
+    }
+  }
+  _rtfPrevTSim  = t_sim;
+  _rtfPrevTWall = tWall;
+
+  const elRtf  = document.getElementById('rtf-display');
+  const elTsim = document.getElementById('tsim-display');
+  if (elTsim) elTsim.textContent = `t: ${t_sim.toFixed(1)}s`;
+  if (elRtf && _rtfEma !== null) {
+    elRtf.textContent = `RTF: ${_rtfEma.toFixed(2)}`;
+    elRtf.className = 'fps rtf-badge ' +
+      (_rtfEma >= 0.95 ? 'rtf-ok' : _rtfEma >= 0.6 ? 'rtf-warn' : 'rtf-slow');
   }
 }
 
@@ -316,6 +343,49 @@ function btnDown(el) {
 function btnUp(el) {
   el.classList.remove('pressed');
   socket.emit('button', { name: el.dataset.name, pressed: false });
+}
+
+// ── Control por teclado ───────────────────────────────────────────────────
+const _keyHeld = new Set();
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (_keyHeld.has(e.code)) return;
+  _keyHeld.add(e.code);
+  const cs = stickState.carro, is = stickState.izaje;
+  switch (e.code) {
+    case 'ArrowLeft':  e.preventDefault(); cs.ax = -1; cs.dragging = true;  emitJoystick(); break;
+    case 'ArrowRight': e.preventDefault(); cs.ax =  1; cs.dragging = true;  emitJoystick(); break;
+    case 'ArrowUp':    e.preventDefault(); is.ay = -1; is.dragging = true;  emitJoystick(); break;
+    case 'ArrowDown':  e.preventDefault(); is.ay =  1; is.dragging = true;  emitJoystick(); break;
+    case 'KeyM': _kbBtn('MANUAL', true); break;
+    case 'KeyA': _kbBtn('AUTO',   true); break;
+    case 'KeyT': _kbBtn('TLK',    true); break;
+    case 'KeyR': _kbBtn('RESET',  true); break;
+    case 'Space': e.preventDefault(); _kbBtn('EMERG', true); break;
+  }
+});
+document.addEventListener('keyup', (e) => {
+  _keyHeld.delete(e.code);
+  const cs = stickState.carro, is = stickState.izaje;
+  switch (e.code) {
+    case 'ArrowLeft':
+    case 'ArrowRight': cs.ax = 0; cs.dragging = false; emitJoystick(); break;
+    case 'ArrowUp':
+    case 'ArrowDown':  is.ay = 0; is.dragging = false; emitJoystick(); break;
+    case 'KeyM': _kbBtn('MANUAL', false); break;
+    case 'KeyA': _kbBtn('AUTO',   false); break;
+    case 'KeyT': _kbBtn('TLK',    false); break;
+    case 'KeyR': _kbBtn('RESET',  false); break;
+    case 'Space': _kbBtn('EMERG', false); break;
+  }
+});
+function _kbBtn(name, pressed) {
+  const el = document.querySelector(`.ctrl-btn[data-name="${name}"]`);
+  if (el) {
+    pressed ? btnDown(el) : btnUp(el);
+  } else {
+    socket.emit('button', { name, pressed });
+  }
 }
 
 // ── Verificar gamepad status ──────────────────────────────────────────────────
@@ -493,6 +563,20 @@ async function initGoldenLayout() {
 
 // ── Inicialización ────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  // Tema claro/oscuro
+  const themeToggle = document.getElementById('theme-toggle');
+  const savedTheme = document.documentElement.dataset.theme || 'dark';
+  themeToggle.checked = (savedTheme === 'light');
+  CraneViz.setTheme(savedTheme === 'light');
+  SelectorViz.setTheme(savedTheme === 'light');
+  themeToggle.addEventListener('change', () => {
+    const t = themeToggle.checked ? 'light' : 'dark';
+    document.documentElement.dataset.theme = t;
+    localStorage.setItem('theme', t);
+    CraneViz.setTheme(t === 'light');
+    SelectorViz.setTheme(t === 'light');
+  });
+
   initGoldenLayout();
   checkGamepadStatus();
   setInterval(checkGamepadStatus, 10000);

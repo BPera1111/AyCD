@@ -17,11 +17,39 @@ const SelectorViz = (() => {
     return XT_MIN + (i / (N - 1)) * (XT_MAX - XT_MIN);
   }
 
+  let SC = buildSC(false);
+
+  function buildSC(light) {
+    return light ? {
+      bg:       '#d4dfe8',
+      invalid:  '#b8c4cc',
+      muelle:   '#4070a0',
+      barco:    '#407858',
+      hold:     '#a8b8c8',
+      baseline: '#8090a8',
+      divider:  '#90a0b8',
+      lblMuelle:'#305080',
+      lblBarco: '#306050',
+      lblAxis:  '#506878',
+    } : {
+      bg:       '#0f1520',
+      invalid:  '#1e2430',
+      muelle:   '#2a5070',
+      barco:    '#2a6050',
+      hold:     '#0a1e2e',
+      baseline: '#2a3448',
+      divider:  '#3a4458',
+      lblMuelle:'#2d5070',
+      lblBarco: '#2d6050',
+      lblAxis:  '#363f50',
+    };
+  }
+
   function baseColor(i0) {
     const i1 = i0 + 1;
-    if (INVALID.has(i1))   return '#1e2430';
-    if (i1 <= 12)          return '#2a5070';
-    return '#2a6050';
+    if (INVALID.has(i1))   return SC.invalid;
+    if (i1 <= 12)          return SC.muelle;
+    return SC.barco;
   }
 
   function draw() {
@@ -47,7 +75,7 @@ const SelectorViz = (() => {
     const MAX_STACKS = 8;
 
     // Fondo
-    ctx.fillStyle = '#0f1520';
+    ctx.fillStyle = SC.bg;
     ctx.fillRect(0, 0, W, H);
 
     const yc0_vec = _data.yc0_vec || Array(N).fill(0);
@@ -74,7 +102,7 @@ const SelectorViz = (() => {
       } else if (stacks < 0) {
         // hold por debajo de la línea base
         const barH = Math.min((-stacks / MAX_STACKS) * chartH * 0.4, chartH * 0.25);
-        ctx.fillStyle = '#0a1e2e';
+        ctx.fillStyle = SC.hold;
         ctx.fillRect(barL, BASE_Y, barW, barH);
       }
 
@@ -88,7 +116,7 @@ const SelectorViz = (() => {
     }
 
     // Línea base
-    ctx.strokeStyle = '#2a3448';
+    ctx.strokeStyle = SC.baseline;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(ML, BASE_Y);
@@ -97,7 +125,7 @@ const SelectorViz = (() => {
 
     // Divisor muelle / barco
     ctx.setLineDash([3, 3]);
-    ctx.strokeStyle = '#3a4458';
+    ctx.strokeStyle = SC.divider;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(divX, MT);
@@ -108,13 +136,13 @@ const SelectorViz = (() => {
     // Etiquetas de zona
     ctx.font = '7px Consolas';
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#2d5070';
+    ctx.fillStyle = SC.lblMuelle;
     ctx.fillText('MUELLE', ML + 2, MT - 3);
-    ctx.fillStyle = '#2d6050';
+    ctx.fillStyle = SC.lblBarco;
     ctx.fillText('BARCO', divX + 3, MT - 3);
 
     // Eje X (cada 20m)
-    ctx.fillStyle = '#363f50';
+    ctx.fillStyle = SC.lblAxis;
     ctx.font = '8px Consolas';
     ctx.textAlign = 'center';
     for (let x = XT_MIN; x <= XT_MAX; x += 20) {
@@ -158,5 +186,7 @@ const SelectorViz = (() => {
     _data = data;
   }
 
-  return { init, update };
+  function setTheme(isLight) { SC = buildSC(isLight); }
+
+  return { init, update, setTheme };
 })();

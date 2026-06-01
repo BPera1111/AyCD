@@ -71,47 +71,82 @@ const CraneViz = (() => {
     return m / (WORLD.xMax - WORLD.xMin) * sceneW();
   }
 
-  // ── Colores ──────────────────────────────────────────────────────────────
-  const C = {
-    sky:        '#0a1520',
-    water:      '#0a2035',
-    dock:       '#2a3040',
-    dockEdge:   '#4a5560',
-    ship:       '#1a2535',
-    shipEdge:   '#3a4a60',
-    rail:       '#6a7a9a',
-    trolley:    '#3060c0',
-    trolleyEdge:'#60a0ff',
-    cable:      '#c0c8d8',
-    spreader:   '#e07010',
-    spreaderEdge:'#ffa040',
-    container:  '#3a7a50',
-    containerEdge:'#60c080',
-    containerShip:'#4a5070',
-    containerDock:'#5a6a40',
-    pulley:     '#8090b0',
-    text:       '#8090b0',
-    grid:       '#1a2230',
-    waterSurf:  '#0d4060',
-    ship_hull:  '#243040',
-    crane_col:  '#3a4560',
-    crane_bm:   '#4a5570',
-  };
+  // ── Colores (dos paletas: oscuro/claro) ─────────────────────────────────
+  function buildColors(light) {
+    return light ? {
+      sky:           '#4488cc',
+      water:         '#2060a0',
+      dock:          '#8090a0',
+      dockEdge:      '#5a6878',
+      ship:          '#5a2030',
+      shipEdge:      '#8a4555',
+      rail:          '#8898b0',
+      trolley:       '#202020',
+      trolleyEdge:   '#606060',
+      cable:         '#304858',
+      spreader:      '#e07010',
+      spreaderEdge:  '#ffa040',
+      container:     '#3a7a50',
+      containerEdge: '#60c080',
+      containerShip: '#607890',
+      containerDock: '#6a8050',
+      pulley:        '#607888',
+      text:          '#305070',
+      grid:          '#8090a8',
+      waterSurf:     '#4090c0',
+      ship_hull:     '#3a1020',
+      crane_col:     '#708090',
+      crane_bm:      '#809090',
+      skyGrad:       ['#4488cc', '#a0c8e8'],
+      waterGrad:     ['#2060a0', '#102040'],
+      barBg:         '#c8d4e0',
+      barBorder:     '#8090a0',
+    } : {
+      sky:           '#0a1520',
+      water:         '#0a2035',
+      dock:          '#2a3040',
+      dockEdge:      '#4a5560',
+      ship:          '#3a1020',
+      shipEdge:      '#703040',
+      rail:          '#6a7a9a',
+      trolley:       '#202020',
+      trolleyEdge:   '#606060',
+      cable:         '#c0c8d8',
+      spreader:      '#e07010',
+      spreaderEdge:  '#ffa040',
+      container:     '#3a7a50',
+      containerEdge: '#60c080',
+      containerShip: '#4a5070',
+      containerDock: '#5a6a40',
+      pulley:        '#8090b0',
+      text:          '#8090b0',
+      grid:          '#1a2230',
+      waterSurf:     '#0d4060',
+      ship_hull:     '#250a12',
+      crane_col:     '#3a4560',
+      crane_bm:      '#4a5570',
+      skyGrad:       ['#050e1a', '#0a1a2e'],
+      waterGrad:     ['#0a2035', '#061018'],
+      barBg:         '#1a2230',
+      barBorder:     '#3a4858',
+    };
+  }
+  let C = buildColors(false);
 
   // ── Dibujar fondo (cielo, agua, suelo) ───────────────────────────────────
   function drawBackground() {
     // Cielo
     const y_water = toCanvasY(-5);
     const sky_grad = ctx.createLinearGradient(0, 0, 0, y_water);
-    sky_grad.addColorStop(0, '#050e1a');
-    sky_grad.addColorStop(1, '#0a1a2e');
+    sky_grad.addColorStop(0, C.skyGrad[0]);
+    sky_grad.addColorStop(1, C.skyGrad[1]);
     ctx.fillStyle = sky_grad;
     ctx.fillRect(0, 0, W, y_water);
 
     // Agua
     const water_grad = ctx.createLinearGradient(0, y_water, 0, H);
-    water_grad.addColorStop(0, '#0a2035');
-    water_grad.addColorStop(1, '#061018');
+    water_grad.addColorStop(0, C.waterGrad[0]);
+    water_grad.addColorStop(1, C.waterGrad[1]);
     ctx.fillStyle = water_grad;
     ctx.fillRect(0, y_water, W, H - y_water);
 
@@ -218,14 +253,15 @@ const CraneViz = (() => {
       if (x_m < x_start || x_m > x_end) continue;
       const stacks_top = Math.round(PHYS.h_vec[i]);
       if (stacks_top <= y_min_stacks) continue;
-      const cx = toCanvasX(x_m) - Wc_px / 2;
+      const visW = Math.max(2, Wc_px * 0.90);   // gap visual entre containers del stack
+      const cx = toCanvasX(x_m) - visW / 2;
       for (let s = y_min_stacks; s < stacks_top; s++) {
         const cy = toCanvasY((s + 1) * PHYS.Hc) + 1;
         ctx.fillStyle = color;
-        ctx.fillRect(cx, cy, Wc_px - 1, Hc_px - 1);
+        ctx.fillRect(cx, cy, visW, Hc_px - 1);
         ctx.strokeStyle = '#607080';
         ctx.lineWidth = 0.5;
-        ctx.strokeRect(cx, cy, Wc_px - 1, Hc_px - 1);
+        ctx.strokeRect(cx, cy, visW, Hc_px - 1);
       }
     }
   }
@@ -270,7 +306,7 @@ const CraneViz = (() => {
     ctx.strokeRect(x_l, y_rail - rail_h / 2, x_r - x_l, rail_h);
 
     // Etiquetas de escala en X
-    ctx.fillStyle = '#404858';
+    ctx.fillStyle = C.text;
     ctx.font = '9px Consolas';
     ctx.textAlign = 'center';
     for (let x = PHYS.xt_min; x <= PHYS.xt_max; x += 10) {
@@ -322,13 +358,13 @@ const CraneViz = (() => {
       }
     }
 
-    // Spreader
+    // Spreader (amarillo — identidad visual)
     const sp_grad = ctx.createLinearGradient(cx_spread - sw / 2, y_spreader - sh / 2, cx_spread + sw / 2, y_spreader + sh / 2);
-    sp_grad.addColorStop(0, '#c05a10');
-    sp_grad.addColorStop(1, '#e07010');
+    sp_grad.addColorStop(0, '#ffe040');
+    sp_grad.addColorStop(1, '#e0b000');
     ctx.fillStyle = sp_grad;
     ctx.fillRect(cx_spread - sw / 2, y_spreader - sh / 2, sw, sh);
-    ctx.strokeStyle = C.spreaderEdge;
+    ctx.strokeStyle = '#fff080';
     ctx.lineWidth = 1.5;
     ctx.strokeRect(cx_spread - sw / 2, y_spreader - sh / 2, sw, sh);
 
@@ -347,10 +383,10 @@ const CraneViz = (() => {
     ctx.fillStyle = C.pulley;
     ctx.fill();
 
-    // Carro (trolley)
+    // Carro (trolley — negro para visibilidad)
     const trolley_grad = ctx.createLinearGradient(cx - tw / 2, y_rail - th, cx + tw / 2, y_rail + th);
-    trolley_grad.addColorStop(0, '#5080d0');
-    trolley_grad.addColorStop(1, '#3060c0');
+    trolley_grad.addColorStop(0, '#303030');
+    trolley_grad.addColorStop(1, '#101010');
     ctx.fillStyle = trolley_grad;
     ctx.fillRect(cx - tw / 2, y_rail - th, tw, th);
     ctx.strokeStyle = C.trolleyEdge;
@@ -370,7 +406,7 @@ const CraneViz = (() => {
     });
 
     // Etiquetas
-    ctx.fillStyle = '#8090b0';
+    ctx.fillStyle = C.text;
     ctx.font = '9px Consolas';
     ctx.textAlign = 'center';
     ctx.fillText(`xt=${xt.toFixed(1)}m`, cx, y_rail - th - 3);
@@ -395,7 +431,7 @@ const CraneViz = (() => {
 
     function drawBar(x, frac, label) {
       // Fondo
-      ctx.fillStyle = '#1a2230';
+      ctx.fillStyle = C.barBg;
       ctx.fillRect(x, y_mid - bar_h / 2, bar_w, bar_h);
       // Relleno
       const fill_h = Math.abs(frac) * (bar_h / 2);
@@ -403,11 +439,11 @@ const CraneViz = (() => {
       ctx.fillStyle = frac > 0 ? '#3080d0' : '#d04030';
       ctx.fillRect(x, fill_y, bar_w, fill_h);
       // Borde
-      ctx.strokeStyle = '#3a4858';
+      ctx.strokeStyle = C.barBorder;
       ctx.lineWidth = 0.5;
       ctx.strokeRect(x, y_mid - bar_h / 2, bar_w, bar_h);
       // Línea central
-      ctx.strokeStyle = '#4a5868';
+      ctx.strokeStyle = C.barBorder;
       ctx.beginPath();
       ctx.moveTo(x - 2, y_mid);
       ctx.lineTo(x + bar_w + 2, y_mid);
@@ -513,5 +549,7 @@ const CraneViz = (() => {
     }
   }
 
-  return { init, update };
+  function setTheme(isLight) { C = buildColors(isLight); }
+
+  return { init, update, setTheme };
 })();
