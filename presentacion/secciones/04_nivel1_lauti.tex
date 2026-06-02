@@ -1,5 +1,71 @@
 \section{Nivel 1 --- Control supervisor (DEDS)}
 
+\begin{frame}{Nivel 1: el cerebro lógico de la grúa}
+  Autómata de \textbf{eventos discretos} (Stateflow), $T_{s1}=20$ ms. Organizado en
+  \textbf{procesos paralelos} que se evalúan simultáneamente:
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item \textbf{Autómata principal} de modos.
+        \item Gestión de \textbf{twistlocks}.
+        \item Análisis espacial: \textbf{perfil e índices} (LIDAR).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item \textbf{Suavizado} de consignas (jerk/acel.).
+        \item \textbf{Límites suaves} de velocidad.
+        \item \textbf{Watchdog} de comunicación.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.2cm}
+  \begin{alertblock}{Entradas / Salidas}
+    Sensores + joystick + fallas $\;\to\;$ consignas \sig{vx\_cmd}/\sig{vy\_cmd}, frenos
+    \sig{$BRK$}, \sig{TLK}, \sig{vh\_lim}, \sig{heartbeat}.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Autómata principal de modos de operación}
+  \begin{columns}[T]
+    \begin{column}{0.42\textwidth}
+      \begin{itemize}
+        \item \textbf{Reposo}: detenido, frenos cerrados.
+        \item \textbf{Manual}: control directo por joystick.
+        \item \textbf{Automático}: ciclo autónomo de carga/descarga.
+        \item \textbf{Recuperación}: resguardo tras falla.
+        \item \textbf{Errores}: por tipo de fin de carrera.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.58\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{nivel_1/automata_principal.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Modo automático: ciclo coordinado sin colisiones}
+  \begin{columns}[c]
+    \begin{column}{0.45\textwidth}
+      \begin{itemize}
+        \item Secuencia \textbf{origen $\to$ destino} gestionada por el estado del ciclo y los
+              índices seleccionados.
+        \item Una \textbf{función planificadora} genera las consignas de velocidad
+              (\sig{vx\_target}, \sig{vy\_target}) coordinando ambos ejes.
+        \item Usa la \textbf{envolvente de seguridad} del perfil para \textbf{evadir colisiones}
+              con la pila de contenedores.
+        \item Movimientos \textbf{simultáneos} (izaje + traslación) para optimizar el tiempo de
+              ciclo.
+        \item \textbf{Transferencia suave} a manual si el operador interviene (\textit{bumpless}).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.55\textwidth}
+      \centering
+      \vspace{0.2cm}
+      \includegraphics[width=\linewidth]{nivel_1/modo_auto.png}
+    \end{column}
+  \end{columns}
+\end{frame}
 \begin{frame}{Twistlocks}
   \begin{columns}[T]
     \begin{column}{0.5\textwidth}
