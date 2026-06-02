@@ -189,10 +189,10 @@ def _udp_receiver():
                     sobrecarga_idx = modo_error_idx + 1
                     if N > sobrecarga_idx:
                         crane_state['FALLA_SOBRECARGA'] = float(values[sobrecarga_idx])
-                    # m_container_est: Mux input 32 (índice 63)
+                    # m_container_est: Mux input 32 (índice 63) — señal en unidades ×100, escalar a kg
                     m_est_idx = sobrecarga_idx + 1
                     if N > m_est_idx:
-                        crane_state['m_container_est'] = float(values[m_est_idx])
+                        crane_state['m_container_est'] = float(values[m_est_idx]) * 100
                     # freno_h_n0: Mux input 33 (índice 64) — freno emergencia izaje nivel 0
                     freno_h_n0_idx = m_est_idx + 1
                     if N > freno_h_n0_idx:

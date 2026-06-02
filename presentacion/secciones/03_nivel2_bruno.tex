@@ -1,94 +1,69 @@
-\section{Nivel 2 --- Control regulatorio}
-
-\begin{frame}{Nivel 2: objetivo}
-  \begin{itemize}
-    \item Genera los comandos de \textbf{torque} $T^\ast$ a partir de referencias de
-          \textbf{velocidad} del supervisor.
-    \item Control en cascada: \textbf{velocidad} (PI) $\to$ modulador de torque.
-    \item Atenúa perturbaciones: balanceo de la carga y variaciones de masa.
-    \item Opera muestreado en tiempo discreto.
-  \end{itemize}
-  \begin{block}{Componentes diseñados}
-    Lazo PI de velocidad \quad$\bullet$\quad Observador de estado \quad$\bullet$\quad
-    Control anti-balanceo \quad$\bullet$\quad Anti-windup \quad$\bullet$\quad
-    Compensación de gravedad
+\begin{frame}{Control de balanceo (Anti-Sway): estrategia}
+  \begin{block}{Control desacoplado (no basado en el modelo completo)}
+    Se aprovechan dos dinámicas con escalas de tiempo \textbf{muy separadas}:
+    \begin{itemize}
+      \item \textbf{Accionamiento del carro}: rápido (establecimiento $< 100$ ms).
+      \item \textbf{Péndulo de la carga}: lento (periodo natural $2$--$12$ s, según $l_h$).
+    \end{itemize}
   \end{block}
+
+  \begin{block}{Hipótesis de desacople}
+    Con el lazo de velocidad bien sintonizado, $v_t(t) \approx v_t^*(t)$: la dinámica del
+    actuador se separa de la pendular.
+  \end{block}
+
+  \begin{alertblock}{Idea}
+    El balanceo se amortigua \textbf{modulando la velocidad de referencia} del carro, no con un
+    actuador extra.
+  \end{alertblock}
 \end{frame}
 
-\begin{frame}{Lazo de velocidad: PI por asignación de polos}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      Planta simplificada del carro:
-      \[ G_{vel,t}(s)=\frac{V_t(s)}{T_{tm}(s)}=\frac{K_f}{M_t\,s+b_t}\approx\frac{K_f}{M_t\,s} \]
-      Controlador:
-      \[ C_{vel}(s)=K_p+\frac{K_i}{s} \]
-      Comparando con $s^2+2\zeta\omega_n s+\omega_n^2$:
-      \[ K_p=\frac{2\zeta\omega_n M_t}{K_f},\quad K_i=\frac{\omega_n^2 M_t}{K_f} \]
-      \footnotesize $\omega_n=0.8$ rad/s, $\zeta=1$ (sin sobrepaso).
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \centering
-      \includegraphics[width=\linewidth]{nivel_2/lazo_controlador_carro.png}\\[0.2cm]
-      \footnotesize \textbf{Anti-windup}: la señal de freno resetea el integrador mientras el
-      freno está cerrado.
-    \end{column}
-  \end{columns}
+\begin{frame}{Deducción de la ley de control no lineal}
+  \begin{block}{Péndulo excitado por la aceleración del carro}
+    \[
+    \ddot\theta_l = -\frac{g}{l_h}\sin\theta_l - \frac{\ddot x_t}{l_h}\cos\theta_l
+    \]
+  \end{block}
+
+  \vspace{-0.15cm}
+  \begin{block}{Ley antibalanceo proporcional al ángulo}
+    $v_t^* = v_{t\,target} + v_{sway}$, \quad con $\;v_{sway} = K_{sway}\,\theta_l$ \quad
+    $\Rightarrow\; \ddot x_t \approx \dot v_{t\,target} + K_{sway}\,\dot\theta_l$.
+    \[
+    \ddot\theta_l + \underbrace{\left(\tfrac{K_{sway}}{l_h}\cos\theta_l\right)}_{\text{amortiguamiento}}\dot\theta_l
+    + \frac{g}{l_h}\sin\theta_l = -\frac{\dot v_{t\,target}}{l_h}\cos\theta_l
+    \]
+  \end{block}
+
+  \begin{alertblock}{Resultado clave}
+    La velocidad inyectada se vuelve un \textbf{amortiguamiento viscoso no lineal}. Como
+    $\cos(\theta_l) > 0$, es estable a cualquier ángulo operativo \textbf{sin} aproximar
+    $\sin\theta_l\approx\theta_l$.
+  \end{alertblock}
 \end{frame}
 
-\begin{frame}{Control anti-balanceo (\textit{anti-sway})}
-  \begin{columns}[T]
-    \begin{column}{0.55\textwidth}
-      Estrategia \textbf{desacoplada}: la velocidad del carro inyecta amortiguamiento sobre el
-      péndulo.
-      \[ v_{sway}(t)=K_{sway}\,\theta_l(t) \]
-      Sintonía por linealización local ($\omega_n=\sqrt{g/l_h}$):
-      \[ \boxed{\,K_{sway}(l_h)=2\sqrt{g\,l_h}\,} \]
-      \begin{itemize}
-        \item \textbf{Gain scheduling} con la altura de izaje $l_h$.
-        \item Válido sin aproximación de ángulos pequeños ($\cos\theta_l>0$).
-        \item Se subamortigua ($\zeta=0.5$) para no sobrecorregir la posición.
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.45\textwidth}
-      \centering
-      \includegraphics[width=\linewidth]{nivel_2/control_balanceo.png}
-    \end{column}
-  \end{columns}
-\end{frame}
+\begin{frame}{Sintonía por linealización local (gain scheduling)}
+  \begin{block}{Dinámica local ($\theta_l \approx 0$)}
+    \begin{columns}[c]
+      \begin{column}{0.4\textwidth}
+        \[
+        \ddot\theta_l + \frac{K_{sway}}{l_h}\dot\theta_l + \frac{g}{l_h}\theta_l = 0
+        \]
+        Comparando con $s^2 + 2\zeta\omega_n s + \omega_n^2$, con $\omega_n=\sqrt{g/l_h}$:
+        \[
+        \boxed{\,K_{sway} = 2 \, \zeta \, l_h(t) \, \sqrt{\frac{g}{l_h(t)}}\,}
+        \]
+        \textbf{Gain scheduling}: $K_{sway}$ se ajusta con la longitud del cable $l_h$.
+      \end{column}
+      \begin{column}{0.48\textwidth}
+        % \raggedleft
+        \includegraphics[width=0.8\linewidth]{nivel_2/control_balanceo.png}
+      \end{column}
+    \end{columns}
+  \end{block}
 
-\begin{frame}{Observador de estado con acción integral}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}
-        \item Solo se mide \textbf{posición} (encoder); el PI necesita la \textbf{velocidad}.
-        \item Observador que estima $\tilde\omega$ a partir de $\theta$.
-        \item \textbf{Acción integral} sobre el error de observación $\Rightarrow$ elimina el
-              error en régimen ante perturbaciones constantes (balanceo).
-        \item Sintonía por separación de anchos de banda: $20\times$ más rápido que la planta.
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \centering
-      \includegraphics[width=\linewidth]{nivel_2/obs_pid_carro.png}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}{Izaje: gravedad y límite de potencia}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{block}{Compensación de gravedad (feedforward)}
-        \[ T_{g,ff}=\frac{m_l\,g\,r_{hd}}{2\,i_h} \]
-        El PI sólo corrige errores de modelo; el peso estático lo sostiene el feedforward.
-      \end{block}
-      \begin{block}{Operación a potencia constante}
-        El límite de velocidad de izaje se reduce con la masa estimada para no exceder la
-        potencia nominal.
-      \end{block}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \centering
-      \includegraphics[width=\linewidth]{nivel_2/lazo_controlador_izaje.png}
-    \end{column}
-  \end{columns}
+  \begin{alertblock}{En la práctica}
+    El amortiguamiento crítico ($\zeta=1$) sobrecorrige la posición; se usa $\zeta = 0.5$
+    (subamortiguado) para mantener la carga cerca del objetivo.
+  \end{alertblock}
 \end{frame}
