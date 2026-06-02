@@ -1,71 +1,70 @@
-\begin{frame}{Control supervisor: migración Stateflow → SFC}
+\begin{frame}{Nivel 1 CODESYS}
   \centering
-  \includegraphics[width=0.95\textwidth]{codesys/codesys_supervisor11.png}
+  \includegraphics[width=\textwidth]{codesys/codesys_supervisor11.png}
   
   Conversión de bloques Stateflow a SFC (Sequential Function Chart) manteniendo estados y transiciones
 \end{frame}
 
 \begin{frame}{Autómata principal en CODESYS}
   \centering
-  \includegraphics[width=0.95\textwidth]{codesys/codesys_supervisor12.png}
-  
-  \vspace{0.2cm}
-  
-  \includegraphics[width=0.95\textwidth]{codesys/codesys_supervisor13.png}
-  
-  Alternancia entre: REPOSO, MANUAL, AUTOMÁTICO, ERROR, RECUPERACIÓN
+  \includegraphics[width=0.9\textwidth]{codesys/codesys_supervisor12.png}
+    
+  \includegraphics[width=0.9\textwidth]{codesys/codesys_supervisor13.png}
 \end{frame}
 
-\begin{frame}{Modo automático: adaptaciones de Stateflow a SFC}
+\begin{frame}{Modo automático}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{codesys/auto_1.png}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{codesys/auto_2.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Twistlocks}
   \centering
-  \includegraphics[width=0.7\textwidth]{codesys/codesys_supervisor15.png}
-  
-  Estado inicial vacío + transición FALSE para cumplir requisitos sintácticos de SFC
+  \includegraphics[width=\textwidth]{codesys/codesys_supervisor4.png}
 \end{frame}
 
-\begin{frame}{Lógica de Twistlocks}
+\begin{frame}{Análisis espacial}
   \centering
-  \includegraphics[width=0.85\textwidth]{codesys/codesys_supervisor4.png}
+  \includegraphics[width=0.79\textwidth]{codesys/codesys_supervisor14.png}
   
-  SFC cíclico: últimos pasos retornan al estado inicial
 \end{frame}
 
-\begin{frame}{Cálculo de perfil e índices del muelle}
+\begin{frame}{Nivel 0 CODESYS}
+  \begin{columns}[T]
+    \begin{column}{0.4\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{codesys/codesys_seguridad1.png}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{codesys/codesys_seguridad3.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Autómata de protección}
   \centering
-  \includegraphics[width=0.8\textwidth]{codesys/codesys_supervisor14.png}
-  
-  Posición discreta del carro + actualización dinámica del perfil de obstáculos
-\end{frame}
-
-\begin{frame}{Bloques complementarios}
-  \begin{block}{Suavizado de velocidad}
-    Implementado en ST: suaviza referencias de velocidad
-  \end{block}
-  
-  \begin{block}{Velocidad límites}
-    Implementado en ST: aplicación de límites de velocidad por zona
-  \end{block}
-  
-  \begin{block}{Watchdog heartbeat}
-    Implementado en ST: monitoreo de comunicación con sistema de control
-  \end{block}
+  \includegraphics[width=\textwidth]{codesys/codesys_seguridad22.png}
 \end{frame}
 
 \subsection{Comunicación OPC-UA Simulink/CODESYS}
 
-\begin{frame}{Protocolo OPC-UA para comunicación Simulink/CODESYS}
+\begin{frame}{Protocolo OPC-UA Nivel 1}
   \centering
-  \includegraphics[width=0.85\textwidth]{codesys/opc_ua_1.png}
-  
-  Servidor OPC-UA en CODESYS con cliente en Matlab R2025b. Configuración: \textit{User allow anonymous} para lectura/escritura en tiempo real
+  \includegraphics[width=1\textwidth]{codesys/opc_ua_1.png}
 \end{frame}
 
-\begin{frame}{Bloques de comunicación: control de protección}
+\begin{frame}{Protocolo OPC-UA Nivel 0}
   \centering
-  \includegraphics[width=0.9\textwidth]{codesys/opc_ua_0.png}
-  
-  Lectura/escritura de variables de protección (Nivel 0) a través de OPC-UA
-\end{frame}
+  \includegraphics[width=1\textwidth]{codesys/opc_ua_0.png}
+  \end{frame}
 
 \begin{frame}{Desafío: retardo de comunicación}
   \begin{block}{Problema}
@@ -85,7 +84,5 @@
 \begin{frame}{Simulación con OPC-UA en funcionamiento}
   \centering
   \includegraphics[width=0.9\textwidth]{codesys/codesys_interfaz.png}
-  
-  Mejora significativa en fluidez de simulación con comunicación OPC-UA. Controlador responde de forma equivalente al modelo en Simulink
 \end{frame}
 

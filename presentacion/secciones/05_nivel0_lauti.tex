@@ -1,100 +1,26 @@
 \section{Nivel 0 --- Protección}
 
-\begin{frame}{Nivel 0: capa de máxima autoridad}
+\begin{frame}{Nivel 0}
   \begin{itemize}
     \item Supervisa la planta de forma \textbf{permanente} (redundancia de sensores).
     \item Ante anomalía, \textbf{sobrescribe} a los niveles superiores y aplica los frenos.
-    \item Recomputa \sig{vh\_lim} de forma \textbf{independiente} (defensa en profundidad).
   \end{itemize}
-  \begin{alertblock}{Condiciones de emergencia}
-    Sobrevelocidad \;$\bullet$\; fines de carrera de emergencia \;$\bullet$\; parada manual
-    (botón) \;$\bullet$\; pérdida de \textit{heartbeat}.
-  \end{alertblock}
 \end{frame}
 
-\begin{frame}{Autómata de seguridad: frenado selectivo}
-  \begin{columns}[T]
-    \begin{column}{0.45\textwidth}
-      \begin{itemize}
-        \item Estado nominal \texttt{SISTEMA\_OK} (ambos frenos abiertos).
-        \item \textbf{Frenado selectivo}: sólo se detiene el \textbf{eje afectado}.
-          \begin{itemize}
-            \item Falla izaje $\Rightarrow$ frena izaje, carro libre.
-            \item Falla carro $\Rightarrow$ frena carro, izaje libre.
-            \item Emergencia manual $\Rightarrow$ ambos.
-          \end{itemize}
-        \item Rearme manual $\to$ \texttt{RECUPERACION}.
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.55\textwidth}
-      \centering
-      \includegraphics[width=\linewidth]{nivel_0/estados_seguridad.png}
-    \end{column}
-  \end{columns}
-\end{frame}
 
-\begin{frame}{Monitor de comunicaciones (watchdog)}
+\begin{frame}{Monitor de comunicaciones}
   \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
+    \begin{column}{0.4\textwidth}
       \begin{itemize}
         \item Persigue el \textbf{heartbeat} del supervisor.
-        \item Si el contador supera el límite seguro $\Rightarrow$ \sig{FALLA\_WD}.
-        \item Dispara la parada de emergencia: la grúa nunca opera con un comando
-              \textbf{desactualizado}.
+        \item Si el contador supera el límite seguro $FALLA_{WD}$.
+        \item Dispara la parada de emergencia.
       \end{itemize}
     \end{column}
-    \begin{column}{0.5\textwidth}
+    \begin{column}{0.6\textwidth}
       \centering
       \includegraphics[width=\linewidth]{nivel_0/watchdog.png}
     \end{column}
   \end{columns}
-\end{frame}
-
-\section{Comunicación y Animación con Python}
-
-\begin{frame}{Integración completa en Simulink}
-  \centering
-  \includegraphics[width=0.95\textwidth]{simulacion/planta_completa.png}
-  
-  \vspace{0.2cm}
-  Planta física + Nivel 2 (control) + Nivel 1 (supervisor) + Nivel 0 (protección) + UDP
-\end{frame}
-
-\begin{frame}{Comunicación UDP: Simulink Python}
-  \centering
-  \includegraphics[width=0.45\textwidth]{simulacion/sim_udp.png}
-  \hspace{0.3cm}
-  \includegraphics[width=0.45\textwidth]{simulacion/sim_udp2.png}
-  
-  \vspace{0.2cm}
-  Estados de la planta (posiciones, velocidades, sensores) Visualización web en tiempo real
-\end{frame}
-
-\begin{frame}{Modo manual}
-  \centering
-  \includegraphics[width=\textwidth]{simulacion/sim_manual.png}
-  
-  Control del operador por joystick: traslación y elevación de la carga
-\end{frame}
-
-\begin{frame}{Modo automático: seguimiento de trayectoria}
-  \centering
-  \includegraphics[width=\textwidth]{simulacion/sim_auto.png}
-  
-  Ejecución automática de la secuencia de operación sin intervención manual
-\end{frame}
-
-\begin{frame}{Liberación de la carga}
-  \centering
-  \includegraphics[width=\textwidth]{simulacion/sim_auto_leave.png}
-  
-  Desenganche de twistlocks y apoyado de la carga en la pila
-\end{frame}
-
-\begin{frame}{Estado de error}
-  \centering
-  \includegraphics[width=\textwidth]{simulacion/sim_error.png}
-  
-  Detección de anomalía, aplicación de frenos, indicación de estado de error
 \end{frame}
 

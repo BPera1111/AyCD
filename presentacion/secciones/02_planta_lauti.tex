@@ -1,74 +1,60 @@
-\begin{frame}{Subsistema de izaje: visión general}
-  \begin{block}{Función del sistema}
+\begin{frame}{Subsistema de izaje}
+  \begin{block}{Características del sistema}
     Controla la elevación de la carga mediante:
     \begin{itemize}
       \item Motor eléctrico accionando un \textbf{tambor}
       \item Sistema de cableado con relación de transmisión \textbf{2:1} (aparejo móvil)
-      \item Carga suspendida: \alert{2 grados de libertad} (traslación horizontal $x_l$ y vertical $y_l$)
+      \item Carga suspendida: \textbf{2 grados de libertad}
+    \end{itemize}
+    Característica clave:
+    \begin{itemize}
+    \item\alert{Dinámica híbrida}
     \end{itemize}
   \end{block}
-  
-  \vspace{0.3cm}
-  \begin{alertblock}{Característica clave}
-    Dinámica \textbf{híbrida}: parámetros cambian discretamente según el estado de los twistlocks (TLK)
-  \end{alertblock}
 \end{frame}
 
-\begin{frame}{Dinámica de la carga: parámetros inerciales}
-  \begin{block}{Masa total ($m_l$) — depende de TLK}
+\begin{frame}{Parámetros discretos}
+  \begin{block}{Masa total ($m_l$)}
     \[
     m_l(\text{TLK}) = 
     \begin{cases} 
-      M_s = 15000 \text{ kg} & \text{si TLK} = 1 \text{ (solo spreader)} \\[6pt]
-      M_s + M_{cX} & \text{si TLK} = 0 \text{ (spreader + contenedor)}
+      M_s & \text{si TLK} = 0 \text{ (solo spreader)} \\[6pt]
+      M_s + M_{cX} & \text{si TLK} = 1 \text{ (spreader + contenedor)}
     \end{cases}
     \]
-    \vspace{-0.3cm}
-    \begin{itemize}
-      \item $M_{c\min} = 2000$ kg (contenedor vacío)
-      \item $M_{c\max} = 50000$ kg (carga máxima)
-    \end{itemize}
   \end{block}
 
-  \begin{block}{Altura de la carga ($h_c$) — norma ISO}
+  \begin{block}{Altura de la carga ($h_c$)}
     \[
     h_c(\text{TLK}) = 
     \begin{cases} 
-      0 & \text{si TLK} = 1 \\
-      H_c = 2.59 \text{ m} & \text{si TLK} = 0
+      0 & \text{si TLK} = 0 \\
+      H_c & \text{si TLK} = 1
     \end{cases}
     \]
   \end{block}
 \end{frame}
 
 \begin{frame}{Ecuaciones de movimiento de la carga}
-  \begin{block}{Dinámicas acopladas — 2 DOF}
-    \vspace{-0.15cm}
+  \begin{block}{Dinámicas acopladas}
     \begin{equation*}
-      m_l \, \frac{dv_{lx}}{dt} = -2 F_{hw} \sin\theta_l + F_{cx}
+      m_l(\textcolor{signalcolor}{TLK}) \, \frac{d \, v_{lx}(t)}{dt} = -2 F_{hw}(t,l(t)-l_h(t)) \, \sin\theta_l(t) + F_{cx}(t, \delta y)
     \end{equation*}
-    \vspace{-0.4cm}
     \begin{equation*}
-      m_l \, \frac{dv_{ly}}{dt} = 2 F_{hw} \cos\theta_l - m_l g + F_{cy}
+        m_l(\textcolor{signalcolor}{TLK}) \, \frac{d \, v_{ly}(t)}{dt} = 2 F_{hw}(t,l(t)-l_h(t)) \, \cos\theta_l(t) - m_l(\textcolor{signalcolor}{TLK}) \, g + F_{cy}(t, \delta y)
     \end{equation*}
-    \begin{itemize}
-      \item $\theta_l$: ángulo de balanceo del cable
-      \item $F_{hw}$: fuerza de tensión del cable (elástica + amortiguadora)
-      \item $F_{cx}$, $F_{cy}$: fuerzas de contacto con el perfil de obstáculos
-    \end{itemize}
+    \begin{equation*}
+      \delta y = y_l(t) - h_c(\textcolor{signalcolor}{TLK}) - y_{c0}(x_l(t), t)
+    \end{equation*}
   \end{block}
-
-  \begin{alertblock}{Acoplamiento}
-    Los movimientos horizontal y vertical están acoplados a través de la geometría del cable y el ángulo $\theta_l$
-  \end{alertblock}
 \end{frame}
 
-\begin{frame}{Interacción con el entorno: fuerzas de contacto}
+\begin{frame}{Interacción con el entorno}
   \begin{block}{Condición de contacto}
-    Contacto cuando: $y_l(t) - h_c \leq y_{c0}(x_l, t)$ \quad (perfil de obstáculos)
+    Cuando: $\delta y \le 0$ 
   \end{block}
 
-  \begin{block}{Fuerza vertical: modelo elástico-amortiguado}
+  \begin{block}{Fuerza vertical}
     \[
     F_{cy} = 
     \begin{cases} 
@@ -76,38 +62,28 @@
       0 & \text{(Suspendido)}
     \end{cases}
     \]
-    \begin{itemize}
-      \item $K_{cy} = 1.8 \times 10^9$ N/m \quad (rigidez)
-      \item $b_{cy} = 10 \times 10^6$ Ns/m \quad (amortiguamiento)
-    \end{itemize}
   \end{block}
 
-  \begin{block}{Fuerza horizontal: fricción de contacto}
+  \begin{block}{Fuerza horizontal}
     \[
     F_{cx} = 
     \begin{cases} 
       -b_{cx} v_{lx} & \text{(Apoyado)} \\[4pt]
       0 & \text{(Suspendido)}
     \end{cases}
-    \quad ; \quad b_{cx} = 1 \times 10^6 \text{ Ns/m}
     \]
   \end{block}
 \end{frame}
 
 \begin{frame}{Acoplamiento elástico del cable}
-  \begin{block}{Modelado: resorte-amortiguador con rigidez variable}
+  \begin{block}{Resorte-amortiguador con rigidez variable}
     La rigidez y amortiguamiento escalan con la longitud del cable bajo tensión:
     \[
     K_{hw}(l_h) = \frac{k_{hwu}}{2 l_h + L_{h0}} \quad ; \quad b_{hw}(l_h) = b_{hwu}(2 l_h + L_{h0})
     \]
-    \begin{itemize}
-      \item $k_{hwu} = 236 \times 10^6$ N/m·m (rigidez unitaria)
-      \item $b_{hwu} = 150$ Ns/m·m (amortiguamiento unitario)
-      \item $L_{h0} = 110$ m (despliegue fijo)
-    \end{itemize}
   \end{block}
 
-  \begin{block}{Fuerza de tensión: solo si cable está tenso}
+  \begin{block}{Fuerza de tensión}
     \[
     F_{hw} = 
     \begin{cases} 
@@ -118,30 +94,23 @@
   \end{block}
 \end{frame}
 
-\begin{frame}{Dinámica del accionamiento: estructura}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \textbf{Eje lento (tambor)}
-      \begin{itemize}
-        \item Freno de emergencia: $T_{hEb}$
-        \item Inercia: $J_{hd+hEb} = 3800$ kgm²
-        \item Radio: $r_{hd} = 0.75$ m
-        \item Fricción: $b_{hd} = 8$ Nms/rad
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \textbf{Eje rápido (motor)}
-      \begin{itemize}
-        \item Freno de operación: $T_{hb}$
-        \item Inercia: $J_{hm+hb} = 30$ kgm²
-        \item Transmisión: $i_h = 22$
-        \item Fricción: $b_{hm} = 18$ Nms/rad
-      \end{itemize}
-    \end{column}
-  \end{columns}
+\begin{frame}{Dinámica del accionamiento}
+  \small
+  \begin{block}{Ecuaciones de  los dos ejes}
+    \begin{itemize}
+      \item \textbf{Eje lento(tambor):}
+      \begin{equation*}
+        J_{hd+hEb} \, \frac{d \, \omega_{hd}(t)}{dt} = T_{hd}(t) + T_{hEb}(t,\textcolor{signalcolor}{BRK_{hE}}) - b_{hd} \, \omega_{hd}(t) - T_{hdl}(t)
+      \end{equation*}
+      \item \textbf{Eje rápido(motor):} 
+      \begin{equation*}
+        J_{hm+hb} \, \frac{d \, \omega_{hm}(t)}{dt} = T_{hm}(t) + T_{hb}(t,\textcolor{signalcolor}{BRK_{h}}) - b_{hm} \, \omega_{hm}(t) - T_{hml}(t)
+      \end{equation*}
+    \end{itemize}
+  \end{block}
 
-  \vspace{0.3cm}
-  \begin{block}{Relación cinemática (aparejo 2:1)}
+  \vspace{0.2cm}
+  \begin{block}{Relación cinemática}
     \[
     v_h(t) = \frac{r_{hd} \omega_{hd}(t)}{2} = -\frac{dl_h}{dt}
     \]
@@ -149,91 +118,34 @@
   \end{block}
 \end{frame}
 
-\begin{frame}{Frenos mecánicos: operación y emergencia}
-  \begin{block}{Lógica NC (Normally Closed) para ambos}
-    \begin{itemize}
-      \item Energizado ($=1$): freno \alert{abierto}, motor libre
-      \item Desenergizado ($=0$): freno \alert{cerrado}, torque máximo
-    \end{itemize}
-  \end{block}
-
-  \begin{block}{Freno de operación (motor)}
-    \[
-    T_{hb}(\text{BRK}_h) = 
-    \begin{cases} 
-      0 & \text{si BRK}_h = 1 \\[4pt]
-      -T_{hb\max} \tanh(b_{hb} \omega_{hm}) & \text{si BRK}_h = 0
-    \end{cases}
-    \]
-    \begin{itemize}
-      \item $T_{hb\max} = 50 \times 10^3$ Nm \quad (torque máximo)
-      \item $b_{hb} = 100 \times 10^6$ Nms/rad \quad (fricción viscosa)
-    \end{itemize}
-  \end{block}
-
-  \begin{block}{Freno de emergencia (tambor) — Nivel 0}
-    \[
-    T_{hEb}(\text{BRK}_{hE}) = 
-    \begin{cases} 
-      0 & \text{si BRK}_{hE} = 1 \\[4pt]
-      -T_{hEb\max} \tanh(b_{hEb} \omega_{hd}) & \text{si BRK}_{hE} = 0
-    \end{cases}
-    \]
-    \begin{itemize}
-      \item $T_{hEb\max} = 1.1 \times 10^6$ Nm
-      \item $b_{hEb} = 2.2 \times 10^9$ Nms/rad
-    \end{itemize}
-  \end{block}
+\begin{frame}{Frenos mecánicos}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{freno_izaje.png}
+  \caption{Freno mecánico de operación izaje}
+\end{figure}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{freno_izaje_e.png}
+  \caption{Freno mecánico de emergencia izaje}
+\end{figure}
 \end{frame}
 
 \begin{frame}{Modelo equivalente referido al motor}
-  \begin{block}{Reducción a un solo eje equivalente}
-    Al igual que el carro, se refiere la dinámica del tambor al motor usando $i_h = 22$:
+  \begin{block}{Reducción eje equivalente}
+    Al igual que el carro, se refiere la dinámica del tambor al motor usando $i_h$:
   \end{block}
 
   \vspace{-0.2cm}
   \[
-  J_{h,eq} = J_{hm+hb} + \frac{J_{hd+hEb}}{i_h^2} = 30 + \frac{3800}{22^2} \approx 37.9 \text{ kgm}^2
+  J_{h,eq} = J_{hm+hb} + \frac{J_{hd+hEb}}{i_h^2}
   \]
 
   \vspace{-0.3cm}
   \[
-  b_{h,eq} = b_{hm} + \frac{b_{hd}}{i_h^2} = 18 + \frac{8}{22^2} \approx 18.016 \text{ Nms/rad}
+  b_{h,eq} = b_{hm} + \frac{b_{hd}}{i_h^2} 
   \]
-
-  \begin{alertblock}{Resultado}
-    Ecuación de estado única para todo el accionamiento:
-    \[
-    \frac{d\omega_{hm}}{dt} = \frac{1}{J_{h,eq}}\left[T_{hm} + T_{hb} + \frac{T_{hEb}}{i_h} - b_{h,eq}\omega_{hm} - \frac{r_{hd}}{i_h}F_{hw}\right]
-    \]
-  \end{alertblock}
-\end{frame}
-
-\begin{frame}{Modelo dinámico completo: ecuaciones de estado}
-  \begin{block}{Sistema de ecuaciones acopladas}
-    \begin{enumerate}
-      \item \textbf{Motor}: $\frac{d\omega_{hm}}{dt} = f_1(\omega_{hm}, F_{hw}, T_{hm}, \text{BRK}_h, \text{BRK}_{hE})$
-      \vspace{0.1cm}
-      \item \textbf{Velocidades de carga}: 
-      \begin{itemize}
-        \item $\frac{dv_{lx}}{dt} = f_2(v_{lx}, \theta_l, F_{hw}, F_{cx}, m_l)$
-        \item $\frac{dv_{ly}}{dt} = f_3(v_{ly}, \theta_l, F_{hw}, F_{cy}, m_l)$
-      \end{itemize}
-      \vspace{0.1cm}
-      \item \textbf{Posiciones}: $\frac{dy_l}{dt} = v_{ly}$ ; $\frac{dl_h}{dt} = -\frac{r_{hd}}{2i_h}\omega_{hm}$
-      \vspace{0.1cm}
-      \item \textbf{Fuerzas}: $F_{hw}(l, l_h, \dot{l}, \dot{l}_h)$ con lógica de cable tenso/flojo
-    \end{enumerate}
-  \end{block}
-
-  \vspace{0.2cm}
-  \begin{alertblock}{Dimensionalidad del sistema de izaje}
-    Sistema híbrido con \textbf{4–5 estados continuos} (según el cable) + \textbf{2 eventos discretos} (TLK, contacto)
-  \end{alertblock}
-\end{frame}
-
-\begin{frame}{Variables auxiliares clave}
-  \begin{block}{Geometría del cable}
+  \begin{block}{Variables auxiliares}
     \vspace{-0.2cm}
     \begin{itemize}
       \item Longitud geométrica: $l(t) = \sqrt{(x_l - x_t)^2 + (Y_{t0} - y_l)^2}$
@@ -241,222 +153,117 @@
       \item Ángulo de balanceo: $\theta_l = \text{atan2}\left(\frac{x_l - x_t}{Y_{t0} - y_l}\right)$
     \end{itemize}
   \end{block}
-
-  \begin{block}{Rigidez y amortiguamiento variable}
-    \begin{itemize}
-      \item $K_{hw}(l_h)$ e $b_{hw}(l_h)$ dependen de la longitud instantánea del cable
-      \item Realimentación: cuanto más largo el cable, menor la rigidez (acoplamiento débil)
-    \end{itemize}
-  \end{block}
-
-  \begin{block}{Estados discretos}
-    \begin{itemize}
-      \item TLK: determina $m_l$ y $h_c$ (comutación de parámetros)
-      \item Contacto: activa/desactiva $F_{cx}$ y $F_{cy}$ (cambio de dinámica)
-    \end{itemize}
-  \end{block}
 \end{frame}
 
-\begin{frame}{Sensores: visión general}
-  \begin{block}{Función del subsistema sensorial}
-    Proporciona retroalimentación para:
-    \begin{itemize}
-      \item Control de posición y velocidad
-      \item Detección de límites de operación
-      \item Protección automática (Nivel 0)
-      \item Supervisión de estado (Nivel 1)
-    \end{itemize}
-  \end{block}
-
-  \begin{alertblock}{Clasificación de sensores}
-    \begin{itemize}
-      \item \textbf{Medición continua}: encoders, celda de carga, acelerómetro
-      \item \textbf{Eventos discretos}: fines de carrera (operativo y emergencia)
-    \end{itemize}
-  \end{alertblock}
+\begin{frame}{Subsistema izaje completo}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.77\textwidth]{modelo_izaje.png}
+  %\caption{Diagrama de bloques del subsistema de izaje}
+\end{figure}
+  
 \end{frame}
 
-\begin{frame}{Sensores del carro}
-  \begin{block}{Encoder en el eje del motor}
-    Mide la posición angular del motor del carro $\theta_{tm}(t)$
-  \end{block}
-
-  \vspace{-0.2cm}
-  \begin{block}{Conversión a posición lineal}
+\begin{frame}{Sensores}
+  \begin{block}{Sensor carro}
+    \begin{itemize}
+    \item \textbf{Encoder:} Mide la posición angular del motor del carro $\theta_{tm}(t)$
     \[
-    x_t(t) = \theta_{tm}(t) \, \frac{r_{td}}{i_t}
+  x_t(t) = \theta_{tm}(t) \, \frac{r_{tm}}{i_t}
     \]
-    \begin{itemize}
-      \item $r_{td} = 0.25$ m: radio primitivo del piñón del carro
-      \item $i_t = 80$: relación de transmisión del carro
-      \item Resolución: depende del número de pulsos del encoder
     \end{itemize}
   \end{block}
-
-  \begin{alertblock}{Ubicación física}
-    Sensores externos (en la viga) $\Rightarrow$ miden la \textbf{posición real} del carro, independiente del cable
-  \end{alertblock}
-\end{frame}
-
-\begin{frame}{Sensores del izaje}
-  \begin{block}{1. Encoder en el eje del motor}
-    Mide posición angular del motor de izaje $\theta_{hm}(t)$
+  \begin{block}{Sensores izaje}
+    \begin{itemize}
+    \item \textbf{Encoder:} Mide posición angular del motor de izaje $\theta_{hm}(t)$
     \[
     y_h(t) = \theta_{hm}(t) \, \frac{r_{hd}}{2\,i_h}
     \]
-    \begin{itemize}
-      \item $r_{hd} = 0.75$ m: radio del tambor
-      \item $i_h = 22$: relación de transmisión
-      \item Factor 2: aparejo móvil (reeving)
-    \end{itemize}
-  \end{block}
-
-  \begin{block}{2. Celda de carga en el cable}
-    Mide directamente la fuerza de tensión $F_{hw}(t)$
-    \begin{itemize}
-      \item Ubicación: en la línea del cable de izaje
-      \item Rango de medición: $[0, F_{hw\max}]$ con factor de seguridad
-    \end{itemize}
-  \end{block}
-
-  \begin{block}{3. Sensor de ángulo de spreader}
-    Mide ángulo de balanceo $\theta_l(t)$ y velocidad angular $\dot{\theta}_l(t)$
-    \begin{itemize}
-      \item Tecnología: acelerómetro biaxial o sensor óptico
-      \item Crítico para control de oscilaciones
+    \item \textbf{Celda de carga:} Mide fuerza de tensión $F_{hw}(t)$ en el cable de izaje
+    \item \textbf{Sensor de ángulo de spreader:} Mide ángulo de balanceo $\theta_l(t)$ y velocidad angular $\dot{\theta}_l(t)$ 
+    de la carga suspendida
     \end{itemize}
   \end{block}
 \end{frame}
 
-\begin{frame}{Fines de carrera: concepto y arquitectura}
-  \begin{block}{Propósito dual}
-    \begin{itemize}
-      \item \textbf{Modo operativo}: detienen movimiento en límites normales
-      \item \textbf{Modo emergencia}: aplican frenos de seguridad (Nivel 0)
-    \end{itemize}
+\begin{frame}{Fines de carrera}
+  \begin{block}{FC del carro}
+    \vspace{0.2cm}
+    \begin{columns}[T]
+      \begin{column}{0.5\textwidth}
+        \[
+        \text{FC}_{t,\text{der}} = 
+        \begin{cases} 
+          0 & \text{si } x_t < x_{t\max} \\[4pt]
+          1 & \text{si } x_t \ge x_{t\max} \\[4pt]
+          1 & \text{si } x_t \ge x_{t\max} + 0.5 \text{ m (E)}
+        \end{cases}
+        \]
+      \end{column}
+      \begin{column}{0.5\textwidth}
+        \[
+        \text{FC}_{t,\text{izq}} = 
+        \begin{cases} 
+          0 & \text{si } x_t > x_{t\min} \\
+          1 & \text{si } x_t \le x_{t\min} \\[4pt]
+          1 & \text{si } x_t \le x_{t\min} + 0.5 \text{ m (E)}
+        \end{cases}
+        \]
+      \end{column}
+    \end{columns}
   \end{block}
-
-  \begin{block}{Arquitectura}
-    \begin{itemize}
-      \item \textbf{Carro}: sensores externos (viga) — detectan posición real $x_t(t)$
-      \item \textbf{Izaje}: sensores internos (tambor) — detectan cable desenrollado $y_h(t)$
-    \end{itemize}
+    \begin{block}{FC del izaje}
+    \vspace{0.2cm}
+    \begin{columns}[T]
+      \begin{column}{0.5\textwidth}
+        \[
+        \text{FC}_{h,\text{sup}} = 
+        \begin{cases} 
+          0 & \text{si } y_h < y_{h\max} \\[4pt]
+          1 & \text{si } y_h \ge y_{h\max} \\[4pt]
+          1 & \text{si } y_h \ge y_{h\max} + 0.5 \text{ m (E)}
+        \end{cases}
+        \]
+      \end{column}
+      \begin{column}{0.5\textwidth}
+        \[
+        \text{FC}_{h,\text{inf}} = 
+        \begin{cases} 
+          0 & \text{si } y_h > y_{h\min} \\[4pt]
+          1 & \text{si } y_h \le y_{h\min}  \\[4pt]
+          1 & \text{si } y_h \le y_{h\min} + 0.5 \text{ m (E)}
+        \end{cases}
+        \]
+      \end{column}
+    \end{columns}
   \end{block}
-
-  \vspace{0.2cm}
-  \begin{alertblock}{Lógica de emergencia}
-    Se activa con \textbf{margen de seguridad} (típicamente 0.5 m) después del límite operativo
-  \end{alertblock}
 \end{frame}
 
-\begin{frame}{Fines de carrera del carro}
-  \begin{block}{Fin de carrera derecha}
-    \[
-    \text{FC}_{t,\text{der}} = 
-    \begin{cases} 
-      0 & \text{si } x_t < x_{t\max} \\[4pt]
-      1 & \text{si } x_t \ge x_{t\max} \text{ (Operativo)} \\[4pt]
-      1 & \text{si } x_t \ge x_{t\max} + 0.5 \text{ m (Emergencia)}
-    \end{cases}
-    \]
-  \end{block}
 
-  \begin{block}{Fin de carrera izquierda}
-    \[
-    \text{FC}_{t,\text{izq}} = 
-    \begin{cases} 
-      0 & \text{si } x_t > x_{t\min} \\[4pt]
-      1 & \text{si } x_t \le x_{t\min} \text{ (Operativo)} \\[4pt]
-      1 & \text{si } x_t \le x_{t\min} + 0.5 \text{ m (Emergencia)}
-    \end{cases}
-    \]
-  \end{block}
 
-  \begin{alertblock}{Redundancia}
-    Doble detección asimétrica para máxima seguridad ante falla de sensor
-  \end{alertblock}
-\end{frame}
-
-\begin{frame}{Fines de carrera del izaje}
-  \begin{block}{Fin de carrera superior}
-    \[
-    \text{FC}_{h,\text{sup}} = 
-    \begin{cases} 
-      0 & \text{si } y_h < y_{h\max} \\[4pt]
-      1 & \text{si } y_h \ge y_{h\max} \text{ (Operativo)} \\[4pt]
-      1 & \text{si } y_h \ge y_{h\max} + 0.5 \text{ m (Emergencia)}
-    \end{cases}
-    \]
-  \end{block}
-
-  \begin{block}{Fin de carrera inferior}
-    \[
-    \text{FC}_{h,\text{inf}} = 
-    \begin{cases} 
-      0 & \text{si } y_h > y_{h\min} \\[4pt]
-      1 & \text{si } y_h \le y_{h\min} \text{ (Operativo)} \\[4pt]
-      1 & \text{si } y_h \le y_{h\min} + 0.5 \text{ m (Emergencia)}
-    \end{cases}
-    \]
-  \end{block}
-
-  \begin{alertblock}{Ubicación física}
-    Acoplados mecánicamente al tambor (eje lento) $\Rightarrow$ miden \textbf{cable desenrollado}, no posición de carga
-  \end{alertblock}
-\end{frame}
-
-\begin{frame}{Fines de carrera: integración en control}
+\begin{frame}{Modelo sensores}
   \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \textbf{Nivel 1 (Supervisor)}
-      \begin{itemize}
-        \item Recibe FC en modo operativo
-        \item Inhibe comandos que violarían límites
-        \item Transición a estado REPOSO o ERROR
-      \end{itemize}
+    \begin{column}{0.48\textwidth}
+      \vspace{1cm}
+      \centering
+      \begin{figure}
+      \includegraphics[width=\textwidth]{sensores_carro.png}
+      \caption{Diagrama de bloques sensores carro e izaje Simulink}
+      \end{figure}
     \end{column}
-    \begin{column}{0.5\textwidth}
-      \textbf{Nivel 0 (Protección)}
-      \begin{itemize}
-        \item Monitorea FC emergencia
-        \item Si se activa: \alert{aplica frenos automáticos}
-        \item Señal de PARADA DE EMERGENCIA
-      \end{itemize}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{sensores_izaje.png}
     \end{column}
   \end{columns}
-
-  \vspace{0.3cm}
-  \begin{block}{Lógica de transición}
-    \begin{itemize}
-      \item \textit{Hysteresis}: para evitar oscilaciones, se requiere retroceso de $\approx 0.2$ m para liberar la inhibición
-      \item Prioritario: siempre prevalece Nivel 0 sobre Nivel 1
-    \end{itemize}
-  \end{block}
-\end{frame}
-
-\begin{frame}{Modelos Simulink: subsistema sensorial}
-  \begin{block}{Estructura de bloques}
-    \begin{itemize}
-      \item \textbf{Encoder carro}: conversión $\theta_{tm} \to x_t$ con resolución configurable
-      \item \textbf{Encoder izaje}: conversión $\theta_{hm} \to y_h$ con factor 2:1
-      \item \textbf{Celda de carga}: lectura directa de $F_{hw}$ (sin procesamiento)
-      \item \textbf{Sensor de ángulo}: lectura de $\theta_l$ y $\dot{\theta}_l$
-      \item \textbf{Lógica FC}: generación de señales lógicas con histéresis
-    \end{itemize}
-  \end{block}
-
-  \vspace{0.2cm}
-  \begin{alertblock}{Observación}
-    Los sensores se implementan \textbf{sin ruido ni retardo} en esta etapa de modelado de planta. La robustez ante ruido se valida posteriormente en simulación y en los algoritmos del control (filtros, observadores).
-  \end{alertblock}
 \end{frame}
 
 
-\begin{frame}{Moduladores de torque: visión general}
+\begin{frame}{Moduladores de torque}
   \begin{block}{Función en la simulación}
-    Modelan las limitaciones de los \textbf{accionamientos reales} (variadores de frecuencia + motores eléctricos)
+    Modelan las limitaciones de los \textbf{accionamientos reales} (motores eléctricos)
     \begin{itemize}
-      \item No es posible aplicar torque instantánea como una fuerza mecánica ideal
+      \item No es posible aplicar torque instantáneo como una fuerza mecánica ideal
       \item Los motores reales tienen capacidad limitada y retardo dinámico
     \end{itemize}
   \end{block}
@@ -467,13 +274,6 @@
       \item \textbf{Filtrado}: modela retardo electromagnético con constante $\tau = 1$ ms
     \end{enumerate}
   \end{block}
-
-  \begin{alertblock}{Señal discreta → continua}
-    El controlador digital (Nivel 2) envía comandos cada $T_{s2}$, que se mantienen constantes vía \textbf{ZOH} (retenedor de orden cero) entre muestreos
-  \end{alertblock}
-\end{frame}
-
-\begin{frame}{Dinámica del motor: filtro de primer orden}
   \begin{block}{Ecuación diferencial}
     Vincula el torque limitado comandado $T_{\text{Lim}}^*(t)$ con el torque físico real $T(t)$:
     \vspace{-0.2cm}
@@ -482,43 +282,19 @@
     \]
   \end{block}
 
-  \vspace{-0.2cm}
-  \begin{block}{Parámetro de la dinámica}
-    \begin{itemize}
-      \item $\tau = 1$ ms: constante de tiempo (retardo electromagnético)
-      \item Representa la inercia eléctrica equivalente del motor + variador
-      \item Respuesta dinámica rápida (pequeño $\tau$) $\Rightarrow$ acoplamiento fuerte planta-control
-    \end{itemize}
-  \end{block}
-
 \end{frame}
 
 
-\begin{frame}{Modulador del carro: estructura}
-  \begin{block}{Proceso de modulación (3 etapas)}
-    \begin{enumerate}
-      \item \textbf{Retenedor}: mantiene comando discreto constante entre muestreos
-      \vspace{0.05cm}
-      \item \textbf{Saturador}: limita a rango $[-T_{tm\max}, +T_{tm\max}]$
-      \vspace{0.05cm}
-      \item \textbf{Filtro}: aplica dinámica de primer orden (retardo $\tau$)
-    \end{enumerate}
-  \end{block}
-
-  \vspace{0.1cm}
-  \begin{block}{Limitador de torque del carro}
+\begin{frame}{Modulador del carro}
+  \begin{block}{Ecuación}
     \[
-    T_{tm\,\text{Lim}}^*(k \, T_{s2} \le t < (k+1) \, T_{s2}) = \text{sat}(T_{tm}^*(k \, T_{s2}))
-    \]
-    donde la función saturación es:
-    \[
-    \text{sat}(u) = 
-    \begin{cases} 
-      +T_{tm\max} & \text{si } u > +T_{tm\max} \\[4pt]
-      u & \text{si } -T_{tm\max} \le u \le +T_{tm\max} \\[4pt]
-      -T_{tm\max} & \text{si } u < -T_{tm\max}
-    \end{cases}
+T_{tm\ Lim}^*(k \, T_{s2} \leq t < (k+1) \, T_{s2}) = \text{min}\left(+T_{tm\max}, \text{max}\left(-T_{tm\max}, T_{tm}^*(k \, T_{s2})\right)\right)
     \]
   \end{block}
+  \begin{figure}
+  \centering
+  \includegraphics[width=1\textwidth]{modulador_carro.png}
+  \caption{Diagrama de bloques del modulador de torque del carro}
+  \end{figure}
 \end{frame}
 
