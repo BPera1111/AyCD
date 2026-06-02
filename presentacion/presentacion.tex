@@ -19,6 +19,10 @@
 \definecolor{signalcolor}{RGB}{0,115,195}
 \newcommand{\sig}[1]{\textcolor{signalcolor}{#1}}
 
+% Modo Lauti: fondo levemente teñido para distinguir slides en revisión
+\newcommand{\lautimode}{\setbeamercolor{background canvas}{bg=teal!8}}
+\newcommand{\defaultmode}{\setbeamercolor{background canvas}{bg=}}
+
 % Información
 \title{Control y Automatización de una\\Grúa Portacontenedores Portuaria (STS)}
 \subtitle{Proyecto Global Integrador}
@@ -32,21 +36,37 @@
 
 \begin{frame}{Contenido}
   \setbeamertemplate{section in toc}[sections numbered]
-  \tableofcontents[hideallsubsections]
+  {\footnotesize\tableofcontents[hideallsubsections]}
 \end{frame}
 
 \input{secciones/01_intro.tex}
 \input{secciones/02_planta_bruno.tex}
+% \lautimode
 \input{secciones/02_planta_lauti.tex}
-\input{secciones/03_nivel2_bruno.tex}
+% \defaultmode
+\input{secciones/02_planta_bruno copy.tex}
+% \lautimode
+\input{secciones/02_planta_lauti copy.tex}
+% \defaultmode
+\input{secciones/02_planta_modulador_izaje.tex}
+% \lautimode
 \input{secciones/03_nivel2_lauti.tex}
+% \defaultmode
+\input{secciones/035_nivel2_bruno.tex}
 \input{secciones/04_nivel1_bruno.tex}
+% \lautimode
 \input{secciones/04_nivel1_lauti.tex}
-\input{secciones/05_nivel0_bruno.tex}
+% \defaultmode
+% \input{secciones/05_nivel0_bruno.tex}
+% \lautimode
 \input{secciones/05_nivel0_lauti.tex}
+% \defaultmode
 \input{secciones/06_codesys_bruno.tex}
+% \lautimode
 \input{secciones/06_codesys_lauti.tex}
-\input{secciones/07_simulacion.tex}
+% \defaultmode
+% \input{secciones/07_simulacion.tex}
+\input{secciones/10_autogeneracion.tex}
 \input{secciones/08_conclusion.tex}
 
 \end{document}
