@@ -58,12 +58,13 @@ socket.on('telemetry', (data) => {
 
 // ── Actualizar UI de estado ───────────────────────────────────────────────────
 function updateUI(data) {
-  setLabel('lbl-xt', data.xt, 2, 'm');
-  setLabel('lbl-yh', data.yh, 2, 'm');
-  setLabel('lbl-vt', data.vt, 2, 'm/s');
-  setLabel('lbl-vh', data.vh, 2, 'm/s');
-  setLabel('lbl-tita', data.tita_l, 4, 'rad');
-  setLabel('lbl-m-est', data.m_container_est, 0, 'kg');
+  setLabel('lbl-xt',    data.xt,              2);
+  setLabel('lbl-yh',    data.yh,              2);
+  setLabel('lbl-lh',    data.l_h,             2);
+  setLabel('lbl-vt',    data.vt,              2);
+  setLabel('lbl-vh',    data.vh,              2);
+  setLabel('lbl-tita',  data.tita_l,          4);
+  setLabel('lbl-m-est', data.m_container_est, 0);
 
   updateConnectionBadge(data.connected);
 
@@ -87,7 +88,7 @@ function updateModeFlags(data) {
     if (data.modo_error)          modoActivo.classList.add('modo-error');
     else if (data.modo_muerto)    modoActivo.classList.add('modo-muerto');
     else if (data.recuperacion)   modoActivo.classList.add('modo-recuperacion');
-    else if (data.modo_auto || data.modo_manual_auto) modoActivo.classList.add('modo-auto');
+    else if (data.modo_auto || data.modo_manual_auto || data.ciclo_doble) modoActivo.classList.add('modo-auto');
     else if (data.modo_manual)    modoActivo.classList.add('modo-manual');
   }
 
@@ -96,6 +97,7 @@ function updateModeFlags(data) {
     'flag-manual':   data.modo_manual,
     'flag-auto':     data.modo_auto,
     'flag-man-auto': data.modo_manual_auto,
+    'flag-ciclo':    data.ciclo_doble,
     'flag-recup':    data.recuperacion,
     'flag-muerto':   data.modo_muerto,
     'flag-error':    data.modo_error,
@@ -188,11 +190,11 @@ function updateRTF(t_sim) {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function setLabel(id, val, dec, unit) {
+function setLabel(id, val, dec) {
   const el = document.getElementById(id);
   if (!el) return;
   if (val === undefined || val === null) { el.textContent = '---'; return; }
-  el.textContent = `${parseFloat(val).toFixed(dec)} ${unit}`;
+  el.textContent = parseFloat(val).toFixed(dec);
 }
 
 function updateConnectionBadge(connected) {

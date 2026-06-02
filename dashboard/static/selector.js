@@ -11,7 +11,7 @@ const SelectorViz = (() => {
   const INVALID = new Set([1, 13, 33]);   // 1-indexed
 
   let canvas, ctx, infoEl;
-  let _data = { yc0_vec: Array(N).fill(0), i_sel: 0 };
+  let _data = { yc0_vec: Array(N).fill(0), i_sel: 0, i_origen: 0, i_destino: 0 };
 
   function xFromIndex(i) {
     return XT_MIN + (i / (N - 1)) * (XT_MAX - XT_MIN);
@@ -78,8 +78,10 @@ const SelectorViz = (() => {
     ctx.fillStyle = SC.bg;
     ctx.fillRect(0, 0, W, H);
 
-    const yc0_vec = _data.yc0_vec || Array(N).fill(0);
-    const i_sel   = Math.round(_data.i_sel) || 0;
+    const yc0_vec  = _data.yc0_vec || Array(N).fill(0);
+    const i_sel    = Math.round(_data.i_sel)    || 0;
+    const i_origen  = Math.round(_data.i_origen)  || 0;
+    const i_destino = Math.round(_data.i_destino) || 0;
 
     // Divisor muelle/barco (entre col i=12 y i=13)
     const divX = ML + (13 / N) * chartW;
@@ -114,6 +116,23 @@ const SelectorViz = (() => {
         ctx.strokeRect(barL + 0.75, MT, barW - 1.5, BASE_Y - MT + MB * 0.4);
       }
     }
+
+    // Markers i_origen (azul) e i_destino (naranja)
+    function drawMarker(i1, color, label) {
+      if (i1 < 1 || i1 > N) return;
+      const barL = ML + ((i1 - 1) / N) * chartW;
+      const barWm = Math.max(1, colW - 1);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(barL + 0.75, MT + 10, barWm - 1.5, BASE_Y - MT - 10 + MB * 0.4);
+      ctx.fillStyle = color;
+      ctx.font = 'bold 7px Consolas';
+      ctx.textAlign = 'center';
+      ctx.fillText(label, barL + barWm / 2, MT + 9);
+      ctx.textAlign = 'left';
+    }
+    drawMarker(i_origen,  '#4a9aff', 'ORG');
+    drawMarker(i_destino, '#ff8040', 'DST');
 
     // Línea base
     ctx.strokeStyle = SC.baseline;
@@ -154,18 +173,22 @@ const SelectorViz = (() => {
 
     // Info strip
     if (infoEl) {
+      let txt = '';
       if (i_sel >= 1 && i_sel <= N) {
         const i0    = i_sel - 1;
         const xt_m  = xFromIndex(i0);
         const h_m   = yc0_vec[i0] || 0;
         const nCont = h_m > 0 ? Math.max(0, Math.round(h_m / HC)) : 0;
         const valid = !INVALID.has(i_sel);
-        infoEl.textContent = `Col: ${i_sel}  |  xt: ${xt_m.toFixed(1)} m  |  ${nCont} cont.  |  ${valid ? 'VÁLIDO' : 'INVÁLIDO'}`;
-        infoEl.style.color  = valid ? '' : '#e04040';
+        txt = `Sel: ${i_sel} (${xt_m.toFixed(1)}m) ${nCont}c ${valid ? '✓' : '✗'}`;
+        infoEl.style.color = valid ? '' : '#e04040';
       } else {
-        infoEl.textContent = 'Col: --  |  xt: -- m  |  -- cont.';
-        infoEl.style.color  = '';
+        txt = 'Sel: --';
+        infoEl.style.color = '';
       }
+      if (i_origen  >= 1) txt += `  |  ORG: ${i_origen}`;
+      if (i_destino >= 1) txt += `  |  DST: ${i_destino}`;
+      infoEl.textContent = txt;
     }
   }
 

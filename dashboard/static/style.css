@@ -91,7 +91,7 @@
 .theme-switch input:checked + .theme-slider { background: #c8a800; border-color: #a08000; }
 .theme-switch input:checked + .theme-slider::before { transform: translateX(16px); background: #fff8d0; }
 
-html { height: 100%; overflow: hidden; }
+html { height: 100%; overflow: hidden; font-size: 17px; }
 
 body {
   background: var(--bg);
@@ -204,7 +204,7 @@ header {
 .crane-info strong {
   color: var(--accent2);
   display: inline-block;
-  min-width: 7ch;
+  width: 7ch;
   text-align: right;
 }
 

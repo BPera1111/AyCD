@@ -406,14 +406,15 @@ const CraneViz = (() => {
     });
 
     // Etiquetas
+    ctx.textAlign = 'center';
     ctx.fillStyle = C.text;
     ctx.font = '9px Consolas';
-    ctx.textAlign = 'center';
     ctx.fillText(`xt=${xt.toFixed(1)}m`, cx, y_rail - th - 3);
+    ctx.font = '12px Consolas';
     ctx.fillText(`yh=${yh.toFixed(1)}m`, cx_spread, y_spreader - sh - 8);
     if (Math.abs(tita_l) > 0.001) {
       ctx.fillStyle = '#e0a040';
-      ctx.fillText(`θ=${(tita_l * 180 / Math.PI).toFixed(1)}°`, cx_spread, y_spreader + sh / 2 + 14);
+      ctx.fillText(`θ=${(tita_l * 180 / Math.PI).toFixed(1)}°`, cx_spread, y_spreader + sh / 2 + 18);
     }
     ctx.textAlign = 'left';
   }

@@ -83,6 +83,7 @@ crane_state = {
     'yc0_vec': [0.0] * 33,
     '_udp_n': 0,   # debug: cantidad de doubles en último paquete UDP
     't_sim': 0.0,  # tiempo de simulación [s] — Clock Mux input 39
+    'ciclo_doble': 0, 'i_origen': 0, 'i_destino': 0, 'l_h': 0.0,
     # Derivados
     'modo_nombre': 'REPOSO',
     'any_falla': False,
@@ -107,6 +108,8 @@ def _derive_mode_state():
         crane_state['modo_nombre'] = 'RECUPERACION'
     elif crane_state['modo_error']:
         crane_state['modo_nombre'] = 'ERROR'
+    elif crane_state['ciclo_doble']:
+        crane_state['modo_nombre'] = 'CICLO DOBLE'
     elif crane_state['modo_manual_auto']:
         crane_state['modo_nombre'] = 'MANUAL→AUTO'
     elif crane_state['modo_auto']:
@@ -207,6 +210,15 @@ def _udp_receiver():
                     t_sim_idx = freno_h_n1_idx + 5
                     if N > t_sim_idx:
                         crane_state['t_sim'] = float(values[t_sim_idx])
+                    # ciclo_doble, i_destino, i_origen: Mux inputs 40-42 (índices 71-73)
+                    for j, key in enumerate(['ciclo_doble', 'i_destino', 'i_origen']):
+                        idx = t_sim_idx + 1 + j
+                        if N > idx:
+                            crane_state[key] = float(values[idx])
+                    # l_h: longitud cable [m] — Mux input 43 (índice 74)
+                    l_h_idx = t_sim_idx + 4
+                    if N > l_h_idx:
+                        crane_state['l_h'] = float(values[l_h_idx])
                     crane_state['connected'] = True
                     _derive_mode_state()
             except socket.timeout:
