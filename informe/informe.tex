@@ -77,6 +77,8 @@
     Peralta Bruno - 13220\par}\vspace{0.5cm}
 
     % Profesor titular
+    {\Large Autómatas y Control Discreto\\
+    Prof. Ing. Gabriel Julián\par}\vspace{0.5cm}
     {Año 2026\par}
 \end{titlepage}
 
@@ -90,7 +92,7 @@
 
 \newpage
 
-\section{Descripción del sistema}
+\section{Descripción del sistema \cite{Profe2025}}
 El sistema físico a controlar y automatizar es una grúa portacontenedores STS (Fig. \ref{fig:grua}).
 Este proyecto considera el control de accionamientos eléctricos y operación semi-automática coordinada de los dos movimientos principales continuos y 
 simultáneos de la grúa en un plano vertical (2D): traslación horizontal del carro (Trolley) sobre las vigas principal y móvil (paralelo al eje $x$); e 
@@ -410,8 +412,8 @@ Los parámetros inerciales y geométricos dependen del estado discreto de los tw
 \begin{equation}
     m_l(\textcolor{signalcolor}{TLK}) = 
     \begin{cases} 
-        M_s & \text{si } \textcolor{signalcolor}{TLK} = 1 \text{ (solo spreader)} \\
-        M_s + M_{cX} & \text{si } \textcolor{signalcolor}{TLK} = 0 \text{ (spreader + contenedor)}
+        M_s & \text{si } \textcolor{signalcolor}{TLK} = 0 \text{ (solo spreader)} \\
+        M_s + M_{cX} & \text{si } \textcolor{signalcolor}{TLK} = 1 \text{ (spreader + contenedor)}
     \end{cases}
 \end{equation}
 Siendo $M_s = 15000$ kg la masa del spreader y $M_{cX}$ la masa del contenedor, con $M_{c\min} = 2000$ kg el peso del contenedor vacío y $M_{c\max} = 50000$ kg el peso máximo de carga.
@@ -419,8 +421,8 @@ Siendo $M_s = 15000$ kg la masa del spreader y $M_{cX}$ la masa del contenedor, 
 \begin{equation}
     h_c(\textcolor{signalcolor}{TLK}) = 
     \begin{cases} 
-        0 & \text{si } \textcolor{signalcolor}{TLK} = 1 \\
-        H_c & \text{si } \textcolor{signalcolor}{TLK} = 0
+        0 & \text{si } \textcolor{signalcolor}{TLK} = 0 \\
+        H_c & \text{si } \textcolor{signalcolor}{TLK} = 1
     \end{cases}
 \end{equation}
 Siendo $H_c = 2.59$ m la altura del contenedor estándar según la norma ISO.
@@ -818,9 +820,9 @@ T_{hm\ Lim}^*(k \, T_{s2} \leq t < (k+1) \, T_{s2}) = \text{min}\left(+T_{hm\max
 \input{nivel0.tex}
 \input{simulacion.tex}
 \input{codesys.tex}
-
 \input{conclusiones.tex}
 
-
+\newpage
+\bibliographystyle{unsrt}
+\bibliography{references}
 \end{document}
-

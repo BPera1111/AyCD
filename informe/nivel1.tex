@@ -97,7 +97,7 @@ mecánicamente seguro. Posee cuatro estados internos:
     \item \texttt{CARGADO}: con el contenedor enganchado, se estima su masa a partir de la celda
     de carga mediante un filtro de primer orden sobre la tensión del cable. Con dicha estimación
     se ajusta dinámicamente el límite de velocidad de izaje según la curva de potencia constante
-    del motor (Ec. ??) y se detecta una condición de sobrecarga si la masa estimada supera el máximo
+    del motor (Ec. \ref{eq:curva_potencia_constante}) y se detecta una condición de sobrecarga si la masa estimada supera el máximo
     admisible.
     \begin{equation}
         v_{h,lim}({m}_l) = 
@@ -105,6 +105,7 @@ mecánicamente seguro. Posee cuatro estados internos:
             v_{h\max} & \text{si } {m}_l < 32500 kg \\
             \frac{P_{h\ nom}}{{m}_l \, g} & \text{si } {m}_l \ge 32500 kg
         \end{cases}
+        \label{eq:curva_potencia_constante}
     \end{equation}
 
     \item \texttt{ABRIENDO\_TLK}: de forma análoga al cierre, detecta la disminución de tensión
