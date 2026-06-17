@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Symbolconfiguration xmlns="http://www.3s-software.com/schemas/Symbolconfiguration.xsd">
+  <Header>
+    <Version>3.5.14.0</Version>
+    <SymbolConfigObject version="4.6.0.0" runtimeid="3.5.21.20" libversion="4.6.0.0" compiler="3.5.21.20" lmm="3.5.21.20" profile="CODESYS V3.5 SP21 Patch 2+" settings="SupportOPCUA, LayoutCalculator=OptimizedClientSideLayoutCalculator" />
+    <ProjectInfo name="codesys_st" devicename="Device" appname="Application" />
+  </Header>
+  <TypeList>
+    <TypeSimple name="T_BOOL" size="1" swapsize="0" typeclass="Bool" iecname="BOOL" />
+    <TypeSimple name="T_LREAL" size="8" swapsize="8" typeclass="LReal" iecname="LREAL" />
+    <TypeArray name="T_ARRAY__0__1__OF_LREAL" size="16" nativesize="16" typeclass="Array" iecname="ARRAY [0..1] OF LREAL" basetype="T_LREAL">
+      <ArrayDim minrange="0" maxrange="1" />
+    </TypeArray>
+    <TypeArray name="T_ARRAY__0__32__OF_LREAL" size="264" nativesize="264" typeclass="Array" iecname="ARRAY [0..32] OF LREAL" basetype="T_LREAL">
+      <ArrayDim minrange="0" maxrange="32" />
+    </TypeArray>
+  </TypeList>
+  <NodeList>
+    <Node name="Application">
+      <Node name="PLC_PRG">
+        <Node name="opc_in_BTN_AUTO" type="T_BOOL" access="ReadWrite" />
+        <Node name="opc_in_BTN_EMERG" type="T_BOOL" access="ReadWrite" />
+        <Node name="opc_in_BTN_RESET" type="T_BOOL" access="ReadWrite" />
+        <Node name="opc_in_BTN_TLK" type="T_BOOL" access="ReadWrite" />
+        <Node name="opc_in_FALLA_IZAJE_SV" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_FALLA_MAN" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_FALLA_WD" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_FC_der" type="T_BOOL" access="ReadWrite" />
+        <Node name="opc_in_FC_INF" type="T_BOOL" access="ReadWrite" />
+        <Node name="opc_in_FC_izq" type="T_BOOL" access="ReadWrite" />
+        <Node name="opc_in_FC_sup" type="T_BOOL" access="ReadWrite" />
+        <Node name="opc_in_Fhw" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_heartbeat" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_Joy_XY" type="T_ARRAY__0__1__OF_LREAL" access="ReadWrite" />
+        <Node name="opc_in_m_cont" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_modo_muerto" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_ON_OFF" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_recup_ok" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_T_hm" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_T_tm" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_tita_dl" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_tita_l" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_vh" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_vt" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_xt" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_in_yh" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_BRK_h_N1" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_BRK_hE_N0" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_BRK_t_N0" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_BRK_t_N1" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_FALLA_IZAJE_SV" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_FALLA_MAN" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_FALLA_WD" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_heartbeat" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_m_container" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_modo_auto" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_modo_error" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_modo_manual" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_modo_muerto" type="T_BOOL" access="ReadWrite" />
+        <Node name="opc_out_recuperacion" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_TLK" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_vx_suave" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_vy_suave" type="T_LREAL" access="ReadWrite" />
+        <Node name="opc_out_yc0_vec" type="T_ARRAY__0__32__OF_LREAL" access="ReadWrite" />
+      </Node>
+    </Node>
+  </NodeList>
+</Symbolconfiguration>

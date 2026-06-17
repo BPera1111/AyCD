@@ -168,7 +168,7 @@ vh_0 = 0;
 
 
 periodo_pulsos = 100;               % Pulsos cada 100 ms
-timeout = 300;                      % [ms] Tiempo antes de detectar error
+timeout = 30000;                      % [ms] Tiempo antes de detectar error
 counter_limit = timeout/(Ts0*1000); % Pulsos a contar antes de detectar error
 
 %% Fin
