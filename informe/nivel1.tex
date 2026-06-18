@@ -33,29 +33,71 @@ manera segura las transiciones entre los distintos modos de operación.
     referencias de velocidad para el control regulatorio, permitiendo movimientos precisos y
     suaves. Se activa al detectarse una consigna en el joystick.
 
-    \item \textbf{Modo automático (\texttt{MODO\_AUTO}):} es el estado más complejo, ya que debe
-    controlar la grúa temporalmente sin intervención del operador. Posee subestados internos que gestionan el
-    ciclo completo de movimiento de un contenedor desde un punto de origen hasta un punto de
-    destino:
+    \item \textbf{Modo automático (\texttt{MODO\_AUTO}):} es el modo de operación principal del
+    sistema. Una vez que el operador selecciona las posiciones de origen y destino, el autómata
+    gestiona de forma autónoma el ciclo completo de traslado del contenedor: planificación de
+    alturas seguras, movimiento coordinado de ambos ejes y operación de los twistlocks. La misión
+    se organiza en tres etapas consecutivas, identificadas internamente por la variable
+    \texttt{estado}: la etapa de recolección (\texttt{estado}~$= 1$), la etapa de depósito
+    (\texttt{estado}~$= 2$) y el retorno a la posición de inicio. Los subestados que implementan
+    este ciclo son:
+
     \begin{itemize}
-        \item \texttt{AUTO\_INIT}: inicializa la maniobra, fija la posición de retorno
-        (\textit{home}) y determina la etapa según el estado de los twistlocks.
-        \item \texttt{SEL\_ORIGEN} y \texttt{SEL\_DESTINO}: permiten seleccionar los índices de
-        las posiciones de origen y destino del contenedor sobre el perfil de obstáculos.
-        \item \texttt{SELECCION\_TRAYECTORIA}: según la etapa actual del ciclo (origen, destino
-        o retorno), elige el índice objetivo que se utilizará en la planificación.
+        \item \texttt{AUTO\_INIT}: inicializa la maniobra. Guarda la posición horizontal actual
+        del carro como punto de retorno al final de la misión (\textit{home}) y determina la
+        etapa de inicio según el estado de los twistlocks: si el spreader ya tiene carga
+        enganchada (\textcolor{signalcolor}{TLK}~$= 1$), se salta directamente a la etapa de
+        depósito.
+
+        \item \texttt{SEL\_ORIGEN} y \texttt{SEL\_DESTINO}: permiten al operador navegar el
+        perfil de obstáculos discretizado con el joystick para seleccionar los índices de
+        columna de origen y destino del contenedor. La selección incorpora un filtro de
+        antirrebote de aproximadamente 500~ms para evitar cambios involuntarios. El sistema
+        valida que exista un contenedor en la columna de origen y que el slot de destino esté
+        disponible; al confirmar con el botón \textcolor{signalcolor}{BTN\_TLK} se fija el
+        índice correspondiente y se avanza al subestado siguiente.
+
+        \item \texttt{SELECCION\_TRAYECTORIA}: según la etapa activa del ciclo (ir a buscar, ir
+        a depositar o retornar), selecciona el índice objetivo y calcula la altura mínima de
+        tránsito seguro entre la posición actual del carro y dicho objetivo:
+        \begin{equation}
+            y_{\text{segura}} = \max_{k \,\in\, [i_{\min},\, i_{\max}]} y_{c0,\text{vec}}[k]
+            + H_c + 1\,\text{m}
+            \label{eq:altura_segura}
+        \end{equation}
+        donde $[i_{\min}, i_{\max}]$ es el rango de columnas que el carro atravesará. El margen
+        $H_c + 1$~m garantiza que el spreader, con o sin contenedor, despeje cualquier
+        obstáculo intermedio.
+
         \item \texttt{MOVIMIENTO\_CURVO} y \texttt{MOVIMIENTO\_CURVO\_FINAL}: ejecutan el
-        movimiento coordinado. Una función planificadora de trayectoria genera las consignas de
-        velocidad seguras ($vx\ target$, $vy\ target$), según un controlador PD de seguimiento de posición (Ec. \ref{eq:control_pd}) y
-        evitando colisiones con la pila de contenedores. Durante este modo, el sistema vigila la consigna del joystick: 
-        si el operador interviene, se habilita el modo manual con la posibilidad de continuar la maniobra automática.
+        desplazamiento coordinado en dos fases. Primero, el izaje lleva el spreader hasta
+        $y_{\text{segura}}$ (Ec.~\ref{eq:altura_segura}) antes de iniciar el
+        desplazamiento horizontal; a continuación, el carro traslada el spreader hasta el
+        índice objetivo. Ambos ejes utilizan un controlador proporcional-derivativo de
+        seguimiento de posición que genera las consignas de velocidad $v_{x\,target}$ y
+        $v_{y\,target}$:
         \begin{equation}
             v_{target}(k) = K_{p} \, \bigl(pos_{target}(k) - pos_{med}(k)\bigr) - K_{d} \, v_{obs}(k)
             \label{eq:control_pd}
         \end{equation}
-        \item \texttt{MODO\_MANUAL\_SIMPLE}: etapa final de aproximación con o sin contenedor
-        realizada por el operador.
+        siendo $pos_{med}(k)$ la posición medida por el encoder y $v_{obs}(k)$ la velocidad
+        estimada por el observador de Luenberger del Nivel~2. Durante toda esta fase, el
+        autómata monitorea la consigna del joystick: si el operador realiza una entrada
+        voluntaria, el sistema transfiere el control a \texttt{MODO\_MANUAL\_SIMPLE} para
+        que el operador complete el posicionamiento fino, con la posibilidad de retomar la
+        secuencia automática.
+
+        \item \texttt{MODO\_MANUAL\_SIMPLE}: etapa de aproximación final con o sin contenedor
+        realizada por el operador a velocidad reducida (hasta un 5\,\% de $v_{t\,\max}$ en
+        horizontal), que permite el alineamiento preciso del spreader sobre el contenedor o
+        el slot de destino. Al confirmar con \textcolor{signalcolor}{BTN\_TLK}, el autómata
+        cierra o abre los twistlocks según corresponda y avanza a la etapa siguiente del ciclo.
     \end{itemize}
+
+    La velocidad máxima de izaje durante la etapa de depósito se ajusta dinámicamente según
+    la curva de potencia constante del motor (Ec.~\ref{eq:curva_potencia_constante}), en función
+    de la masa del contenedor estimada por el filtro de la celda de carga en el subestado
+    \texttt{CARGADO} del proceso de twistlocks.
 
     \item \textbf{Estados de error:} ante una falla propia del supervisor o detectada por el
     Nivel 0, el autómata aborta la operación en curso y fuerza al sistema a un estado seguro con
