@@ -195,6 +195,22 @@
   </div>
 </template>
 
+<template id="tpl-lidar">
+  <div class="gl-panel lidar-panel">
+    <div class="lidar-header">
+      <span class="lidar-title">PERFIL LIDAR</span>
+      <span class="lidar-info">
+        Celda: <strong id="lbl-i-li">--</strong> &nbsp;|&nbsp;
+        Lectura: <strong id="lbl-reading">--</strong> m &nbsp;|&nbsp;
+        Escaneadas: <strong id="lbl-scanned-count">--</strong>/33
+      </span>
+    </div>
+    <div class="lidar-chart-wrap">
+      <canvas id="chartLidar"></canvas>
+    </div>
+  </div>
+</template>
+
 <script src="/static/crane.js"></script>
 <script src="/static/selector.js"></script>
 <script src="/static/dashboard.js"></script>

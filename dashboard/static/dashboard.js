@@ -53,6 +53,7 @@ socket.on('telemetry', (data) => {
   SelectorViz.update(data);
   updateUI(data);
   updateCharts(data);
+  updateLidar(data);
   updateRTF(data.t_sim);
 });
 
@@ -244,9 +245,11 @@ function makeChart(canvasId, label1, label2, color1, color2, yMin, yMax) {
   });
 }
 
-let chartPos = null;
-let chartVel = null;
-let t_start = null;
+let chartPos   = null;
+let chartVel   = null;
+let chartLidar = null;
+let t_start    = null;
+const N_MIN_SCAN = 3;
 
 function updateCharts(data) {
   if (!chartPos || !chartVel) return;
@@ -267,6 +270,127 @@ function updateCharts(data) {
 
   pushData(chartPos, data.xt, data.yh);
   pushData(chartVel, data.vt, data.vh);
+}
+
+// ── Chart LIDAR ───────────────────────────────────────────────────────────────
+const LIDAR_N_FINE  = 328;         // bins a 0.244m  (80m / 0.244 ≈ 328)
+const LIDAR_X_MIN   = -30;
+const LIDAR_DX      = 0.244;
+const LIDAR_N_CELL  = 33;
+const LIDAR_DX_CELL = 2.44;
+
+function initLidarChart() {
+  const canvas = document.getElementById('chartLidar');
+  if (!canvas || chartLidar) return;
+
+  const N = LIDAR_N_FINE;
+  const labels = Array.from({length: N}, (_, i) =>
+    `${(LIDAR_X_MIN + (i + 0.5) * LIDAR_DX).toFixed(1)}m`
+  );
+
+  // Perfil real expandido de 33 celdas a 160 bins (cada celda = 4.88 bins ≈ 5)
+  function expandReal(yc0) {
+    return Array.from({length: N}, (_, i) => {
+      const cell = Math.min(Math.floor(i * LIDAR_DX / LIDAR_DX_CELL), LIDAR_N_CELL - 1);
+      return (yc0 && yc0[cell] !== undefined) ? yc0[cell] : 0;
+    });
+  }
+
+  chartLidar = new Chart(canvas, {
+    data: {
+      labels,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Scan LIDAR',
+          data: new Array(N).fill(0),
+          backgroundColor: 'rgba(74,144,226,0.75)',
+          borderColor:     '#4a90e2',
+          borderWidth: 0,
+          categoryPercentage: 1.0,
+          barPercentage: 1.0,
+          order: 2,
+        },
+        {
+          type: 'line',
+          label: 'Perfil real',
+          data: new Array(N).fill(0),
+          borderColor: 'rgba(200,200,200,0.55)',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          stepped: 'middle',
+          fill: false,
+          order: 1,
+        },
+        {
+          type: 'bar',
+          label: 'Lectura actual',
+          data: new Array(N).fill(null),
+          backgroundColor: 'rgba(245,166,35,0.9)',
+          borderColor: '#f5a623',
+          borderWidth: 0,
+          categoryPercentage: 1.0,
+          barPercentage: 1.0,
+          order: 0,
+        },
+      ],
+    },
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#7a8aaa', font: { size: 10 }, boxWidth: 12 } },
+      },
+      scales: {
+        x: { ticks: { color: '#4a5570', maxTicksLimit: 16, font: { size: 8 } }, grid: { color: '#1a2230' } },
+        y: { ticks: { color: '#4a5570', font: { size: 9 } }, grid: { color: '#1a2230' },
+             title: { display: true, text: 'Altura [m]', color: '#4a5570', font: { size: 9 } } },
+      },
+    },
+  });
+}
+
+function updateLidar(data) {
+  if (!chartLidar) return;
+  const scan   = data.scan_h_vec  || [];
+  const counts = data.count_vec   || [];
+  const real   = data.yc0_vec     || [];
+  const N      = LIDAR_N_FINE;
+
+  // Expandir perfil real (33 celdas) a 160 bins
+  const realExpanded = Array.from({length: N}, (_, i) => {
+    const cell = Math.min(Math.floor(i * LIDAR_DX / LIDAR_DX_CELL), LIDAR_N_CELL - 1);
+    return real[cell] !== undefined ? real[cell] : 0;
+  });
+
+  // Barras scan: azul = positivo, naranja oscuro = negativo (bajo deck), transparente = no escaneado
+  const bgColors = scan.map(v =>
+    v > 0.01  ? 'rgba(74,144,226,0.80)' :
+    v < -0.01 ? 'rgba(210,100,40,0.80)' :
+                'rgba(74,144,226,0.0)'
+  );
+
+  chartLidar.data.datasets[0].data            = scan.slice(0, N);
+  chartLidar.data.datasets[0].backgroundColor = bgColors;
+  chartLidar.data.datasets[1].data            = realExpanded;
+
+  // Lectura actual: bin fino correspondiente al i_lidar actual
+  const i_li_1based = data.i_li || 1;
+  const xt_lidar = LIDAR_X_MIN + (i_li_1based - 1) * LIDAR_DX_CELL + LIDAR_DX_CELL / 2;
+  const i_fine   = Math.min(Math.max(Math.round((xt_lidar - LIDAR_X_MIN) / LIDAR_DX - 0.5), 0), N - 1);
+  const readingBars = new Array(N).fill(null);
+  if (data.reading !== undefined && data.reading !== 0) {
+    readingBars[i_fine] = data.reading;
+  }
+  chartLidar.data.datasets[2].data = readingBars;
+  chartLidar.update('none');
+
+  const scannedCount = counts.filter(c => c >= N_MIN_SCAN).length;
+  setLabel('lbl-i-li',    Math.round(i_li_1based), 0);
+  setLabel('lbl-reading', data.reading, 2);
+  const elSc = document.getElementById('lbl-scanned-count');
+  if (elSc) elSc.textContent = scannedCount;
 }
 
 // ── Joystick virtual ──────────────────────────────────────────────────────────
@@ -426,9 +550,10 @@ const GL_DEFAULT = {
                 content: [
                   { type: 'component', componentType: 'crane',     title: 'Vista Grúa',     height: 65 },
                   { type: 'row', height: 35, content: [
-                    { type: 'component', componentType: 'chart-pos', title: 'Posición (m)',    width: 33 },
-                    { type: 'component', componentType: 'chart-vel', title: 'Velocidad (m/s)', width: 33 },
-                    { type: 'component', componentType: 'selector',  title: 'Selector Pos.',   width: 34 },
+                    { type: 'component', componentType: 'chart-pos', title: 'Posición (m)',    width: 25 },
+                    { type: 'component', componentType: 'chart-vel', title: 'Velocidad (m/s)', width: 25 },
+                    { type: 'component', componentType: 'selector',  title: 'Selector Pos.',   width: 25 },
+                    { type: 'component', componentType: 'lidar',     title: 'Perfil LIDAR',    width: 25 },
                   ]},
                 ],
               },
@@ -449,6 +574,7 @@ const PANEL_META = {
   'chart-vel': { title: 'Velocidad (m/s)',     init: () => { if (chartVel) { chartVel.destroy(); chartVel = null; } chartVel = makeChart('chartVel', 'vt (m/s)', 'vh (m/s)', COLORS.vt, COLORS.vh, -5,  5);  } },
   'control':   { title: 'Control',             init: () => { initStick('stickCarro', 'carro', 'x'); initStick('stickIzaje', 'izaje', 'y'); } },
   'selector':  { title: 'Selector Posición',   init: () => { SelectorViz.init(); } },
+  'lidar':     { title: 'Perfil LIDAR',        init: () => { initLidarChart(); } },
 };
 
 function cloneTpl(id) {
@@ -475,6 +601,7 @@ async function initGoldenLayout() {
   layout.registerComponentConstructor('chart-vel', class { constructor(c) { c.element.appendChild(cloneTpl('tpl-chart-vel')); } });
   layout.registerComponentConstructor('control',   class { constructor(c) { c.element.appendChild(cloneTpl('tpl-control'));   } });
   layout.registerComponentConstructor('selector',  class { constructor(c) { c.element.appendChild(cloneTpl('tpl-selector'));  } });
+  layout.registerComponentConstructor('lidar',     class { constructor(c) { c.element.appendChild(cloneTpl('tpl-lidar'));     } });
 
   // loadLayout es síncrono — cuando retorna, todos los elementos YA están en el DOM
   const saved = localStorage.getItem(GL_KEY);
@@ -499,6 +626,7 @@ async function initGoldenLayout() {
     if (document.getElementById('chartVel'))     chartVel = makeChart('chartVel', 'vt (m/s)', 'vh (m/s)', COLORS.vt, COLORS.vh, -5,  5);
     if (document.getElementById('stickCarro'))    { initStick('stickCarro', 'carro', 'x'); initStick('stickIzaje', 'izaje', 'y'); }
     if (document.getElementById('selectorCanvas')) SelectorViz.init();
+    if (document.getElementById('chartLidar'))    initLidarChart();
   });
 
   // Reset layout

@@ -80,7 +80,12 @@ crane_state = {
     # Fines de carrera emergencia
     'FCE_der': 0, 'FCE_izq': 0, 'FCE_sup': 0, 'FCE_inf': 0,
     # Perfil de obstáculos (metros, 33 columnas de xt_min a xt_max)
-    'yc0_vec': [0.0] * 33,
+    'yc0_vec':     [0.0] * 33,
+    'yc0_est_vec': [0.0] * 33,
+    'count_vec':   [0.0] * 33,
+    'scan_h_vec':  [0.0] * 328,
+    'i_li': 0,
+    'reading': 0.0,
     '_udp_n': 0,   # debug: cantidad de doubles en último paquete UDP
     't_sim': 0.0,  # tiempo de simulación [s] — Clock Mux input 39
     'ciclo_doble': 0, 'i_origen': 0, 'i_destino': 0, 'l_h': 0.0,
@@ -219,6 +224,29 @@ def _udp_receiver():
                     l_h_idx = t_sim_idx + 4
                     if N > l_h_idx:
                         crane_state['l_h'] = float(values[l_h_idx])
+                    # i_li: índice LIDAR actual (índice 75)
+                    i_li_idx = l_h_idx + 1
+                    if N > i_li_idx:
+                        crane_state['i_li'] = float(values[i_li_idx])
+                    # reading: medición ruidosa instantánea (índice 76)
+                    reading_idx = i_li_idx + 1
+                    if N > reading_idx:
+                        crane_state['reading'] = float(values[reading_idx])
+                    # count_vec: 33 doubles (índices 77-109)
+                    count_start = reading_idx + 1
+                    if N > count_start:
+                        n_count = min(33, N - count_start)
+                        crane_state['count_vec'] = [float(values[count_start + j]) for j in range(n_count)] + [0.0] * (33 - n_count)
+                    # yc0_est_vec: 33 doubles (índices 110-142)
+                    est_start = count_start + 33
+                    if N > est_start:
+                        n_est = min(33, N - est_start)
+                        crane_state['yc0_est_vec'] = [float(values[est_start + j]) for j in range(n_est)] + [0.0] * (33 - n_est)
+                    # scan_h_vec: 328 doubles a 0.244m (índices 143-470)
+                    scan_start = est_start + 33
+                    if N > scan_start:
+                        n_scan = min(328, N - scan_start)
+                        crane_state['scan_h_vec'] = [float(values[scan_start + j]) for j in range(n_scan)] + [0.0] * (328 - n_scan)
                     crane_state['connected'] = True
                     _derive_mode_state()
             except socket.timeout:
