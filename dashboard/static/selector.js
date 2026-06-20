@@ -66,6 +66,22 @@ const SelectorViz = (() => {
 
     ctx.clearRect(0, 0, W, H);
 
+    // Scan completo cuando la celda i_lidar=2 (índice 1) fue alcanzada
+    const count_vec  = _data.count_vec || [];
+    const scanComplete = count_vec[1] >= 1;
+
+    if (!scanComplete) {
+      ctx.fillStyle = SC.bg;
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = 'rgba(74,144,226,0.35)';
+      ctx.font = 'bold 11px Consolas';
+      ctx.textAlign = 'center';
+      ctx.fillText('ESPERANDO SCAN LIDAR...', W / 2, H / 2);
+      ctx.textAlign = 'left';
+      if (infoEl) infoEl.textContent = 'Scan incompleto';
+      return;
+    }
+
     // Layout
     const ML = 26, MR = 4, MT = 16, MB = 16;
     const chartW = W - ML - MR;
@@ -78,8 +94,8 @@ const SelectorViz = (() => {
     ctx.fillStyle = SC.bg;
     ctx.fillRect(0, 0, W, H);
 
-    const yc0_vec  = _data.yc0_vec || Array(N).fill(0);
-    const i_sel    = Math.round(_data.i_sel)    || 0;
+    const yc0_vec   = _data.yc0_vec || Array(N).fill(0);
+    const i_sel     = Math.round(_data.i_sel)     || 0;
     const i_origen  = Math.round(_data.i_origen)  || 0;
     const i_destino = Math.round(_data.i_destino) || 0;
 

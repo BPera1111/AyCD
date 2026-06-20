@@ -12,25 +12,32 @@
 const CraneViz = (() => {
   // ── Parámetros físicos del modelo ────────────────────────────────────────
   const PHYS = {
-    xt_min: -30, xt_max: 50,      // rango carro [m]
-    yh_min: -20, yh_max: 40,      // rango izaje [m]
-    Yt0: 45.0,                    // altura poleas en carro [m]
-    Ysb: 5.0,                     // despeje mínimo viga [m]
-    Hc: 2.59,                     // altura container [m]
-    Wc: 2.44,                     // ancho container [m]
-    xt_0: 5.0,                    // posición inicial carro
-    yh_0: 20.0,                   // posición inicial izaje
-    alt_borde: 2.8,               // altura borde muelle [m]
-    hold_depth: -7,               // profundidad hold barco [stacks]
-    // Perfil de containers (h_vec * Hc), 33 columnas de xt_min a xt_max
-    // Corresponde a h_vec_inicial en init_plant_parameters.m
-    h_vec: [0,0,1,0,0,1,0,0,0,0,0,0,0,   // [0-12] muelle (índice 12=muro, se dibuja aparte)
-            3,5,6,3,5,6,6,4,1,1,-4,-5,-2,-1,2,6,4,2,5,0],  // [13-32] barco (índice 32=muro, aparte)
+    xt_min: -30, xt_max: 50,
+    yh_min: -20, yh_max: 40,
+    Yt0: 45.0,
+    Ysb: 5.0,
+    Hc: 2.59,
+    Wc: 2.44,
+    xt_0: 5.0,
+    yh_0: 20.0,
+    alt_borde: 2.8,
+    hold_depth: -7,
+    h_vec: [0,0,1,0,0,1,0,0,0,0,0,0,0,
+            3,5,6,3,5,6,6,4,1,1,-4,-5,-2,-1,2,6,4,2,5,0],
+    // Geometría del portal de la grúa
+    portal_land_x:      -33 ,    // [m] top pata tierra
+    portal_sea_x:        -1  ,    // [m] top pata mar
+    portal_base_spread:  0,    // [m] inclinación outward de cada pata
+    // Boom
+    boom_backreach: -37,       // [m] extremo contraboom
+    boom_tip:        52,       // [m] extremo boom sobre barco
+    // Ruedas
+    wheel_r: 1.2,              // [m] radio rueda
   };
 
   // ── Estado interno del canvas ────────────────────────────────────────────
   let canvas, ctx;
-  let W, H;           // dimensiones canvas en px
+  let W, H;
   let state = {
     xt: PHYS.xt_0,
     yh: PHYS.yh_0,
@@ -45,14 +52,13 @@ const CraneViz = (() => {
     modo_manual_auto: 0,
   };
 
-  // ── Coordenadas de la escena ─────────────────────────────────────────────
-  // margin en px
+  // ── Márgenes en px ───────────────────────────────────────────────────────
   const M = { top: 30, bottom: 30, left: 30, right: 30 };
 
   function sceneW() { return W - M.left - M.right; }
   function sceneH() { return H - M.top - M.bottom; }
 
-  // Mundo físico: X ∈ [xt_min-5, xt_max+5], Y ∈ [-25, Yt0+10]
+  // Mundo físico
   const WORLD = {
     xMin: PHYS.xt_min - 5,
     xMax: PHYS.xt_max + 5,
@@ -64,7 +70,6 @@ const CraneViz = (() => {
     return M.left + ((x_m - WORLD.xMin) / (WORLD.xMax - WORLD.xMin)) * sceneW();
   }
   function toCanvasY(y_m) {
-    // y_m positivo = arriba → en canvas, arriba = y pequeño
     return M.top + ((WORLD.yMax - y_m) / (WORLD.yMax - WORLD.yMin)) * sceneH();
   }
   function mToPx(m) {
@@ -133,9 +138,8 @@ const CraneViz = (() => {
   }
   let C = buildColors(false);
 
-  // ── Dibujar fondo (cielo, agua, suelo) ───────────────────────────────────
+  // ── Dibujar fondo (cielo, agua) ──────────────────────────────────────────
   function drawBackground() {
-    // Cielo
     const y_water = toCanvasY(-5);
     const sky_grad = ctx.createLinearGradient(0, 0, 0, y_water);
     sky_grad.addColorStop(0, C.skyGrad[0]);
@@ -143,14 +147,12 @@ const CraneViz = (() => {
     ctx.fillStyle = sky_grad;
     ctx.fillRect(0, 0, W, y_water);
 
-    // Agua
     const water_grad = ctx.createLinearGradient(0, y_water, 0, H);
     water_grad.addColorStop(0, C.waterGrad[0]);
     water_grad.addColorStop(1, C.waterGrad[1]);
     ctx.fillStyle = water_grad;
     ctx.fillRect(0, y_water, W, H - y_water);
 
-    // Línea de agua
     ctx.strokeStyle = C.waterSurf;
     ctx.lineWidth = 1.5;
     ctx.beginPath();
@@ -158,7 +160,6 @@ const CraneViz = (() => {
     ctx.lineTo(W, y_water);
     ctx.stroke();
 
-    // Grid de fondo (sutil)
     ctx.strokeStyle = C.grid;
     ctx.lineWidth = 0.5;
     for (let x = PHYS.xt_min; x <= PHYS.xt_max; x += 10) {
@@ -171,10 +172,9 @@ const CraneViz = (() => {
   }
 
   // ── Dibujar dock (muelle, xt < 0) ───────────────────────────────────────
-  // El muelle termina en x=0 (índice 12 del h_vec = alt_borde)
   function drawDock() {
     const y_dock_top = toCanvasY(0);
-    const x_dock_r   = toCanvasX(0);   // borde derecho del muelle = x=0m
+    const x_dock_r   = toCanvasX(0);
     const x_dock_l   = 0;
 
     ctx.fillStyle = C.dock;
@@ -186,7 +186,6 @@ const CraneViz = (() => {
     ctx.lineTo(x_dock_l, y_dock_top);
     ctx.stroke();
 
-    // Muro vertical del muelle (borde al agua)
     ctx.fillStyle = C.dockEdge;
     ctx.fillRect(x_dock_r - 4, toCanvasY(PHYS.alt_borde), 4, H);
 
@@ -194,22 +193,20 @@ const CraneViz = (() => {
     ctx.font = `${Math.max(9, mToPx(2))}px Consolas`;
     ctx.fillText('MUELLE', x_dock_l + 4, y_dock_top - 5);
 
-    drawContainerStack(PHYS.xt_min, -0.1, C.containerDock);  // excluye x=0 (muro)
+    drawContainerStack(PHYS.xt_min, -0.1, 0, C.containerDock);
   }
 
   // ── Dibujar barco (xt > 0) ───────────────────────────────────────────────
-  // El barco empieza en x≈2.5m (índice 13 del h_vec), pegado al muelle
   function drawShip() {
     const x_ship_l = toCanvasX(1);
     const x_ship_r = toCanvasX(PHYS.xt_max + 3);
     const y_deck   = toCanvasY(-2);
-    const y_hull_b = toCanvasY(PHYS.hold_depth * PHYS.Hc - 2);  // 2m bajo el fondo del hold
+    const y_hull_b = toCanvasY(PHYS.hold_depth * PHYS.Hc - 2);
 
-    // Casco
     ctx.fillStyle = C.ship_hull;
     ctx.beginPath();
     ctx.moveTo(x_ship_l, y_deck);
-    ctx.lineTo(x_ship_l, y_hull_b);           // lado izquierdo vertical recto
+    ctx.lineTo(x_ship_l, y_hull_b);
     ctx.lineTo(x_ship_r + mToPx(2), y_hull_b);
     ctx.lineTo(x_ship_r, y_deck);
     ctx.closePath();
@@ -218,7 +215,6 @@ const CraneViz = (() => {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Cubierta
     ctx.fillStyle = C.ship;
     ctx.fillRect(x_ship_l, y_deck, x_ship_r - x_ship_l, toCanvasY(-8) - y_deck);
     ctx.strokeStyle = C.shipEdge;
@@ -229,22 +225,20 @@ const CraneViz = (() => {
     ctx.font = `${Math.max(9, mToPx(2))}px Consolas`;
     ctx.fillText('BARCO', x_ship_l + 4, y_deck - 5);
 
-    // Borde izquierdo grueso del barco (lado muelle)
     ctx.fillStyle = C.shipEdge;
     ctx.fillRect(x_ship_l - 4, toCanvasY(PHYS.alt_borde), 4, y_hull_b - toCanvasY(PHYS.alt_borde));
 
-    // Muro lateral del barco (x=50m, borde fijo)
     const x_ship_wall = toCanvasX(PHYS.xt_max);
     ctx.fillStyle = C.shipEdge;
     ctx.fillRect(x_ship_wall - 2, toCanvasY(PHYS.alt_borde), 5, H);
 
-    drawContainerStack(1, PHYS.xt_max - 0.1, C.containerShip, PHYS.hold_depth);  // excluye x=50 (muro)
+    drawContainerStack(1, PHYS.xt_max - 0.1, PHYS.hold_depth, C.containerShip);
   }
 
-  // ── Dibujar stacks de containers en el muelle o barco ───────────────────
-  function drawContainerStack(x_start, x_end, color, y_min_stacks = 0) {
+  // ── Dibujar stacks de containers ────────────────────────────────────────
+  function drawContainerStack(x_start, x_end, y_min_stacks = 0, color) {
     const Wc_px = mToPx(PHYS.Wc);
-    const Hc_px = toCanvasY(0) - toCanvasY(PHYS.Hc);  // escala Y correcta
+    const Hc_px = toCanvasY(0) - toCanvasY(PHYS.Hc);
     const N = PHYS.h_vec.length;
     const x_range = PHYS.xt_max - PHYS.xt_min;
 
@@ -253,7 +247,7 @@ const CraneViz = (() => {
       if (x_m < x_start || x_m > x_end) continue;
       const stacks_top = Math.round(PHYS.h_vec[i]);
       if (stacks_top <= y_min_stacks) continue;
-      const visW = Math.max(2, Wc_px * 0.90);   // gap visual entre containers del stack
+      const visW = Math.max(2, Wc_px * 0.90);
       const cx = toCanvasX(x_m) - visW / 2;
       for (let s = y_min_stacks; s < stacks_top; s++) {
         const cy = toCanvasY((s + 1) * PHYS.Hc) + 1;
@@ -266,46 +260,232 @@ const CraneViz = (() => {
     }
   }
 
-  // ── Dibujar estructura de la grúa (columnas + viga) ─────────────────────
+  // ── Dibujar estructura de la grúa (portal en A + boom) ──────────────────
   function drawCraneStructure() {
-    // Viga horizontal (rail) a la altura Yt0
-    const y_rail = toCanvasY(PHYS.Yt0);
-    const x_l    = toCanvasX(PHYS.xt_min - 3);
-    const x_r    = toCanvasX(PHYS.xt_max + 2);
+    const y_ground = toCanvasY(0);
+    const y_top    = toCanvasY(PHYS.Yt0);
 
-    // Columna izquierda (land side)
-    const y_base  = toCanvasY(0);
-    ctx.fillStyle = C.crane_col;
-    ctx.fillRect(toCanvasX(PHYS.xt_min - 2) - 4, y_rail, 8, y_base - y_rail);
+    // Columnas exteriores
+    const land_top_x  = PHYS.portal_land_x;
+    const sea_top_x   = PHYS.portal_sea_x;
+    const land_base_x = land_top_x - PHYS.portal_base_spread;
+    const sea_base_x  = sea_top_x  + PHYS.portal_base_spread;
 
-    // Columna derecha (sea side)
-    ctx.fillStyle = C.crane_col;
-    ctx.fillRect(toCanvasX(PHYS.xt_max) - 4, y_rail, 8, y_base - y_rail);
+    // Columnas interiores
+    const col_sep     = 3.5;
+    const land_in_top  = land_top_x  + col_sep;
+    const land_in_base = land_base_x + col_sep;
+    const sea_in_top   = sea_top_x   - col_sep;
+    const sea_in_base  = sea_base_x  - col_sep;
 
-    // Tirantes diagonales (decorativos)
-    ctx.strokeStyle = C.crane_bm;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(toCanvasX(PHYS.xt_min - 2), y_rail);
-    ctx.lineTo(toCanvasX(PHYS.xt_min - 2) + mToPx(8), y_base);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(toCanvasX(PHYS.xt_max), y_rail);
-    ctx.lineTo(toCanvasX(PHYS.xt_max) - mToPx(8), y_base);
-    ctx.stroke();
+    // x de una columna a altura h dada
+    function colX(top_x, base_x, h) {
+      return top_x + (base_x - top_x) * (1 - h / PHYS.Yt0);
+    }
 
-    // Rail horizontal
-    const rail_h = Math.max(3, mToPx(0.4));
-    const rail_grad = ctx.createLinearGradient(0, y_rail, 0, y_rail + rail_h);
-    rail_grad.addColorStop(0, '#8090b0');
-    rail_grad.addColorStop(1, '#4a5570');
-    ctx.fillStyle = rail_grad;
-    ctx.fillRect(x_l, y_rail - rail_h / 2, x_r - x_l, rail_h);
+    const leg_w   = Math.max(3, mToPx(0.75));
+    const boom_h  = Math.max(5, mToPx(0.9));
+    const x_bl    = toCanvasX(PHYS.boom_backreach);
+    const x_br    = toCanvasX(PHYS.boom_tip);
+    const h_cross = PHYS.Yt0 * 0.55;
+    const y_cross = toCanvasY(h_cross);
+    const cross_h = Math.max(3, mToPx(0.75));
+
+    // centros de cada pata (para kingpost y machine room)
+    const kp_lx  = (land_top_x + land_in_top) / 2;
+    const kp_sx  = (sea_top_x  + sea_in_top)  / 2;
+    const kp_h   = 8;   // [m] altura del kingpost sobre el boom
+    const kp_apex_lx = kp_lx;
+    const kp_apex_sx = kp_sx;
+    const y_kp_l = toCanvasY(PHYS.Yt0 + kp_h);
+    const y_kp_s = toCanvasY(PHYS.Yt0 + kp_h);
+
+    // ── Boom horizontal (cercha: chord superior + inferior + diagonales) ──
+    const boom_grad = ctx.createLinearGradient(0, y_top - boom_h, 0, y_top + boom_h);
+    boom_grad.addColorStop(0, C.crane_bm);
+    boom_grad.addColorStop(0.5, C.crane_col);
+    boom_grad.addColorStop(1, C.crane_col);
+    ctx.fillStyle = boom_grad;
+    ctx.fillRect(x_bl, y_top - boom_h / 2, x_br - x_bl, boom_h);
     ctx.strokeStyle = C.rail;
     ctx.lineWidth = 0.5;
-    ctx.strokeRect(x_l, y_rail - rail_h / 2, x_r - x_l, rail_h);
+    ctx.strokeRect(x_bl, y_top - boom_h / 2, x_br - x_bl, boom_h);
 
-    // Etiquetas de escala en X
+    // Diagonales de cercha sobre el boom
+    ctx.strokeStyle = C.crane_bm;
+    ctx.lineWidth = Math.max(0.5, mToPx(0.15));
+    const truss_sp = mToPx(7);
+    let dir = 1;
+    for (let tx = x_bl; tx < x_br - 1; tx += truss_sp) {
+      const nx = Math.min(tx + truss_sp, x_br);
+      ctx.beginPath();
+      if (dir > 0) {
+        ctx.moveTo(tx, y_top - boom_h / 2);
+        ctx.lineTo(nx, y_top + boom_h / 2);
+      } else {
+        ctx.moveTo(tx, y_top + boom_h / 2);
+        ctx.lineTo(nx, y_top - boom_h / 2);
+      }
+      ctx.stroke();
+      dir *= -1;
+    }
+
+    // ── Contrapeso en extremo del backreach ───────────────────────────────
+    const cw_w = Math.max(6, mToPx(2.5));
+    const cw_h = Math.max(5, mToPx(2.0));
+    ctx.fillStyle = C.crane_col;
+    ctx.fillRect(x_bl, y_top - boom_h / 2 - cw_h, cw_w, cw_h);
+    ctx.strokeStyle = C.crane_bm;
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(x_bl, y_top - boom_h / 2 - cw_h, cw_w, cw_h);
+
+    // ── Machine room (caja sobre portal, lado mar) ────────────────────────
+    const mr_w  = Math.max(12, mToPx(6));
+    const mr_h  = Math.max(10, mToPx(4));
+    const mr_cx = (toCanvasX(sea_in_top) + toCanvasX(sea_top_x)) / 2;
+    const mr_y  = y_top - boom_h / 2 - mr_h;
+    ctx.fillStyle = C.crane_col;
+    ctx.fillRect(mr_cx - mr_w / 2, mr_y, mr_w, mr_h);
+    ctx.strokeStyle = C.crane_bm;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(mr_cx - mr_w / 2, mr_y, mr_w, mr_h);
+    // Ventanas machine room
+    ctx.fillStyle = C.crane_bm;
+    ctx.fillRect(mr_cx - mr_w * 0.35, mr_y + mr_h * 0.15, mr_w * 0.7, mr_h * 0.35);
+
+    // ── Columnas (4 total) ────────────────────────────────────────────────
+    function drawLeg(top_x, base_x) {
+      const xt_c = toCanvasX(top_x);
+      const xb_c = toCanvasX(base_x);
+      const leg_grad = ctx.createLinearGradient(xt_c, y_top, xb_c, y_ground);
+      leg_grad.addColorStop(0, C.crane_bm);
+      leg_grad.addColorStop(1, C.crane_col);
+      ctx.fillStyle = leg_grad;
+      ctx.beginPath();
+      ctx.moveTo(xt_c - leg_w / 2, y_top);
+      ctx.lineTo(xt_c + leg_w / 2, y_top);
+      ctx.lineTo(xb_c + leg_w / 2, y_ground);
+      ctx.lineTo(xb_c - leg_w / 2, y_ground);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = C.rail;
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+    drawLeg(land_top_x,  land_base_x);
+    drawLeg(land_in_top, land_in_base);
+    drawLeg(sea_in_top,  sea_in_base);
+    drawLeg(sea_top_x,   sea_base_x);
+
+    // ── Crossbeam principal (~55% altura) ────────────────────────────────
+    const land_out_cx = colX(land_top_x, land_base_x, h_cross);
+    const sea_out_cx  = colX(sea_top_x,  sea_base_x,  h_cross);
+    const cross_grad  = ctx.createLinearGradient(0, y_cross - cross_h, 0, y_cross + cross_h);
+    cross_grad.addColorStop(0, C.crane_bm);
+    cross_grad.addColorStop(1, C.crane_col);
+    ctx.fillStyle = cross_grad;
+    ctx.fillRect(
+      toCanvasX(land_out_cx) - leg_w / 2,
+      y_cross - cross_h / 2,
+      toCanvasX(sea_out_cx) - toCanvasX(land_out_cx) + leg_w,
+      cross_h
+    );
+
+    // ── Crossbeam inferior (~20% altura) ─────────────────────────────────
+    const h_low = PHYS.Yt0 * 0.20;
+    const land_low_cx = colX(land_top_x, land_base_x, h_low);
+    const sea_low_cx  = colX(sea_top_x,  sea_base_x,  h_low);
+    const y_low = toCanvasY(h_low);
+    ctx.fillStyle = C.crane_col;
+    ctx.fillRect(
+      toCanvasX(land_low_cx) - leg_w / 2,
+      y_low - cross_h * 0.6,
+      toCanvasX(sea_low_cx) - toCanvasX(land_low_cx) + leg_w,
+      cross_h * 0.6
+    );
+
+    // ── X-bracing dentro de cada pata ────────────────────────────────────
+    ctx.strokeStyle = C.crane_col;
+    ctx.lineWidth = Math.max(1, mToPx(0.18));
+
+    function drawXBrace(x1, x2, y_top_m, y_bot_m) {
+      const yT  = toCanvasY(y_top_m);
+      const yB  = toCanvasY(y_bot_m);
+      const xT1 = toCanvasX(colX(x1[0], x1[1], y_top_m));
+      const xT2 = toCanvasX(colX(x2[0], x2[1], y_top_m));
+      const xB1 = toCanvasX(colX(x1[0], x1[1], y_bot_m));
+      const xB2 = toCanvasX(colX(x2[0], x2[1], y_bot_m));
+      ctx.beginPath(); ctx.moveTo(xT1, yT); ctx.lineTo(xB2, yB); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(xT2, yT); ctx.lineTo(xB1, yB); ctx.stroke();
+    }
+
+    const L_out = [land_top_x,  land_base_x];
+    const L_in  = [land_in_top, land_in_base];
+    const S_in  = [sea_in_top,  sea_in_base];
+    const S_out = [sea_top_x,   sea_base_x];
+    drawXBrace(L_out, L_in, PHYS.Yt0, h_cross);
+    drawXBrace(L_out, L_in, h_cross,  0);
+    drawXBrace(S_in,  S_out, PHYS.Yt0, h_cross);
+    drawXBrace(S_in,  S_out, h_cross,  0);
+
+    // ── Kingpost en A (torre triangular sobre cada pata) ──────────────────
+    const kp_base_half = col_sep * 0.9;
+    ctx.fillStyle = C.crane_bm;
+
+    function drawKingpost(apex_x, y_apex, base_cx) {
+      const lw = Math.max(2.5, mToPx(0.4));
+      ctx.lineWidth = lw;
+      ctx.strokeStyle = C.crane_bm;
+      // Pata izquierda del kingpost
+      ctx.beginPath();
+      ctx.moveTo(toCanvasX(base_cx - kp_base_half), y_top);
+      ctx.lineTo(toCanvasX(apex_x), y_apex);
+      ctx.stroke();
+      // Pata derecha del kingpost
+      ctx.beginPath();
+      ctx.moveTo(toCanvasX(base_cx + kp_base_half), y_top);
+      ctx.lineTo(toCanvasX(apex_x), y_apex);
+      ctx.stroke();
+      // Nodo en el apex
+      ctx.beginPath();
+      ctx.arc(toCanvasX(apex_x), y_apex, Math.max(2, mToPx(0.3)), 0, Math.PI * 2);
+      ctx.fillStyle = C.crane_bm;
+      ctx.fill();
+    }
+
+    drawKingpost(kp_apex_lx, y_kp_l, kp_lx);
+    drawKingpost(kp_apex_sx, y_kp_s, kp_sx);
+
+    // ── Tirantes (múltiples por cada kingpost) ────────────────────────────
+    ctx.lineWidth = Math.max(0.8, mToPx(0.1));
+    ctx.strokeStyle = C.crane_bm;
+
+    function stays(apex_x, y_apex, targets) {
+      targets.forEach(([tx, ty]) => {
+        ctx.beginPath();
+        ctx.moveTo(toCanvasX(apex_x), y_apex);
+        ctx.lineTo(toCanvasX(tx), toCanvasY(ty));
+        ctx.stroke();
+      });
+    }
+
+    // Kingpost tierra → puntos del boom backreach (3 tirantes)
+    const bl_m = PHYS.boom_backreach;
+    stays(kp_apex_lx, y_kp_l, [
+      [bl_m + 1,  PHYS.Yt0 - 0.5],
+      [bl_m + 7,  PHYS.Yt0 - 0.3],
+      [bl_m + 14, PHYS.Yt0 - 0.1],
+    ]);
+
+    // Kingpost mar → puntos del boom forestay (3 tirantes)
+    const br_m = PHYS.boom_tip;
+    stays(kp_apex_sx, y_kp_s, [
+      [br_m - 1,  PHYS.Yt0 - 0.5],
+      [br_m - 9,  PHYS.Yt0 - 0.3],
+      [br_m - 18, PHYS.Yt0 - 0.1],
+    ]);
+
+    // ── Escala X ──────────────────────────────────────────────────────────
     ctx.fillStyle = C.text;
     ctx.font = '9px Consolas';
     ctx.textAlign = 'center';
@@ -319,20 +499,19 @@ const CraneViz = (() => {
   function drawTrolleyAndHoist(xt, yh, caught, tita_l) {
     const cx      = toCanvasX(xt);
     const y_rail  = toCanvasY(PHYS.Yt0);
-    const tw      = Math.max(12, mToPx(1.5));   // ancho carro px
-    const th      = Math.max(6,  mToPx(0.6));   // alto carro px
+    const tw      = Math.max(16, mToPx(2.8));
+    const th      = Math.max(8,  mToPx(1.1));
 
-    // Péndulo: offset horizontal del spreader por ángulo tita_l
-    const L = PHYS.Yt0 - yh;                         // longitud cable [m]
-    const x_spread_m = xt + L * Math.sin(tita_l);    // posición real spreader [m]
+    const L = PHYS.Yt0 - yh;
+    const x_spread_m = xt + L * Math.sin(tita_l);
     const cx_spread  = toCanvasX(x_spread_m);
     const y_spreader = toCanvasY(yh);
     const Wc_px = mToPx(PHYS.Wc);
-    const Hc_px = toCanvasY(0) - toCanvasY(PHYS.Hc);  // escala Y correcta
-    const sw = Math.max(16, Wc_px * 0.85);   // ancho spreader
-    const sh = Math.max(4,  mToPx(0.3));     // alto spreader
+    const Hc_px = toCanvasY(0) - toCanvasY(PHYS.Hc);
+    const sw = Math.max(16, Wc_px * 0.85);
+    const sh = Math.max(4,  mToPx(0.3));
 
-    // Cable en ángulo
+    // Cable
     ctx.strokeStyle = C.cable;
     ctx.lineWidth = Math.max(1, mToPx(0.05));
     ctx.beginPath();
@@ -340,14 +519,13 @@ const CraneViz = (() => {
     ctx.lineTo(cx_spread, y_spreader - sh / 2);
     ctx.stroke();
 
-    // Container enganchado (debajo del spreader)
+    // Container enganchado
     if (caught) {
       ctx.fillStyle = C.container;
       ctx.fillRect(cx_spread - Wc_px / 2, y_spreader + sh / 2 + 1, Wc_px, Hc_px);
       ctx.strokeStyle = C.containerEdge;
       ctx.lineWidth = 1.5;
       ctx.strokeRect(cx_spread - Wc_px / 2, y_spreader + sh / 2 + 1, Wc_px, Hc_px);
-      // Stripes en el container
       ctx.strokeStyle = '#2a5a3a';
       ctx.lineWidth = 0.5;
       for (let xi = 0.25; xi < 1; xi += 0.25) {
@@ -358,7 +536,7 @@ const CraneViz = (() => {
       }
     }
 
-    // Spreader (amarillo — identidad visual)
+    // Spreader
     const sp_grad = ctx.createLinearGradient(cx_spread - sw / 2, y_spreader - sh / 2, cx_spread + sw / 2, y_spreader + sh / 2);
     sp_grad.addColorStop(0, '#ffe040');
     sp_grad.addColorStop(1, '#e0b000');
@@ -368,7 +546,7 @@ const CraneViz = (() => {
     ctx.lineWidth = 1.5;
     ctx.strokeRect(cx_spread - sw / 2, y_spreader - sh / 2, sw, sh);
 
-    // Puntos de enganche (esquinas del spreader)
+    // Puntos de enganche
     const tlk_color = caught ? '#40ff80' : '#808090';
     [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([dx, dy]) => {
       ctx.beginPath();
@@ -377,16 +555,49 @@ const CraneViz = (() => {
       ctx.fill();
     });
 
+    // Cabina del operario (cuelga del carro, lado tierra)
+    const cab_w  = Math.max(9, mToPx(2.2));
+    const cab_h  = Math.max(7, mToPx(2.0));
+    const cab_x  = cx - tw / 2 - cab_w - mToPx(0.3);
+    const cab_y  = y_rail + th;
+    // Cuerpo
+    ctx.fillStyle = C.trolley;
+    ctx.fillRect(cab_x, cab_y, cab_w, cab_h);
+    ctx.strokeStyle = C.trolleyEdge;
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(cab_x, cab_y, cab_w, cab_h);
+    // Ventanas (banda horizontal)
+    const wp = Math.max(1.5, cab_w * 0.12);
+    ctx.fillStyle = '#4a9abf';
+    ctx.fillRect(cab_x + wp, cab_y + wp, cab_w - wp * 2, cab_h * 0.45);
+    ctx.strokeStyle = '#80c8e8';
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(cab_x + wp, cab_y + wp, cab_w - wp * 2, cab_h * 0.45);
+    // División central ventana
+    ctx.beginPath();
+    ctx.moveTo(cab_x + cab_w / 2, cab_y + wp);
+    ctx.lineTo(cab_x + cab_w / 2, cab_y + wp + cab_h * 0.45);
+    ctx.stroke();
+    // Soporte de la cabina al carro (dos pernos)
+    ctx.strokeStyle = C.trolleyEdge;
+    ctx.lineWidth = 1;
+    [cab_x + cab_w * 0.25, cab_x + cab_w * 0.75].forEach(hx => {
+      ctx.beginPath();
+      ctx.moveTo(hx, cab_y);
+      ctx.lineTo(hx, y_rail + th * 0.5);
+      ctx.stroke();
+    });
+
     // Polea en el carro
     ctx.beginPath();
     ctx.arc(cx, y_rail, Math.max(3, mToPx(0.25)), 0, Math.PI * 2);
     ctx.fillStyle = C.pulley;
     ctx.fill();
 
-    // Carro (trolley — negro para visibilidad)
+    // Carro (gris oscuro)
     const trolley_grad = ctx.createLinearGradient(cx - tw / 2, y_rail - th, cx + tw / 2, y_rail + th);
-    trolley_grad.addColorStop(0, '#303030');
-    trolley_grad.addColorStop(1, '#101010');
+    trolley_grad.addColorStop(0, C.trolleyEdge);
+    trolley_grad.addColorStop(1, C.trolley);
     ctx.fillStyle = trolley_grad;
     ctx.fillRect(cx - tw / 2, y_rail - th, tw, th);
     ctx.strokeStyle = C.trolleyEdge;
@@ -400,7 +611,7 @@ const CraneViz = (() => {
       ctx.arc(cx + dx, y_rail, wr, 0, Math.PI * 2);
       ctx.fillStyle = '#2a3850';
       ctx.fill();
-      ctx.strokeStyle = '#6080a0';
+      ctx.strokeStyle = C.trolleyEdge;
       ctx.lineWidth = 0.5;
       ctx.stroke();
     });
@@ -431,25 +642,20 @@ const CraneViz = (() => {
     const vh_frac = Math.max(-1, Math.min(1, vh / 3.0));
 
     function drawBar(x, frac, label) {
-      // Fondo
       ctx.fillStyle = C.barBg;
       ctx.fillRect(x, y_mid - bar_h / 2, bar_w, bar_h);
-      // Relleno
       const fill_h = Math.abs(frac) * (bar_h / 2);
       const fill_y = frac >= 0 ? y_mid - fill_h : y_mid;
       ctx.fillStyle = frac > 0 ? '#3080d0' : '#d04030';
       ctx.fillRect(x, fill_y, bar_w, fill_h);
-      // Borde
       ctx.strokeStyle = C.barBorder;
       ctx.lineWidth = 0.5;
       ctx.strokeRect(x, y_mid - bar_h / 2, bar_w, bar_h);
-      // Línea central
       ctx.strokeStyle = C.barBorder;
       ctx.beginPath();
       ctx.moveTo(x - 2, y_mid);
       ctx.lineTo(x + bar_w + 2, y_mid);
       ctx.stroke();
-      // Label
       ctx.fillStyle = C.text;
       ctx.font = '8px Consolas';
       ctx.textAlign = 'center';
@@ -464,7 +670,6 @@ const CraneViz = (() => {
   function render() {
     if (!canvas || !ctx) return;
 
-    // Sincronizar tamaño canvas
     const rect = canvas.getBoundingClientRect();
     if (canvas.width !== rect.width || canvas.height !== rect.height) {
       canvas.width  = rect.width;
@@ -480,7 +685,6 @@ const CraneViz = (() => {
     drawDock();
     drawShip();
 
-    // Banda semitransparente en columna i_sel — solo en modo auto
     if ((state.modo_auto || state.modo_manual_auto) && state.i_sel >= 1 && state.i_sel <= 33) {
       const xi   = PHYS.xt_min + ((state.i_sel - 1) / 32) * (PHYS.xt_max - PHYS.xt_min);
       const cx1  = toCanvasX(xi - PHYS.Wc / 2);
@@ -503,7 +707,7 @@ const CraneViz = (() => {
     drawVelocityBars(state.vt, state.vh);
   }
 
-  // ── API pública ───────────────────────────────────────────────────────────
+  // ── Init + loop ───────────────────────────────────────────────────────────
   function init() {
     canvas = document.getElementById('craneCanvas');
     if (!canvas) return;
@@ -513,7 +717,6 @@ const CraneViz = (() => {
     canvas.width  = W;
     canvas.height = H;
 
-    // Responder a resize
     window.addEventListener('resize', () => {
       const rect = canvas.getBoundingClientRect();
       canvas.width  = rect.width  || 800;
@@ -542,11 +745,10 @@ const CraneViz = (() => {
     if (data.i_sel           !== undefined) state.i_sel           = parseInt(data.i_sel) || 0;
     if (data.modo_auto       !== undefined) state.modo_auto       = parseInt(data.modo_auto) || 0;
     if (data.modo_manual_auto !== undefined) state.modo_manual_auto = parseInt(data.modo_manual_auto) || 0;
-    // yc0_vec viene en metros → convertir a stack count dividiendo por Hc
     if (Array.isArray(data.yc0_vec) && data.yc0_vec.length === 33) {
       PHYS.h_vec = data.yc0_vec.map(v => v / PHYS.Hc);
-      PHYS.h_vec[12] = 0;   // muro del muelle — se dibuja como estructura, no container
-      PHYS.h_vec[32] = 0;   // muro del barco — idem
+      PHYS.h_vec[12] = 0;
+      PHYS.h_vec[32] = 0;
     }
   }
 

@@ -304,7 +304,7 @@ function initLidarChart() {
           type: 'bar',
           label: 'Scan LIDAR',
           data: new Array(N).fill(0),
-          backgroundColor: 'rgba(74,144,226,0.75)',
+          backgroundColor: 'rgba(74,144,226,0.45)',
           borderColor:     '#4a90e2',
           borderWidth: 0,
           categoryPercentage: 1.0,
@@ -315,8 +315,9 @@ function initLidarChart() {
           type: 'line',
           label: 'Perfil real',
           data: new Array(N).fill(0),
-          borderColor: 'rgba(200,200,200,0.55)',
-          borderWidth: 1.5,
+          borderColor: 'rgba(255,255,255,0.85)',
+          borderWidth: 2.5,
+          borderDash: [4, 3],
           pointRadius: 0,
           stepped: 'middle',
           fill: false,
@@ -358,10 +359,11 @@ function updateLidar(data) {
   const real   = data.yc0_vec     || [];
   const N      = LIDAR_N_FINE;
 
-  // Expandir perfil real (33 celdas) a 160 bins
+  // Perfil real revelado progresivamente: null donde aún no se escaneó
   const realExpanded = Array.from({length: N}, (_, i) => {
+    if (!scan[i] || Math.abs(scan[i]) < 0.001) return null;
     const cell = Math.min(Math.floor(i * LIDAR_DX / LIDAR_DX_CELL), LIDAR_N_CELL - 1);
-    return real[cell] !== undefined ? real[cell] : 0;
+    return real[cell] !== undefined ? real[cell] : null;
   });
 
   // Barras scan: azul = positivo, naranja oscuro = negativo (bajo deck), transparente = no escaneado
