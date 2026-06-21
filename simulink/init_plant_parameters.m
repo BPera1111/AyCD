@@ -98,7 +98,7 @@ yc0_vec_inicial = [ 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, alt_borde,...
 %yc0_vec_inicial = h_vec_inicial;  % Perfil inicial efectivamente medido (zona aún no escaneada = 0)
 x_LIDAR = 3;                                                % [m] Offset del sensor lidar respecto al carro hacia +xt
 
-envolvent = [ones(1,N_xt)]*30;
+envolvent = [ones(1,N_xt)]*38;
 
 %% CN2 - Controlador de movimiento - Carro
 Kf = it/rtd;                                        % Ganancia de conversión torque motor a fuerza lineal en el carro
@@ -150,7 +150,7 @@ k_i_h = abs(polos_obs_h)^3;     % Ganancia del observador de estado para el izaj
 vt_0 = 0;    
 xt_0 = 5;
 xl_0 = 5; % integradores carga y perfil de obstaculos 
-yh_0 = 20; % integradores carga y perfil de obstaculos 
+yh_0 = 38; % integradores carga y perfil de obstaculos 
 lh_0 = Yt0-yh_0; % Integrador accionamiento de izaje
 Ttm_0 = 0;                                    % [Nm] Torque inicial en el motor del carro
 Thm_0 = 0;
