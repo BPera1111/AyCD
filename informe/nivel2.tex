@@ -17,10 +17,12 @@ horizontal del carro puede escribirse como:
     M_t\,\frac{d \, v_t(t)}{dt} + b_t\,v_t(t) = F_{cmd}(t) + F_{pert}(t) 
 \end{equation}
 Donde:
-\begin{align*}
-    F_{cmd}(t) &= K_f\,T_{tm}(t), \quad siendo\quad K_f = \frac{i_t}{r_{td}} \\
-    F_{pert}(t) &= 2F_{hw}(t)sin(\theta_l(t)) + T_{tb}(t,\textcolor{signalcolor}{BRK_t}) K_f
-\end{align*}
+\begin{equation*}
+    F_{cmd}(t) = K_f\,T_{tm}(t), \quad siendo\quad K_f = \frac{i_t}{r_{td}} \\
+\end{equation*}
+\begin{equation*}
+    F_{pert}(t) = 2F_{hw}(t)sin(\theta_l(t))
+\end{equation*}
 
 Aplicando la Transformada de Laplace, la función de transferencia simplificada de la planta queda:
 \begin{equation}
@@ -297,7 +299,7 @@ estimación sea lo suficientemente veloz y no introduzca retardos de fase en el 
 observador se diseñó para ser significativamente más rápida que la dinámica de la planta. Específicamente, el polo base del 
 observador ($\omega_{obs\ t}$) se ubicó de manera que su respuesta sea $20$ veces más rápida que el polo dominante de la planta 
 a lazo abierto ($-b_{eq}/J_{eq}$, lo que se demuestra en la sección \ref{sec:control_izaje}).
-El polinomio deseado con los tres polos en $\omega_{obs\ t} = -b_{t,eq}/J_{t,eq}$, es:
+El polinomio deseado con los tres polos en $\omega_{obs\ t} = -20\, b_{t,eq}/J_{t,eq}= -14.4048\, rad/s$, es:
 \begin{equation}
 p_d(s) = (s + \omega_{obs\ t})^3 = s^3 + 3\,\omega_{obs\ t}\, s^2 + 3\,\omega_{obs\ t}^2\, s + \omega_{obs\ t}^3
 \end{equation}
@@ -360,7 +362,7 @@ al accionamiento en un término de torque de perturbación $T_{pert}(t)$, la ecu
 \end{equation}
 Donde:
 \begin{equation}
-    T_{pert}(t) = \frac{F_{hw}(t) \, r_{hd}}{i_h} + T_{hb}(t,\textcolor{signalcolor}{BRK_h}) + \frac{T_{hEb}(t,\textcolor{signalcolor}{BRK_{hE}})}{i_h}
+    T_{pert}(t) = \frac{F_{hw}(t) \, r_{hd}}{i_h}
 \end{equation}
 Aplicando la Transformada de Laplace, la función de transferencia de la planta es:
 \begin{equation} \label{eq:G_vel}
@@ -408,8 +410,8 @@ se implementa la misma estrategia de anti-windup que en el caso del carro, con l
 
 Además, se implementa un observador de estado con acción integral para estimar la velocidad angular del motor, dado que solo se dispone de un encoder de posición.
 El sistema aumentado del observador es análogo al caso del carro, pero con las matrices correspondientes al sistema de izaje. Las ganancias del observador 
-se calculan usando el mismo criterio de separación de anchos de banda, seleccionando un polo base del observador ($\omega_{obs\ h}$) que sea $20$ veces más rápido
-que el polo dominante de la planta a lazo abierto ($-b_{h,eq}/J_{h,eq}$).
+se calculan usando el mismo criterio de separación de anchos de banda, seleccionando un polo base del observador que sea $20$ veces más rápido
+que el polo dominante de la planta a lazo abierto ($-b_{h,eq}/J_{h,eq}$), por lo que se usa $\omega_{obs\ h} = -20\, b_{h,eq}/J_{h,eq} = -9.5197\, rad/s$.
 Quedando así las ecuaciones implementadas en Simulink como:
 \[\left\{
 \begin{aligned}

@@ -11,11 +11,10 @@ intacta durante la transición al entorno de ejecución real. Puede verse a cont
     \caption{Árbol de componentes del programa en CODESYS}
 \end{figure}
 
-Los 2 POUs principales corresponden a los Niveles 0 y 1, mientras que el Nivel 2 se aplica en Simulink como bloques de función de
-Matlab simil ST
-en tiempo discreto. Estos 2 POUs se ejecutan de forma cíclica y en paralelo. Sin embargo en CODESYS debido a la utilización de un PLC 
-virtual con una sola CPU, estas tareas se ejecutan de forma secuencial pero de manera intercalada. A pesar de la limitación, se ejecuta 
-a tal velocidad que, a fines prácticos, el comportamiento es idéntico al de un sistema con múltiples CPUs ejecutando tareas en paralelo (o múltiples PLCs).
+Los dos POUs principales corresponden a los Niveles 0 y 1, mientras que el Nivel 2 se implementa como bloques de función 
+desarrollados en Matlab con comportamiento equivalente al lenguaje ST y ejecutados
+en tiempo discreto. Estos dos POUs se ejecutan de forma cíclica e independiente. En un sistema con múltiples CPUs podrían ejecutarse en paralelo; sin embargo, en CODESYS, debido a la utilización de un PLC virtual con una única CPU, ambas tareas se ejecutan de forma secuencial, alternando su ejecución en cada ciclo de planificación. 
+A pesar de la limitación, se ejecuta a tal velocidad que, a fines prácticos, el comportamiento es equivalente al de una ejecución paralela.
 
 \subsection{Control regulatorio en simil ST}
 Se rediseña el modelo del Nivel 2 usando la misma lógica pero representándola con bloques de función de Matlab (simil ST):
@@ -161,7 +160,39 @@ con la comunicación OPC-UA funcionando, respectivamente:
 \section{Generación automática de código ST}
 Simulink ofrece una herramienta llamada PLC Coder, que tiene la capacidad de traducir automáticamente diagramas Stateflow a ST bajo 
 la norma IEC 61131-3. Analizando el código ST resultante de esta autogeneración, se puede observar que el traductor 
-implementa el autómata de forma ``plana'' y monolítica. Para lograrlo, recurre a una estructura de control \texttt{CASE} global que evalúa una variable entera representativa del estado actual, combinada con una densa red de sentencias \texttt{IF/ELSIF} anidadas para resolver las transiciones y acciones correspondientes.
+implementa el autómata de forma ``plana'' y monolítica. Para lograrlo, recurre a una estructura de control \texttt{CASE} global que evalúa una variable entera 
+representativa del estado actual, combinada con una densa red de sentencias \texttt{IF/ELSIF} anidadas para resolver las transiciones y acciones correspondientes.
+A continuación se muestran fragmentos del código autogenerado para el control de seguridad, evidenciando 
+la complejidad y falta de claridad que presenta:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{codesys/st_generado_2.png}
+    \caption{Fragmento de código ST autogenerado por Simulink PLC Coder en CODESYS}
+\end{figure}
+
+
+Además de la complejidad visual, el código autogenerado es un archivo .ST para cada nivel, por lo que para su uso en CODESYS es necesario 
+dividir manualmente cada archivo en varios bloques de función. También se debe crear y llamar una instancia del bloque de función de cada nivel en el programa principal,
+ya que este es el que se comunica con Simulink a través de OPC-UA, conteniendo las variables de entrada/salida que se exponen a través del protocolo. El programa
+principal y la estructura de bloques de función resultante del código autogenerado se muestra a continuación:
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{codesys/arbol_codesys_st.png}
+        \caption{Estructura de bloques de función}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{codesys/codesys_main_st.png}
+        \caption{Programa principal}
+    \end{subfigure}
+    \caption{Estructura de bloques de función y programa principal resultante del código autogenerado}
+\end{figure}
+
 
 En teoría a nivel de eficiencia computacional y carga de CPU, el rendimiento del código autogenerado es comparable al de la implementación manual. 
 Los compiladores modernos de los PLC optimizan ambas estructuras a un código máquina de ejecución sumamente rápida, por lo que el 
@@ -169,10 +200,4 @@ tiempo de ciclo del autómata no se ve significativamente alterado por la elecci
 
 Sin embargo, la divergencia crítica entre ambos enfoques radica en la legibilidad, la mantenibilidad y el diagnóstico de fallas en el 
 entorno industrial. El código ST autogenerado carece de trazabilidad visual; resulta ser una estructura de difícil interpretación para 
-los operarios de planta. A continuación se muestran fragmentos del código autogenerado para el control de seguridad, evidenciando 
-la complejidad y falta de claridad que presenta:
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{codesys/st_generado.png}
-    \caption{Fragmento de código ST autogenerado por Simulink PLC Coder en CODESYS}
-\end{figure}
+los operarios de planta. 
