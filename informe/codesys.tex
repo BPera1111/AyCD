@@ -20,7 +20,7 @@ A pesar de la limitación, se ejecuta a tal velocidad que, a fines prácticos, e
 Se rediseña el modelo del Nivel 2 usando la misma lógica pero representándola con bloques de función de Matlab (simil ST):
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{codesys/control_carro_funciones2.png}
+    \includegraphics[width=0.55\textwidth]{codesys/control_carro_funciones2.png}
     \caption{Diagrama de control del carro con funciones de Matlab}
 \end{figure}
 \begin{figure}[H]
@@ -167,7 +167,7 @@ la complejidad y falta de claridad que presenta:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{codesys/st_generado_2.png}
+    \includegraphics[width=0.85\textwidth]{codesys/st_generado_2.png}
     \caption{Fragmento de código ST autogenerado por Simulink PLC Coder en CODESYS}
 \end{figure}
 
@@ -179,13 +179,13 @@ principal y la estructura de bloques de función resultante del código autogene
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}{0.49\textwidth}
+    \begin{subfigure}{0.35\textwidth}
         \centering
         \includegraphics[width=\linewidth]{codesys/arbol_codesys_st.png}
         \caption{Estructura de bloques de función}
     \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.49\textwidth}
+    \hspace{0.05\textwidth}
+    \begin{subfigure}{0.35\textwidth}
         \centering
         \includegraphics[width=\linewidth]{codesys/codesys_main_st.png}
         \caption{Programa principal}
@@ -201,3 +201,9 @@ tiempo de ciclo del autómata no se ve significativamente alterado por la elecci
 Sin embargo, la divergencia crítica entre ambos enfoques radica en la legibilidad, la mantenibilidad y el diagnóstico de fallas en el 
 entorno industrial. El código ST autogenerado carece de trazabilidad visual; resulta ser una estructura de difícil interpretación para 
 los operarios de planta. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{codesys/codesys_interfaz_st.png}
+    \caption{Simulación con comunicación OPC-UA en funcionamiento usando código ST autogenerado}
+\end{figure}
