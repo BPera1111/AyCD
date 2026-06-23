@@ -200,22 +200,35 @@ consignas suavizadas $v_{x\ suave}, v_{y\ suave}$.
 
 \subsection{Análisis espacial, perfil de obstáculos e índices}
 
-Con el fin de que el modo automático pueda trazar rutas seguras, la grúa debe conocer su entorno y tener un mapa de alturas o perfil de obstáculos
-del mismo.  Para simplificar la programación de este proceso,
-el aútomata conoce de antemano el perfil inicial y se define como condición de habilitación del modo automático 
-que el perfil de obstáculos haya sido previamente escaneado en su totalidad.
-Además, el sistema se encarga de cambiar el perfil acorde los contenedores que se van moviendo. 
+Para que el modo automático pueda trazar rutas seguras, el autómata mantiene un mapa discreto de alturas del entorno denominado \emph{perfil de obstáculos}. Este mapa se construye mediante un sensor LIDAR virtual y se actualiza dinámicamente a medida que la grúa mueve contenedores. La habilitación del modo automático está condicionada a que dicho perfil haya sido escaneado en su totalidad.
 
-Al mismo tiempo, calcula el índice discreto en el que se encuentra el carro, y genera una envolvente de seguridad a partir
-del perfil de obstáculos, con márgenes laterales y superiores que garantizan que la grúa no intente
-pasar por zonas donde pudiera colisionar. Esto es usado en la planificación de trayectorias para generar consignas de velocidad seguras.
+Tres estados paralelos del Stateflow se encargan de esta funcionalidad: \texttt{INDICES} calcula en cada paso los índices discretos de posición del carro y del LIDAR; \texttt{ACTUALIZAR\_PERFIL\_ALTURAS} mantiene las variables del perfil y las actualiza ante eventos de enganche/desenganche; y \texttt{Escaneo} ejecuta el barrido activo del sensor y determina cuándo el perfil es suficientemente confiable para habilitar la autonomía. A partir del perfil estimado, se genera además una envolvente de seguridad con márgenes laterales y superiores que garantiza que las trayectorias planificadas no colisionen con los obstáculos.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.46\textwidth]{nivel_1/indices_perfil.png}
+    \includegraphics[width=0.45\textwidth]{nivel_1/indices_perfil.png}
+    \hspace{0.8cm}
+    \includegraphics[width=0.45\textwidth]{nivel_1/indices_perfil_2.png}
     \caption{Cálculo de índice y actualización del perfil de obstáculos en Stateflow}
-    \label{fig:n1_indices_perfil}
 \end{figure}
+
+\paragraph{Scanning del perfil de obstáculos.}
+El proceso de escaneo es ejecutado por el estado paralelo \texttt{Escaneo}, que opera en conjunto con \texttt{INDICES} y \texttt{ACTUALIZAR\_PERFIL\_ALTURAS}.
+
+El sensor LIDAR virtual se modela como un punto de medición ubicado $x_{\text{LIDAR}} = 3$~m por delante del carro, cuyo índice de celda activa se calcula como:
+\begin{equation}
+    i_{\text{lidar}} = \left\lfloor \frac{x_t + x_{\text{LIDAR}} - x_{t,\min}}{W_c} \right\rfloor + 1, \quad i_{\text{lidar}} \in [1,\, 33]
+\end{equation}
+donde $W_c = 2{,}44$~m es el ancho de cada celda (igual al ancho del contenedor ISO).
+
+El escaneo se activa cuando el carro alcanza el extremo derecho del recorrido ($i_{\text{lidar}} = 33$) y se considera completo al llegar al extremo izquierdo alcanzable ($i_{\text{lidar}} = 2$), momento en que la variable binaria \texttt{scan} pasa a~1 y habilita el modo automático. Durante el barrido, se toma una medición ruidosa cada 0{,}5~m de desplazamiento del punto LIDAR:
+\begin{equation}
+    r_k = y_{c0}(i_{\text{lidar}}) + \mathcal{N}(0,\; 0{,}05^2)
+\end{equation}
+La altura estimada de cada celda se actualiza con un filtro de máximo (\texttt{yc0\_est\_vec}), acumulando la cantidad de mediciones en \texttt{count\_vec}; una celda se marca como confirmada (\texttt{is\_scanned\_vec}~$= 1$) al recibir al menos 3 muestras independientes. Paralelamente, se almacena un perfil de alta resolución en \texttt{scan\_h\_vec} con celdas de 0{,}244~m (328 elementos), útil para visualización detallada.
+
+Ante un evento de enganche o desenganche de twistlocks (\texttt{TLK}), la celda correspondiente a la posición del carro se actualiza en tiempo real: se decrementa o incrementa en $H_c$ la altura estimada y real.
+
 \subsection{Límites suaves de velocidad}
 
 Este proceso actúa como una barrera de seguridad preventiva. Antes de que el carro o el izaje
