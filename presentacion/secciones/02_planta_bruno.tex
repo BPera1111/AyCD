@@ -83,9 +83,9 @@
   \vspace{-0.1cm}
   \begin{block}{Términos}
     \begin{itemize}
-      \item $F_{tw}$: fuerza de tracción del cable del carro.
-      \item $b_t \, v_t$: fricción viscosa sobre los rieles.
-      \item $2 F_{hw}\sin\theta_l$: fuerza horizontal por el balanceo de la carga.
+      \item $F_{tw}(t)$: fuerza de tracción del cable del carro.
+      \item $b_t \, v_t(t)$: fricción viscosa sobre los rieles.
+      \item $2 F_{hw}(t)\sin\theta_l(t)$: fuerza horizontal por el balanceo de la carga.
     \end{itemize}
     Valores: $M_t = 30\,000$ kg \quad ; \quad $b_t = 90$ Ns/m.
   \end{block}
@@ -123,22 +123,22 @@
   \begin{columns}[T]
     \begin{column}{0.5\textwidth}
       \textbf{Eje lento (tambor)}
-      \[ J_{td}\,\dot\omega_{td} = T_{td} - b_{td}\,\omega_{td} - T_{tdl} \]
+      \[ J_{td}\,\dot\omega_{td}(t) = T_{td}(t) - b_{td}\,\omega_{td}(t) - T_{tdl}(t) \]
       \begin{itemize}
         \item $J_{td} = 1200$ kgm²
         \item $b_{td} = 1.8$ Nms/rad
         \item $r_{td} = 0.5$ m
-        \item $T_{tdl} = F_{tw}\,r_{td}$ (carga del cable)
+        \item $T_{tdl}(t) = F_{tw}(t)\,r_{td}$ (carga del cable)
       \end{itemize}
     \end{column}
     \begin{column}{0.5\textwidth}
       \textbf{Eje rápido (motor)}
-      \[ J_{tm+tb}\,\dot\omega_{tm} = T_{tm} + T_{tb} - b_{tm}\,\omega_{tm} - T_{tml} \]
+      \[ J_{tm+tb}\,\dot\omega_{tm}(t) = T_{tm}(t) + T_{tb}(t,\sig{BRK_t}) - b_{tm}\,\omega_{tm}(t) - T_{tml}(t) \]
       \begin{itemize}
         \item $J_{tm+tb} = 7$ kgm²
         \item $b_{tm} = 6$ Nms/rad
-        \item $T_{tm}$: torque del motor
-        \item $T_{tb}$: torque del freno
+        \item $T_{tm}(t)$: torque del motor
+        \item $T_{tb}(t,\sig{BRK_t})$: torque del freno
       \end{itemize}
     \end{column}
   \end{columns}
@@ -196,8 +196,8 @@
   \begin{alertblock}{Resultado}
     Ecuación de estado única para todo el accionamiento del carro:
     \[
-    \frac{d\omega_{tm}}{dt} = \frac{1}{J_{t,eq}}\left[T_{tm} + T_{tb} - b_{t,eq}\,\omega_{tm}
-      - \frac{r_{td}}{i_t}\,F_{tw}\right]
+    \frac{d\omega_{tm}}{dt}(t) = \frac{1}{J_{t,eq}}\left[T_{tm}(t) + T_{tb}(t,\sig{BRK_t}) - b_{t,eq}\,\omega_{tm}(t)
+      - \frac{r_{td}}{i_t}F_{tw}(t)\right]
     \]
   \end{alertblock}
 \end{frame}
@@ -205,23 +205,23 @@
 \begin{frame}{Modelo dinámico completo del carro}
   \vspace{-0.2cm}
   \begin{columns}[T]
-    \begin{column}{0.55\textwidth}
+    \begin{column}{0.65\textwidth}
       \begin{block}{Ecuaciones de estado acopladas}
         \[
         \begin{cases}
-          \dot\omega_{tm} = \frac{1}{J_{t,eq}}\big[T_{tm} + T_{tb} - b_{t,eq}\omega_{tm}
-            - \tfrac{r_{td}}{i_t}F_{tw}\big] \\[6pt]
-          \dot v_t = \frac{1}{M_t}\big[F_{tw} - b_t v_t + 2F_{hw}\sin\theta_l\big] \\[6pt]
-          \dot x_t = v_t \\[6pt]
-          F_{tw} = K_{tw}(x_{td}-x_t) + b_{tw}(v_{td}-v_t)
+          \dot\omega_{tm}(t) = \frac{1}{J_{t,eq}}\big[T_{tm}(t) + T_{tb}(t,\sig{BRK_t}) - b_{t,eq}\,\omega_{tm}(t)
+            - \tfrac{r_{td}}{i_t}F_{tw}(t)\big] \\[6pt]
+          \dot v_t(t) = \frac{1}{M_t}\big[F_{tw}(t) - b_t\,v_t(t) + 2F_{hw}(t)\sin\theta_l(t)\big] \\[6pt]
+          \dot x_t(t) = v_t(t) \\[6pt]
+          F_{tw}(t) = K_{tw}\big(x_{td}(t)-x_t(t)\big) + b_{tw}\big(v_{td}(t)-v_t(t)\big)
         \end{cases}
         \]
       \end{block}
       \begin{block}{Variables auxiliares}
-        $v_{td} = \dfrac{r_{td}}{i_t}\,\omega_{tm}$ \quad ; \quad $x_{td} = \displaystyle\int v_{td}\,dt$
+        $v_{td}(t) = \dfrac{r_{td}}{i_t}\,\omega_{tm}(t)$ \quad ; \quad $x_{td}(t) = \displaystyle\int v_{td}(t)\,dt$
       \end{block}
     \end{column}
-    \begin{column}{0.45\textwidth}
+    \begin{column}{0.35\textwidth}
       \centering
       \includegraphics[width=\linewidth]{modelo_carro.png}
     \end{column}
