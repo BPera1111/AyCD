@@ -12,6 +12,7 @@ const SelectorViz = (() => {
 
   let canvas, ctx, infoEl;
   let _data = { yc0_vec: Array(N).fill(0), i_sel: 0, i_origen: 0, i_destino: 0 };
+  let _scanEverComplete = false;
 
   function xFromIndex(i) {
     return XT_MIN + (i / (N - 1)) * (XT_MAX - XT_MIN);
@@ -66,11 +67,11 @@ const SelectorViz = (() => {
 
     ctx.clearRect(0, 0, W, H);
 
-    // Scan completo cuando la celda i_lidar=2 (índice 1) fue alcanzada
-    const count_vec  = _data.count_vec || [];
-    const scanComplete = count_vec[1] >= 1;
+    // scan=1 cuando MATLAB confirma scan LIDAR completo.
+    // _scanEverComplete no se resetea aunque scan vuelva a 0 tras TLK.
+    if (_data.scan >= 1) _scanEverComplete = true;
 
-    if (!scanComplete) {
+    if (!_scanEverComplete) {
       ctx.fillStyle = SC.bg;
       ctx.fillRect(0, 0, W, H);
       ctx.fillStyle = 'rgba(74,144,226,0.35)';

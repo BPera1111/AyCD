@@ -84,6 +84,7 @@ crane_state = {
     'yc0_est_vec': [0.0] * 33,
     'count_vec':   [0.0] * 33,
     'scan_h_vec':  [0.0] * 328,
+    'scan': 0,
     'i_li': 0,
     'reading': 0.0,
     '_udp_n': 0,   # debug: cantidad de doubles en último paquete UDP
@@ -247,6 +248,8 @@ def _udp_receiver():
                     if N > scan_start:
                         n_scan = min(328, N - scan_start)
                         crane_state['scan_h_vec'] = [float(values[scan_start + j]) for j in range(n_scan)] + [0.0] * (328 - n_scan)
+                    # scan: último double del paquete — 1 cuando scan LIDAR completo
+                    crane_state['scan'] = int(float(values[N - 1]))
                     crane_state['connected'] = True
                     _derive_mode_state()
             except socket.timeout:

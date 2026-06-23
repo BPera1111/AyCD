@@ -240,10 +240,9 @@ const CraneViz = (() => {
     const Wc_px = mToPx(PHYS.Wc);
     const Hc_px = toCanvasY(0) - toCanvasY(PHYS.Hc);
     const N = PHYS.h_vec.length;
-    const x_range = PHYS.xt_max - PHYS.xt_min;
 
     for (let i = 0; i < N; i++) {
-      const x_m = PHYS.xt_min + (i / (N - 1)) * x_range;
+      const x_m = PHYS.xt_min + (i + 0.5) * PHYS.Wc;
       if (x_m < x_start || x_m > x_end) continue;
       const stacks_top = Math.round(PHYS.h_vec[i]);
       if (stacks_top <= y_min_stacks) continue;
@@ -686,7 +685,7 @@ const CraneViz = (() => {
     drawShip();
 
     if ((state.modo_auto || state.modo_manual_auto) && state.i_sel >= 1 && state.i_sel <= 33) {
-      const xi   = PHYS.xt_min + ((state.i_sel - 1) / 32) * (PHYS.xt_max - PHYS.xt_min);
+      const xi   = PHYS.xt_min + (state.i_sel - 0.5) * PHYS.Wc;
       const cx1  = toCanvasX(xi - PHYS.Wc / 2);
       const cx2  = toCanvasX(xi + PHYS.Wc / 2);
       ctx.fillStyle = 'rgba(255, 220, 50, 0.15)';
