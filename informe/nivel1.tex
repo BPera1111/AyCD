@@ -26,11 +26,12 @@ manera segura las transiciones entre los distintos modos de operación.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{nivel_1/automata_principal.png}
+    \includegraphics[width=0.86\textwidth]{nivel_1/automata_principal.png}
     \caption{Máquina de estados del autómata principal en Stateflow}
     \label{fig:n1_automata_principal}
 \end{figure}
 
+\newpage
 \begin{itemize}
     \item \textbf{Reposo (\texttt{REPOSO}):} estado inicial y de espera de comandos. La grúa
     permanece detenida con los frenos cerrados. Es el estado al que se regresa cuando finaliza el movimiento.
@@ -39,6 +40,18 @@ manera segura las transiciones entre los distintos modos de operación.
     velocidades de ambos ejes mediante el joystick. Las consignas del joystick se traducen a
     referencias de velocidad para el control regulatorio, permitiendo movimientos precisos y
     suaves. Se activa al detectarse una consigna en el joystick.
+
+    \item \textbf{Estados de error:} ante una falla propia del supervisor o detectada por el
+    Nivel 0, el autómata aborta la operación en curso y fuerza al sistema a un estado seguro con
+    los frenos aplicados. Los errores se discriminan según su origen: \texttt{ERROR\_FC\_sup\_inf}
+    para fallas de finales de carrera de izaje, \texttt{ERROR\_FC\_izq\_der} para los del carro y
+    \texttt{ERROR\_OTRO} para el resto de las condiciones críticas, cerrando los frenos correspondientes según el error.
+
+
+    \item \textbf{Recuperación (\texttt{RECUPERACION}):} estado de resguardo que limita la
+    velocidad y dirección del movimiento manual para que el operador pueda llevar la grúa a una
+    condición segura tras una falla. Se activa con el botón de reset después de una falla y se
+    abandona cuando la posición se aleja del fin de carrera correspondiente, si no hay uno se abandona inmediatamente.
 
     \item \textbf{Modo automático (\texttt{MODO\_AUTO}):} es el modo de operación principal del
     sistema y se ingresa presionando el \textcolor{signalcolor}{BTN\_AUTO}. Una vez que el operador 
@@ -113,27 +126,14 @@ manera segura las transiciones entre los distintos modos de operación.
     \newpage
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.75\textwidth]{nivel_1/modo_auto_1.png}
+        \includegraphics[width=0.99\textwidth]{nivel_1/modo_auto_1.png}
     \end{figure}
     \vspace{-0.8cm}
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.75\textwidth]{nivel_1/modo_auto_2.png}
+        \includegraphics[width=0.99\textwidth]{nivel_1/modo_auto_2.png}
         \caption{Modo automático en Stateflow}
     \end{figure}
-
-
-    \item \textbf{Estados de error:} ante una falla propia del supervisor o detectada por el
-    Nivel 0, el autómata aborta la operación en curso y fuerza al sistema a un estado seguro con
-    los frenos aplicados. Los errores se discriminan según su origen: \texttt{ERROR\_FC\_sup\_inf}
-    para fallas de finales de carrera de izaje, \texttt{ERROR\_FC\_izq\_der} para los del carro y
-    \texttt{ERROR\_OTRO} para el resto de las condiciones críticas, cerrando los frenos correspondientes según el error.
-
-
-    \item \textbf{Recuperación (\texttt{RECUPERACION}):} estado de resguardo que limita la
-    velocidad y dirección del movimiento manual para que el operador pueda llevar la grúa a una
-    condición segura tras una falla. Se activa con el botón de reset después de una falla y se
-    abandona cuando la posición se aleja del fin de carrera correspondiente, si no hay uno se abandona inmediatamente.
 
 
 \end{itemize}
@@ -176,11 +176,12 @@ mecánicamente seguro. Posee cuatro estados internos:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.65\textwidth]{nivel_1/twistlocks.png}
+    \includegraphics[width=0.85\textwidth]{nivel_1/twistlocks.png}
     \caption{Lógica de gestión de twistlocks en Stateflow}
     \label{fig:n1_twistlocks}
 \end{figure}
 
+\newpage
 \subsection{Suavizador de consignas de velocidad}
 
 Este proceso aplica filtros de suavizado a las consignas de velocidad provenientes del autómata
@@ -204,17 +205,21 @@ Para que el modo automático pueda trazar rutas seguras, el autómata mantiene u
 
 Tres estados paralelos del Stateflow se encargan de esta funcionalidad: \texttt{INDICES} calcula en cada paso los índices discretos de posición del carro y del LIDAR; \texttt{ACTUALIZAR\_PERFIL\_ALTURAS} mantiene las variables del perfil y las actualiza ante eventos de enganche/desenganche; y \texttt{Escaneo} ejecuta el barrido activo del sensor y determina cuándo el perfil es suficientemente confiable para habilitar la autonomía. A partir del perfil estimado, se genera además una envolvente de seguridad con márgenes laterales y superiores que garantiza que las trayectorias planificadas no colisionen con los obstáculos.
 
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.45\textwidth]{nivel_1/indices_perfil.png}
-    \hspace{0.8cm}
-    \includegraphics[width=0.45\textwidth]{nivel_1/indices_perfil_2.png}
+    \includegraphics[width=0.6\textwidth]{nivel_1/indices_perfil.png}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.48\textwidth]{nivel_1/indices_perfil_2.png}
     \caption{Cálculo de índice y actualización del perfil de obstáculos en Stateflow}
 \end{figure}
 
-\paragraph{Scanning del perfil de obstáculos.}
-El proceso de escaneo es ejecutado por el estado paralelo \texttt{Escaneo}, que opera en conjunto con \texttt{INDICES} y \texttt{ACTUALIZAR\_PERFIL\_ALTURAS}.
+\noindent\textbf{Escaneo del perfil de obstáculos}
 
+
+El proceso de escaneo es ejecutado por el estado paralelo \texttt{Escaneo}, que opera en conjunto con \texttt{INDICES} y \texttt{ACTUALIZAR\_PERFIL\_ALTURAS}.
 El sensor LIDAR virtual se modela como un punto de medición ubicado $x_{\text{LIDAR}} = 3$~m por delante del carro, cuyo índice de celda activa se calcula como:
 \begin{equation}
     i_{\text{lidar}} = \left\lfloor \frac{x_t + x_{\text{LIDAR}} - x_{t,\min}}{W_c} \right\rfloor + 1, \quad i_{\text{lidar}} \in [1,\, 33]
@@ -262,7 +267,7 @@ estado de error.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.65\textwidth]{nivel_1/watchdog_heartbeat.png}
+    \includegraphics[width=0.7\textwidth]{nivel_1/watchdog_heartbeat.png}
     \caption{Watchdog Heartbeat en Stateflow}
     \label{fig:n1_watchdog}
 \end{figure}
@@ -280,7 +285,7 @@ modo (encendido/apagado, automático, reset y parada de emergencia).
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{nivel_1/joystick.png}
+    \includegraphics[width=0.7\textwidth]{nivel_1/joystick.png}
     \caption{Bloque de configuración del joystick}
     \label{fig:n1_joystick}
 \end{figure}
