@@ -56,16 +56,14 @@ La planta incluye:
 ## Cómo correr
 
 ### Requisitos
-- MATLAB R2023+ con Simulink, Stateflow y Instrument Control Toolbox
+- MATLAB R2025b con Simulink, Stateflow y Instrument Control Toolbox
 - Python 3.10+ con entorno virtual en `venv/`
 
 ### Setup MATLAB
 ```matlab
 cd simulink
 run('init_plant_parameters.m')   % siempre primero
-run('telemetry_timer.m')         % inicia envío UDP al dashboard
-open_system('nivel_1_full.slx')  % modelo completo
-% → Presionar Play
+run('planta.slx')
 ```
 
 ### Dashboard Python
