@@ -1,0 +1,44 @@
+\section{Introducción}
+
+\begin{frame}{El sistema: grúa portacontenedores STS}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item Grúa de muelle tipo pórtico (\textit{Ship-to-Shore}) para carga/descarga de
+              contenedores en barcos.
+        \item Dos movimientos principales, simultáneos, en un plano vertical (2D):
+          \begin{itemize}
+            \item \textbf{Carro} (\textit{Trolley}): traslación horizontal.
+            \item \textbf{Izaje} (\textit{Hoist}): subida/bajada de la carga.
+          \end{itemize}
+        \item Carga suspendida que se \textbf{balancea como un péndulo} $\Rightarrow$ ejes
+              acoplados.
+        \item Objetivo: \textbf{control de accionamientos} y \textbf{operación
+              semi-automática coordinada}.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{vista_lateral.jpg}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Arquitectura de control jerárquica}
+  \begin{block}{Sistema híbrido de control y protección — 3 niveles}
+    \begin{center}
+      \begin{tabular}{cll}
+        \toprule
+        \textbf{Nivel} & \textbf{Rol} & \textbf{Estados / $T_s$} \\
+        \midrule
+        \textbf{2} & Regulatorio (torque/velocidad) & Continuos muestreados en TD --- $1$ ms \\
+        \textbf{1} & Supervisor (modos, coordinación) & \textbf{Discretos} activados por eventos --- $20$ ms \\
+        \textbf{0} & Protección (seguridad) & Discretos --- $20$ ms \\
+        \bottomrule
+      \end{tabular}
+    \end{center}
+  \end{block}
+  \begin{itemize}
+    \item Jerarquía creciente: el Nivel 0 \textbf{sobrescribe} a los superiores ante falla.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,70 @@
+\newpage
+\section{Comunicación y animación con Python}
+
+Una vez modelados la planta física y los tres niveles de control, se integran todos los
+subsistemas en un único modelo de Simulink que constituye el sistema completo a simular. En él se
+interconectan la planta con las capas de control regulatorio, supervisor y de
+protección, junto con el bloque de comunicación que enlaza la simulación con la
+animación. La Fig. \ref{fig:planta_completa} muestra esta integración general.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.74\textwidth]{simulacion/planta_completa.png}
+    \caption{Modelo completo del sistema en Simulink: planta física e integración de los tres niveles de control.}
+    \label{fig:planta_completa}
+\end{figure}
+
+Para la visualización en tiempo real de la grúa y su entorno, se implementó un bloque de comunicación UDP que transmite los estados
+críticos del sistema a un programa de python que lo comunica con la simulación. Este programa muestra en una ventana del navegador 
+una representación 2D de la grúa, contenedores, barco y parámetros clave que permiten al operador monitorear visualmente la operación.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.25\textwidth]{simulacion/sim_udp.png}
+    \hspace{0.8cm}
+    \includegraphics[width=0.25\textwidth]{simulacion/sim_udp2.png}
+    \caption{Diagrama de la comunicación UDP entre Simulink y el programa de python}
+\end{figure}
+
+A continuación se presentan algunas capturas de diferentes estados de la grúa, mostrando la posición del spreader, la carga y el entorno.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{1\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{simulacion/sim_manual.png}
+        \caption{Modo manual.}
+    \end{subfigure}
+
+    \vspace{0.4cm}
+
+    \begin{subfigure}{1\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{simulacion/sim_auto.png}
+        \caption{Modo automático.}
+    \end{subfigure}
+
+    \caption{Capturas de la animación: modos manual y automático.}
+    \label{fig:sim_estados1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{1\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{simulacion/sim_auto_leave.png}
+        \caption{Modo automático: liberación de la carga.}
+    \end{subfigure}
+
+    \vspace{0.4cm}
+
+    \begin{subfigure}{1\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{simulacion/sim_error.png}
+        \caption{Estado de error.}
+    \end{subfigure}
+
+    \caption{Capturas de la animación: liberación de la carga y estado de error.}
+    \label{fig:sim_estados2}
+\end{figure}
+

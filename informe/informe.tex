@@ -9,6 +9,7 @@
 \usepackage{fancyhdr} % Para encabezados y pies de página
 %\usepackage{geometry} % Para ajustar márgenes
 \usepackage{caption} % Para usar \captionof fuera de float
+\usepackage{subcaption} % Para subfiguras
 \usepackage{float}
 \usepackage{multirow}
 \usepackage{enumitem}
@@ -32,6 +33,9 @@
   right=1.32cm
 ]{geometry}
 
+\graphicspath{{./figs/}}
+
+\definecolor{signalcolor}{RGB}{0,115,195}
 
 % Configuración de encabezados y pies de página
 \pagestyle{fancy}
@@ -39,9 +43,9 @@
 
 % Encabezado
 \fancyhead[L]{\scriptsize UNCuyo - Ing. Mecatrónica\\Mendoza - Argentina}
-\fancyhead[C]{\scriptsize\textbf{Espacio Curricular:  \textbf{AUTÓMATAS Y CONTROL DISCRETO (Año 2024)}\\
+\fancyhead[C]{\scriptsize\textbf{Espacio Curricular:  \textbf{AUTÓMATAS Y CONTROL DISCRETO (Año 2026)}\\
 \textbf{PROYECTO GLOBAL INTEGRADOR}}}
-\fancyhead[R]{\scriptsize Peña Lautaro, Peralta Bruno\\19/07/2025}
+\fancyhead[R]{\scriptsize Peña Lautaro, Peralta Bruno\\29/05/2026}
 
 % Pie de página
 \fancyfoot[C]{Pág. \thepage\ de \pageref{LastPage}}
@@ -60,20 +64,22 @@
 \begin{titlepage}
     \centering
 
-    % % Logo
-    % \includegraphics[width=0.8\textwidth]{imagenes/fing.jpeg}\par\vspace{1cm}
-    % \vspace{2cm}
-    % % Título
-    % {\Huge \textbf{Proyecto Global Integrador:}\\[0.5cm]
-    % \textbf{Control de Accionamiento de CA con}\\
-    % \textbf{Motor Sincrónico de Imanes Permanentes}\par}\vspace{2cm}
-    
+    % Logo
+    \includegraphics[width=0.8\textwidth]{fing.jpeg}\par\vspace{1cm}
+    \vspace{2cm}
+    % Título
+    {\Huge \textbf{Proyecto Global Integrador:}\\[0.5cm]
+    \textbf{Control y Automatización de una}\\
+    \textbf{Grúa Portacontenedores Portuaria (STS)}\par}\vspace{2cm}
+
     % Autores
     {\Large Peña Lautaro - 13099\\
     Peralta Bruno - 13220\par}\vspace{0.5cm}
-    
+
     % Profesor titular
-    {Año 2024\par}
+    {\Large Autómatas y Control Discreto\\
+    Prof. Ing. Gabriel Julián\par}\vspace{0.5cm}
+    {Año 2026\par}
 \end{titlepage}
 
 % Índice
@@ -82,386 +88,741 @@
 \newpage
 
 % Contenido del documento
-\section{Resumen}
-Este documento presenta el diseño y análisis de un sistema 
-de control para un accionamiento eléctrico 
-de corriente alterna (CA) compuesto por una máquina eléctrica sincrónica con excitación
-por imanes permanentes (PMSM), aplicado al 
-control de una articulación robótica de un grado de libertad.
-El proyecto busca integrar los conocimientos 
-adquiridos en el espacio curricular de Automática y Máquinas 
-Eléctricas mediante el modelado, simulación, diseño
-y evaluación del rendimiento 
-de un sistema de control automático para regular el 
-movimiento y la posición de un eje mecánico.
-
-Durante el desarrollo del trabajo, se construirá el modelo 
-matemático completo del sistema físico, incluyendo 
-los subsistemas mecánico, electromagnético y térmico, y se 
-realizarán simulaciones utilizando Matlab/Simulink. 
-A partir de estos modelos, se diseñará una estrategia de 
-control vectorial con desacoplamiento de variables y 
-un controlador externo de movimiento tipo PID, evaluando 
-además la estabilidad, controlabilidad y 
-observabilidad del sistema.
-
-Los resultados obtenidos a partir de las simulaciones 
-permitirán verificar la capacidad del controlador para 
-regular eficazmente la velocidad y el torque del motor, 
-así como su robustez frente a perturbaciones 
-externas y variaciones en los parámetros del sistema. 
-También se analizarán los efectos térmicos en el 
-motor y el impacto del torque de carga en distintas 
-condiciones de operación.
-
-Posteriormente, se reemplazarán los modelos ideales de 
-sensores e inversor por modelos más realistas, 
-incluyendo limitaciones como la saturación y un ancho de 
-banda finito. Se analizará cómo estas restricciones 
-afectan el desempeño del sistema de control.
-
-Finalmente, se desarrollará una versión del controlador 
-en tiempo discreto, evaluando la influencia de 
-la frecuencia de muestreo sobre la precisión del sistema 
-y su estabilidad, acercando la simulación a 
-un escenario realista.
-
-
-\newpage
-\section{Introducción}
-Este trabajo tiene como objetivo desarrollar un sistema de control automático para un accionamiento eléctrico de corriente alterna, basado en una máquina síncrona de imanes permanentes (PMSM), que actúa sobre la articulación de un brazo manipulador robótico con un solo grado de libertad. El sistema está diseñado para operar en un plano vertical, donde el eje de rotación se encuentra fijo a una base y sometido a la acción constante de la gravedad. La dinámica del sistema varía según las condiciones de carga útil aplicadas en el extremo del brazo.
-
-El accionamiento propuesto está compuesto por un reductor de velocidad de engranajes planetarios, un motor eléctrico PMSM, y un conjunto de sensores encargados de proporcionar retroalimentación sobre la posición angular del motor, las corrientes de fase y la temperatura del estator. Con base en las especificaciones dadas, se desarrollará un modelo dinámico que integre los efectos mecánicos, electromagnéticos y térmicos, considerando tanto el comportamiento no lineal como su aproximación lineal, con el propósito de facilitar el análisis y diseño de estrategias de control.
-
-El proyecto comprende distintas etapas, que incluyen el modelado del sistema físico, la simulación en lazo abierto, el diseño de un controlador vectorial mediante un modulador de torque equivalente, y la implementación de un controlador externo de movimiento en cascada. Estas simulaciones permitirán analizar la estabilidad, controlabilidad y observabilidad del sistema bajo distintas condiciones de operación. Además, se evaluará el desempeño térmico del motor y el impacto que tienen las limitaciones físicas de sensores e inversores sobre el comportamiento general del sistema.
-
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[width=1\textwidth]{imagenes/sistema_fisico.png}
-%     \caption{Robot manipulador elemental de 1 g.d.l. en plano vertical (péndulo rígido actuado)}
-% \end{figure}
-
-\newpage
-\section{Modelado, Análisis y Simulación dinámica del sistema físico a lazo abierto}
-
-
-\textbf{Restricción geométrica}
-\begin{align}
-l(t) &= +\sqrt{\left(x_l(t)-x_t(t)\right)^2 + \left(Y_{t0}-y_l(t)\right)^2}
-\quad (>0) \\
-\frac{dl(t)}{dt} &=
-\frac{\left(x_l(t)-x_t(t)\right)\left(v_{lx}(t)-v_t(t)\right) - \left(Y_{t0}-y_l(t)\right)v_{ly}(t)}{l(t)}
-\quad (\lesseqgtr 0) \\
-\theta_l(t) &= \operatorname{atan2}\!\left(\frac{x_l(t)-x_t(t)}{Y_{t0}-y_l(t)}\right)
-\quad (\lesseqgtr 0)
-\end{align}
-
-\textbf{Carga apoyada}
-
-\begin{align}
-F_{cx}\!\left(t,\,\left(y_l(t)-h_c(TLK)\right)\le y_{c0}(x_l,t)\right)
-&= -b_{cx}\,v_{lx}(t) \\
-F_{cy}\!\left(t,\,\left(y_l(t)-h_c(TLK)\right)\le y_{c0}(x_l,t)\right)
-&= K_{cy}\!\left(y_{c0}(x_l,t)-\left(y_l(t)-h_c(TLK)\right)\right)-b_{cy}\,v_{ly}(t)
-\end{align}
-
-
-\textbf{Movimiento de la Carga:}
-
-\[
-m_l(TLK)\cdot\frac{dv_{lx}(t)}{dt} = -2\cdot F_{hw}\!\left(t,\,l(t)\geq l_h(t)\right)\cdot\sin\theta_1(t) + F_{cx}\!\left(t,\,\bigl(y_1(t)-h_c(TLK)\bigr)\leq y_{c0}(x_1,t)\right)
-\]
-
-\begin{equation}
-\frac{dx_1(t)}{dt} \equiv v_{lx}(t)
-\end{equation}
-
-\[
-m_l(TLK)\cdot\frac{dv_{ly}(t)}{dt} = 2\cdot F_{hw}\!\left(t,\,l(t)\geq l_h(t)\right)\cdot\cos\theta_1(t) + F_{cy}\!\left(t,\,\bigl(y_1(t)-h_c(TLK)\bigr)\leq y_{c0}(x_1,t)\right) - m_l(TLK)\cdot g
-\]
-
-\begin{equation}
-\frac{dy_1(t)}{dt} \equiv v_{ly}(t)
-\end{equation}
-
-\textbf{Modo de cable de izaje}
-
-
-\textbf{ON)} Cable \textbf{tensado} (tracción por gravedad sobre carga suspendida), sin pandeo $\Leftrightarrow l(t) \geq l_h(t) \rightarrow$
-
-\begin{equation}
-F_{hw}\!\left(t,\, l(t) \geq l_h(t)\right) = K_{hw}(l_h(t))\cdot 2\cdot\bigl(l(t) - l_h(t)\bigr) + b_{hw}(l_h(t))\cdot 2\cdot\left(\frac{dl(t)}{dt} - \frac{dl_h(t)}{dt}\right)
-\end{equation}
-
-\begin{equation}
-K_{hw}(l_h(t)) \equiv \frac{k_{hwu}}{2\,l_h(t)+L_{ho}}; \qquad b_{hw}(l_h(t)) \equiv b_{hwu}\cdot\bigl(2\,l_h(t)+L_{ho}\bigr)
-\end{equation}
-
-\textbf{OFF)} Cable ``flojo'' (carga apoyada), con flexión o pandeo $\Leftrightarrow l(t) < l_h(t) \rightarrow$
-
-\begin{equation}
-F_{hw}\!\left(t,\, l(t) < l_h(t)\right) = 0\ \text{N}
-\end{equation}
-
-\[
-F_{tw}(t) = K_{tw}(x_{td}(t) - x_t(t)) + b_{tw}(v_{td}(t) - v_t(t))
-\]
-
-\textbf{Accionamiento del sistema de izaje}
-
-
-\[
--\left(\frac{2J_{hd+hEb}+2J_{hm+hb}\cdot i_h^{\,2}}{r_{hd}}\right)\ddot{l}_h(t)
-=
-\left(\frac{2b_{hd}+2b_{hm}\cdot i_h^{\,2}}{r_{hd}}\right)\cdot l_h(t)
-+i_h\left(T_{hm}+T_{hb}\right)+T_{hEb}-F_{hw}r_{hd}
-\]
-
-\[
-M_t \frac{dv_t(t)}{dt} = F_{tw}(t) - b_t \cdot v_t(t) + 2 \cdot F_{hw}(t, l(t) \leq l_h(t)) \cdot \sin \theta_l(t)
-\]
-
-\begin{equation}
-\left(\frac{J_{td} + J_{tm+tb}\cdot{i}_t^2}{r_{td}}\right)\ddot{x}_{td} = -\left(\frac{b_{tm}\cdot{i}_t^2 + b_{td}}{r_{td}}\right)\dot{x}_{td} + i_t(T_{tm} + T_{tb}) - F_{tw}r_{td}
-\end{equation}
-
-\textbf{Traslación del carro}
-\[
-M_t \frac{dv_t(t)}{dt} = F_{tw}(t) - b_t \cdot v_t(t) + 2 \cdot F_{hw}(t, l(t) \leq l_h(t)) \cdot \sin \theta_l(t)
-\]
-
-\begin{equation}
-\left(\frac{J_{td} + J_{tm+tb}\cdot{i}_t^2}{r_{td}}\right)\ddot{x}_{td} = -\left(\frac{b_{tm}\cdot{i}_t^2 + b_{td}}{r_{td}}\right)\dot{x}_{td} + i_t(T_{tm} + T_{tb}) - F_{tw}r_{td}
-\end{equation}
+\input{resumen_introduccion.tex}
 
 \newpage
 
-\[
-J_{eq}=\frac{J_{hd+hEb}}{i_h}+J_{hm+hb}\cdot{i}_h
-\]
+\section{Descripción del sistema \cite{Profe2025}}
+El sistema físico a controlar y automatizar es una grúa portacontenedores STS (Fig. \ref{fig:grua}).
+Este proyecto considera el control de accionamientos eléctricos y operación semi-automática coordinada de los dos movimientos principales continuos y 
+simultáneos de la grúa en un plano vertical (2D): traslación horizontal del carro (Trolley) sobre las vigas principal y móvil (paralelo al eje $x$); e 
+izaje/descenso, o traslación vertical, de la carga (Hoist) bajo la posición del carro (paralelo al eje $y$), Fig. \ref{fig:vista_lateral}.
 
-\[
-B_{eq}=\frac{b_{hd}}{i_h}+b_{hm}\cdot i_h
-\]
+\begin{figure}[H]
+    \centering
+    
+    \begin{subfigure}{0.9\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{vista_lateral.jpg}
+        \caption{Vista lateral (coordenadas globales $x$: traslación de carro - $y$: altura de izaje en la carga).}
+        \label{fig:vista_lateral}
+    \end{subfigure}
+    
+    \vspace{0.8cm}
+    
+    \begin{subfigure}{0.9\textwidth}
+        \centering
+        \includegraphics[width=0.7\textwidth]{vista_frontal.jpg}
+        \caption{Vista frontal, desde un barco, con detalle de headblock/spreader y carga suspendida: contenedor (indicando altura de izaje $y_l(t)$ a base de spreader; y, si hay carga, alto de contenedor $H_c$ a descontar).}
+        \label{fig:vista_frontal}
+    \end{subfigure}
+    
+    \caption{Grúa Portacontenedores Portuaria de Muelle tipo Pórtico (STS)}
+    \label{fig:grua}
+\end{figure}
 
-\begin{align}
-\frac{B_{eq}*K_d*i_h}{J_{eq}} &= (2 \cdot \zeta + 1) \cdot \omega_{pos} \\
-\frac{K_{p}*i_h}{J_{eq}} &= (2 \cdot \zeta + 1) \cdot \omega_{pos}^2 \\
-\frac{K_{i}*i_h}{J_{eq}} &= \omega_{pos}^3
-\end{align}
+Ambos movimientos son impulsados mediante cables de acero (wireropes) desde mecanismos rotativos con tambores, cajas de engranajes, frenos mecánicos y 
+motores eléctricos, ubicados en una Casa de Máquinas (Machinery House) fija (Fig. \ref{fig:mecanismos}), con sus correspondientes accionamientos electrónicos de velocidad variable; 
+dichos movimientos tienen restricciones de operación: posiciones límite de recorrido, velocidades máximas y aceleraciones máximas. Están acoplados 
+entre sí por la carga (headblock/spreader con o sin contenedor, Fig. \ref{fig:vista_frontal}), que se balancea suspendida del carro que la traslada mediante los cables de izaje.
 
-% \[
-% \dot{\omega}=(B_{eq}\omega+T_{hm})/J_{eq}
-% \]
+\begin{figure}[H]
+    \centering
+    
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[height=0.21\textheight]{ubicacion_casa_maquinas.jpg}
+        \caption{Ubicación de la Casa de Máquinas en la estructura}
+        \label{fig:casa_ubicacion}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[height=0.21\textheight]{casa_maquinas.jpg}
+        \caption{Casa de Máquinas y mecanismos principales}
+        \label{fig:casa_maquinas}
+    \end{subfigure}
+    
+    \vspace{0.6cm}
+    
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[height=0.15\textheight]{accionamiento_carro.jpg}
+        \caption{Mecanismo de accionamiento de Carro (Trolley Mechanical Drive)}
+        \label{fig:trolley_drive}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[height=0.15\textheight]{accionamiento_izaje.jpg}
+        \caption{Mecanismo de accionamiento de Izaje (Hoist Mechanical Drive)}
+        \label{fig:hoist_drive}
+    \end{subfigure}
+    
+    \caption{Esquemas de Casa de Máquinas y mecanismos de Carro e Izaje}
+    \label{fig:mecanismos}
+\end{figure}
 
-% \[
-% \dot{\theta}=\omega
-% \]
-
-\section{Identificación de Parámetros de la Planta e Implementación del Controlador PI}
-
-\subsection{Modelo de la Planta de Velocidad de Izaje}
-
-El accionamiento de izaje puede representarse, referido al eje rápido del motor,
-mediante la ecuación diferencial de primer orden:
-
-\begin{equation}
-    J_{eq}\,\dot{\omega}_{hm}(t) = i_h\,T_{hm}(t) - B_{eq}\,\omega_{hm}(t)
-    \label{eq:dinamica_motor}
-\end{equation}
-
-donde los parámetros equivalentes referidos al eje del motor son:
-
-\begin{align}
-    J_{eq} &= J_{hm+hb} + \frac{J_{hd+hEb}}{i_h^2}  \label{eq:Jeq}\\[4pt]
-    B_{eq} &= b_{hm}     + \frac{b_{hd}}{i_h^2}       \label{eq:Beq}
-\end{align}
-
-Tomando la Transformada de Laplace de \eqref{eq:dinamica_motor} con condiciones
-iniciales nulas, la función de transferencia de la planta resulta:
-
-\begin{equation}
-    G(s) = \frac{\omega_{hm}(s)}{T_{hm}(s)}
-         = \frac{i_h}{J_{eq}\,s + B_{eq}}
-    \label{eq:FT_planta}
-\end{equation}
-
-Expresada en forma estándar de primer orden:
-
-\begin{equation}
-    G(s) = \frac{K}{\tau\,s + 1},
-    \qquad
-    K = \frac{i_h}{B_{eq}},
-    \qquad
-    \tau = \frac{J_{eq}}{B_{eq}}
-    \label{eq:FT_estandar}
-\end{equation}
-
-donde $K$ es la ganancia estática de la planta y $\tau$ su constante de tiempo.
-
-% ----------------------------------------------------------------
-\subsection{Identificación Experimental por Respuesta al Escalón}
-
-Dado que los parámetros nominales calculados con \eqref{eq:Jeq}--\eqref{eq:Beq}
-no contemplan efectos de carga variable ni la componente gravitacional, se adopta
-el método de identificación por \textit{Process Reaction Curve}: se aplica un
-escalón de torque conocido $T_0$ en lazo abierto y se registra la respuesta
-$\omega_{hm}(t)$.
-
-\subsubsection{Solución analítica ante escalón}
-
-Para una entrada $T_{hm}(s) = T_0/s$, la salida en el dominio de Laplace es:
-
-\begin{equation}
-    \omega_{hm}(s)
-    = G(s)\,\frac{T_0}{s}
-    = \frac{K\,T_0}{s\,(\tau s + 1)}
-\end{equation}
-
-Antitransformando:
-
-\begin{equation}
-    \omega_{hm}(t)
-    = \omega_0
-      + \bigl(\omega_\infty - \omega_0\bigr)
-        \!\left(1 - e^{-t/\tau}\right)
-    \label{eq:respuesta_escalon}
-\end{equation}
-
-donde $\omega_0 = \omega_{hm}(0)$ es la condición inicial.
-
-\subsubsection{Valor final por el Teorema del Valor Final}
-
-Aplicando el Teorema del Valor Final a la salida:
-
-\begin{equation}
-    \omega_\infty
-    = \lim_{s \to 0}\, s\,\omega_{hm}(s)
-    = \lim_{s \to 0}\, s \cdot \frac{K}{\tau s + 1} \cdot \frac{T_0}{s}
-    = K\,T_0
-    = \frac{i_h\,T_0}{B_{eq}}
-    \label{eq:valor_final}
-\end{equation}
-
-En régimen permanente $\dot{\omega} = 0$, de modo que \eqref{eq:valor_final}
-equivale directamente al equilibrio estático de \eqref{eq:dinamica_motor}.
-
-\subsubsection{Extracción de parámetros desde el ensayo}
-
-A partir de la curva de respuesta se identifican experimentalmente:
+\subsection{Hipótesis simplificativas y sensores}
 
 \begin{itemize}
-    \item $\omega_0$: valor de $\omega_{hm}$ en $t = 0$.
-    \item $\omega_\infty$: valor en régimen permanente.
-    \item $\tau$: tiempo en alcanzar
-          $\omega_0 + 0{,}632\,(\omega_\infty - \omega_0)$,
-          según \eqref{eq:respuesta_escalon}.
+    \item \textbf{Estructura} esbelta y algo flexible de vigas principal y móvil (main and boom girders) y del pórtico con ruedas sobre rieles de muelle. Pero se asume estructura totalmente rígida, sin deformación ni vibración.
+    
+    \item \textbf{Carro} soportado por la estructura rígida, con desplazamiento solo horizontal con 4 ruedas libres (no accionadas) sobre rieles en las vigas principal y móvil; el carro es accionado o tirado por cables (rope-towed trolley) desde el mecanismo de carro (tambor, reductor, freno y motor) en la casa de máquinas (Fig. \ref{fig:trolley_drive}) mediante despliegue cerrado de 2 cables de acero en paralelo de carro, uno por cada lado del carro, desde el tambor con poleas de reenvío en los extremos de las vigas y terminando a ambos extremos del carro. Se asume mecanismo con transmisión rígida y 1 cable de acero equivalente de carro siempre tensado (tracción), con elasticidad longitudinal amortiguada.
+    
+    \item \textbf{Sistema de izaje} de carga con cables desde el mecanismo de izaje (2 tambores con 2 frenos de emergencia, 1 reductor, 2 frenos y 2 motores acoplados) en la casa de máquina (Fig. \ref{fig:hoist_drive}) mediante despliegue abierto de 4 cables de acero en paralelo de izaje, uno por cada esquina del headblock, desde los tambores con poleas de reenvío en extremo posterior de la viga principal, hacia poleas en el carro móvil y headblock (ida y vuelta, 2 partes) y del carro hasta el extremo frontal de la viga móvil; de modo tal que no varía la posición o altura de izaje al desplazarse el carro y hay relación de transmisión 2:1 en cables. Se asume mecanismo equivalente (1 tambor con 1 freno de emergencia, 1 reductor, 1 motor con 1 freno) con transmisión rígida y 1 cable de acero equivalente de izaje con masa propia despreciable, elástico solo a tracción (no soporta compresión al apoyar).
+    
+    \item \textbf{Carga} (headblock/spreader con o sin contenedor) asumida como masa concentrada en un punto material (centro de base de spreader), con 2 grados de libertad (g.d.l.) en el plano vertical 2D.
+    
+    \item \textbf{Efectos externos:} sólo se considera aceleración gravitatoria (vertical) sobre la carga suspendida e interacción vertical de contacto o apoyo por apilado ``suave'' (compresión dentro del límite elástico lineal) del spreader, con o sin contenedor, con el perfil de obstáculos inferior (para tomar o liberar carga). Se desprecia la resistencia aerodinámica frontal al viento de la carga y del carro en movimiento.
+
+    \item \textbf{Sensores de retroalimentación} (operación y emergencia):
+    \begin{enumerate}[label=\alph*.]
+        \item Sistema de Encoder/Homing de posición instantánea en el eje de cada motor (carro e izaje).
+        
+        \item Fines de carrera (limit switches) de operación (límites normales) y de emergencia (límites últimos, separados 0,50 m adicional al límite normal), en cada extremo del carro, fijos en la viga; y para izaje, rotativos en el tambor.
+        
+        \item Detector de sobrevelocidad (O.S. switch) 115\% de velocidad máxima en tambores (izaje y carro).
+        
+        \item Celda de carga en polea de headblock para medir la tensión instantánea del cable de izaje.
+        
+        \item Sensor de ángulo de spreader (cámara CCD en carro y emisor infrarrojo en headblock) para medir el ángulo vertical instantáneo (y velocidad angular) entre la carga y el carro.
+        
+        \item Sensor LIDAR de obstáculos (laser scanner infrarrojo 1D) en el carro (3 m hacia adelante del spreader) para medir la distancia vertical instantánea desde el carro en movimiento hasta la pila de obstáculos y apoyo abajo, y así relevar el perfil topográfico de obstáculos $y_{c0}(x,t)$, Fig. \ref{fig:cuerpo_libre}.
+    \end{enumerate}
 \end{itemize}
 
-Los parámetros físicos equivalentes resultan:
+\subsection{Límites operativos de movimiento (posición, velocidad, aceleración)}
 
+Referidos al sistema inercial de coordenadas cartesianas globales $x$--$y$ fijo al muelle, en Fig. \ref{fig:vista_lateral}.
+
+\noindent \textbf{Traslación de carro:} eje $x$, horizontal (positivo $\rightarrow$ referido al riel en borde de muelle $x = 0$)
+
+\begin{itemize}
+    \item Posición: $x_{t\min} = -30$ m (sobre muelle) y $x_{t\max} = 50$ m (sobre barco).
+    
+    \item Velocidad: $v_{t\max} = \pm 4$ m/s (cargado o sin carga).
+    
+    \item Aceleración: $a_{t\max} = \pm 0.8$ m/s$^2$ (cargado o sin carga).
+\end{itemize}
+
+\noindent\textbf{Izaje de carga:} eje $y$, vertical (positivo $\uparrow$ referido al nivel de muelle $y = 0$)
+
+\begin{itemize}
+    \item Posición $y_h \equiv Y_{t0} - l_h$: $y_{h\min} = -20$ m (dentro de barco) e $y_{h\max} = 40$ m (sobre barco / muelle).
+    
+    Altura (fija) de poleas de suspensión de izaje en el carro: $Y_{t0} = 45$ m.
+        
+    \item Velocidad: $v_{h\ nom} = \pm 1.5$ m/s (cargado con carga nominal) y $v_{h\max} = \pm 3$ m/s (sin carga).
+    
+    \item Aceleración: $a_{h\max} = \pm 0.75$ m/s$^2$ (cargado o sin carga).
+\end{itemize}
+\newpage
+\section{Modelado de la planta}
+
+El modelo de la planta se puede dividir en dos subsistemas principales: el subsistema de traslación del carro y el subsistema de izaje, acoplados entre 
+sí por la carga suspendida (Fig. \ref{fig:cuerpo_libre}). Además, se considera el perfil de obstáculos inferior, el cual interactúa con la carga durante las operaciones 
+de toma y liberación. El modelo también incluye los sensores del sistema y los controladores internos de torque de los accionamientos.
+
+
+A continuación, se presentan las ecuaciones diferenciales que describen la dinámica de cada subsistema, teniendo en cuenta las fuerzas y torques involucrados, así como las interacciones dinámicas entre ellos.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{cuerpo_libre.jpg}
+    \caption{Modelo físico simplificado del sistema Carro - Cable - Carga y Perfil de Obstáculos}
+    \label{fig:cuerpo_libre}
+\end{figure}
+
+\subsection{Subsistema del carro}
+
+El sistema de traslación del carro se modela como un sistema electromecánico de dos masas (inercia rotacional del accionamiento y masa traslacional del carro), acopladas
+mediante un elemento flexible (cable de acero).
+
+\subsubsection{Dinámica del carro}
+Aplicando la segunda ley de Newton al movimiento horizontal del carro se tiene:
+
+\begin{equation}
+    M_t \, \frac{d \, v_t(t)}{dt} = F_{tw}(t) - b_t \, v_t(t) + 2 F_{hw}(t, l(t)-l_h(t))\sin\theta_l(t)
+\end{equation}
+Donde:
+\begin{itemize}
+    \item $M_t = 30000$ kg: Masa del carro.
+
+    \item $F_{tw}(t)$: Fuerza de tracción ejercida por el cable.
+    
+    \item $b_t = 90$ Ns/m: Coeficiente de fricción viscosa del carro sobre los rieles.
+    
+    \item $2F_{hw}\sin\theta_l$: Fuerza horizontal perturbadora debida al balanceo de la carga.
+\end{itemize}
+
+\subsubsection{Acoplamiento elástico del cable}
+
+El cable transmite la fuerza entre el tambor y el carro. Se modela como un resorte con rigidez $K_{tw} = 480 \times 10^3$ N/m y una amortiguación $b_{tw} = 3 \times 10^3$ Ns/m:
+
+
+\begin{equation}
+    F_{tw}(t) = K_{tw} \, (x_{td}(t) - x_t(t)) + b_{tw} \, (v_{td}(t) - v_t(t))
+\end{equation}
+Donde $x_{td}(t)$ y $v_{td}(t)$ son la posición y velocidad lineal equivalente del cable en la superficie del tambor.
+
+\subsubsection{Dinámica del accionamiento}
+
+\begin{itemize}
+    \item \textbf{Dinámica del tambor(eje lento):} La dinámica rotacional del eje de salida está dada por:
+    \begin{equation}
+    J_{td} \, \frac{d \, \omega_{td}(t)}{dt} = T_{td}(t) - b_{td} \, \omega_{td}(t) - T_{tdl}(t)
+    \label{eq:dinamica_tambor_carro}
+    \end{equation}
+    Donde:
+    \begin{itemize}
+        \item $J_{td} = 1200$ kgm²: Momento de inercia equivalente del eje lento.
+        \item $T_{td}(t)$: Torque de salida del tambor.
+        \item $b_{td} = 1.8$ Nms/rad: Coeficiente de fricción mecánica viscosa equivalente del eje lento.
+        \item $T_{tdl}(t) = F_{tw}(t) r_{td}$ :Torque de carga debido a la tensión del cable. 
+        \item $r_{td} = 0.5$ m: Radio primitivo de tambor.
+    \end{itemize}
+    \item \textbf{Dinámica del motor(eje rápido):} La dinámica rotacional del eje de entrada está dada por:
+    \begin{equation}
+    J_{tm+tb} \, \frac{d \, \omega_{tm}(t)}{dt} = T_{tm}(t) + T_{tb}(t,\textcolor{signalcolor}{BRK_t}) - b_{tm} \, \omega_{tm}(t) - T_{tml}(t)
+    \label{eq:dinamica_motor_carro}
+    \end{equation}
+    Donde:
+    \begin{itemize}
+        \item $J_{tm+tb} = 7$ kgm²: Momento de inercia equivalente del eje rápido.
+        \item $T_{tm}(t)$: Torque de salida del motor.
+        \item $T_{tb}(t,\textcolor{signalcolor}{BRK_t})$: Torque de frenado del motor.
+        \item $b_{tm} = 6$ Nms/rad: Coeficiente de fricción mecánica viscosa equivalente del eje rápido.
+        \item $T_{tml}(t)$: Torque resistente que la caja reductora demanda al motor.
+    \end{itemize}
+\end{itemize}
+
+\noindent\textbf{Freno mecánico}
+
+El sistema dispone de un freno mecánico en el eje rápido del motor, configurado como Normal Cerrado (NC) por seguridad. El torque de frenado $T_{tb}$ depende del estado lógico de la señal de control $\textcolor{signalcolor}{BRK_t}$ (0: Desenergizado/Cerrado, 1: Energizado/Abierto):
+
+\begin{equation}
+    T_{tb}(t, \textcolor{signalcolor}{BRK_t}) = 
+    \begin{cases} 
+        0 & \text{si } \textcolor{signalcolor}{BRK_t} = 1 \text{ (Abierto/Energizado)} \\
+        -T_{tb\max} \, \tanh(b_{tb} \, \omega_{tm}(t)) & \text{si } \textcolor{signalcolor}{BRK_t} = 0 \text{ (Cerrado/Frenado)}
+    \end{cases}
+\end{equation}
+Donde $T_{tb\max} = 5 \times 10^3$ Nm es el torque máximo de frenado del freno de operación cerrado y $b_{tb} = 5 \times 10^6$ Nms/rad es el coeficiente de fricción viscosa equivalente del freno de operación cerrado.
+Se usa la función tangente hiperbólica escalada por ser continua y abrupta, evitando así discontinuidades numéricas durante la simulación. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{freno_carro.png}
+    \caption{Diagrama de bloques del modelo del freno mecánico del carro}
+    \label{fig:freno_carro}
+\end{figure}
+
+\subsubsection{Modelo equivalente referido al motor}
+Para la simulación y diseño de control, es conveniente referir la dinámica del tambor al eje del motor. Combinando así las Ecs. \ref{eq:dinamica_tambor_carro} y \ref{eq:dinamica_motor_carro} 
+mediante la relación de transmisión del reductor $i_t = 30$: 
 \begin{align}
-    B_{eq} &= \frac{i_h\,T_0}{\omega_\infty - \omega_0}
-    \label{eq:Beq_id}\\[6pt]
-    J_{eq} &= \tau\,B_{eq}
-    \label{eq:Jeq_id}\\[6pt]
-    p_{OL} &= -\frac{B_{eq}}{J_{eq}} = -\frac{1}{\tau}
-    \label{eq:polo_OL}
+    \text{Velocidades:} & \quad \omega_{td}(t) \, i_t = \omega_{tm}(t)\implies \frac{d \, \omega_{td}(t)}{dt} \, i_t = \frac{d \, \omega_{tm}(t)}{dt}\label{eq:relacion_velocidad_carro} \\
+    \text{Torques:} & \quad T_{td}(t) = i_t \, T_{tml}(t) \label{eq:relacion_torque_carro}
 \end{align}
-
-% ----------------------------------------------------------------
-\subsection{Diseño del Controlador PI por Colocación de Polos}
-
-Se adopta un controlador Proporcional-Integral (PI):
+Sustituyendo las Ecs. \ref{eq:relacion_velocidad_carro} y \ref{eq:relacion_torque_carro} en la Ec. \ref{eq:dinamica_tambor_carro} se obtiene:
 
 \begin{equation}
-    C(s) = K_p + \frac{K_i}{s}
-         = \frac{K_p\,s + K_i}{s}
-    \label{eq:PI}
+    J_{td} \, \left( \frac{1}{i_t} \frac{d \, \omega_{tm}(t)}{dt} \right) = (T_{tml}(t) \, i_t) - b_{td} \, \left( \frac{\omega_{tm}(t)}{i_t} \right) - T_{tdl}(t)
 \end{equation}
-
-\subsubsection{Ecuación característica en lazo cerrado}
-
-Con realimentación unitaria, los polos en lazo cerrado son las raíces de
-$1 + C(s)\,G(s) = 0$:
+Despejando $T_{tml}(t)$ y sustituyéndolo en la Ec. \ref{eq:dinamica_motor_carro} se obtiene la dinámica equivalente referida al motor:
 
 \begin{equation}
-    s\,(J_{eq}\,s + B_{eq})
-    + i_h\,(K_p\,s + K_i) = 0
+    \left( J_{tm+tb} + \frac{J_{td}}{i_t^2} \right) \frac{d \, \omega_{tm}(t)}{dt} = T_{tm}(t) + T_{tb}(t,\textcolor{signalcolor}{BRK_t}) - \left( b_{tm} + \frac{b_{td}}{i_t^2} \right) \omega_{tm}(t) - \frac{T_{tdl}(t)}{i_t}
 \end{equation}
-
-Dividiendo por $J_{eq}$:
+Definiendo los parámetros equivalentes referidos al motor como:
 
 \begin{equation}
-    s^2
-    + \frac{B_{eq} + i_h\,K_p}{J_{eq}}\,s
-    + \frac{i_h\,K_i}{J_{eq}}
-    = 0
-    \label{eq:ec_caract}
+    J_{t,eq} = J_{tm+tb} + \frac{J_{td}}{i_t^2} \quad ; \quad 
+    b_{t,eq} = b_{tm} + \frac{b_{td}}{i_t^2}
 \end{equation}
 
-\subsubsection{Polinomio deseado}
+\subsubsection{Modelo dinámico del subsistema del carro}
+El modelo dinámico del subsistema del carro, implementado posteriormente en Simulink, queda definido por las siguientes ecuaciones diferenciales acopladas:
+\begin{itemize}
+    \item \textbf{Accionamiento del carro}
+    \begin{equation}
+        \frac{d\,\omega_{tm}(t)}{dt}
+        = \frac{1}{J_{t,eq}}
+        \left[
+            T_{tm}(t)
+            + T_{tb}(t,\textcolor{signalcolor}{BRK_t})
+            - b_{t,eq}\,\omega_{tm}(t)
+            - \frac{r_{td}}{i_t}\,F_{tw}(t)
+        \right]
+        \label{eq:accionamiento_carro}
+    \end{equation}
+    \item \textbf{Dinámica del carro}
+    \begin{equation}
+        \frac{d\,v_t(t)}{dt}
+        = \frac{1}{M_t}
+        \left[
+            F_{tw}(t)
+            - b_t\,v_t(t)
+            + 2 F_{hw}(t, l(t)-l_h(t))\sin\theta_l(t)
+        \right]
+        \label{eq:dinamica_carro}
+    \end{equation}
+    \item \textbf{Posición del carro}
+    \begin{equation}
+        \frac{d\,x_t(t)}{dt} = v_t(t)
+    \end{equation}
+    \item \textbf{Fuerza del cable del carro}
+    \begin{equation}
+        F_{tw}(t)
+        = K_{tw}\bigl(x_{td}(t) - x_t(t)\bigr)
+        + b_{tw}\bigl(v_{td}(t) - v_t(t)\bigr)
+    \end{equation}
+\end{itemize}
+\textbf{Variables auxiliares:}
+\begin{itemize}
+    \item Velocidad lineal del tambor: $v_{td}(t) = \frac{r_{td}}{i_t} \, \omega_{tm}(t)$
+    \item Posición lineal del tambor: $x_{td}(t) = \int v_{td}(t) \, dt$
+\end{itemize}
 
-Se especifica un polo doble real en $s = -\omega_{cl}$
-(factor de amortiguamiento $\zeta = 1$, sin sobreoscilación):
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.48\textwidth]{modelo_carro.png}
+    \caption{Diagrama de bloques del modelo dinámico del subsistema del carro}
+    \label{fig:modelo_carro}   
+\end{figure}
+
+
+\subsection{Subsistema de izaje}
+El sistema de izaje controla la elevación de la carga mediante un mecanismo de tambor accionado por motor eléctrico,
+con un sistema de cableado que introduce una relación de transmisión mecánica adicional.
+
+\subsubsection{Dinámica de la carga suspendida}
+La carga se modela como una masa puntual concentrada en el centro de gravedad del conjunto Spreader/Contenedor, con dos grados
+de libertad, traslación horizontal $x_l(t)$ y vertical $y_l(t)$. Su dinámica es híbrida, ya que sus parámetros cambian discretamente
+según el estado de los twistlocks y su interacción con el perfil de obstáculos cambia dependiendo de si está suspendida o apoyada.
+
+\vspace{0.3cm}
+\noindent\textbf{Masa y altura}
+
+Los parámetros inerciales y geométricos dependen del estado discreto de los twistlocks, controlado por la señal lógica
+\textcolor{signalcolor}{TLK}:
+\begin{itemize}
+\item \textbf{Masa total}($m_l$):
+\begin{equation}
+    m_l(\textcolor{signalcolor}{TLK}) = 
+    \begin{cases} 
+        M_s & \text{si } \textcolor{signalcolor}{TLK} = 0 \text{ (solo spreader)} \\
+        M_s + M_{cX} & \text{si } \textcolor{signalcolor}{TLK} = 1 \text{ (spreader + contenedor)}
+    \end{cases}
+\end{equation}
+Siendo $M_s = 15000$ kg la masa del spreader y $M_{cX}$ la masa del contenedor, con $M_{c\min} = 2000$ kg el peso del contenedor vacío y $M_{c\max} = 50000$ kg el peso máximo de carga.
+\item \textbf{Altura de la carga}($h_c$):
+\begin{equation}
+    h_c(\textcolor{signalcolor}{TLK}) = 
+    \begin{cases} 
+        0 & \text{si } \textcolor{signalcolor}{TLK} = 0 \\
+        H_c & \text{si } \textcolor{signalcolor}{TLK} = 1
+    \end{cases}
+\end{equation}
+Siendo $H_c = 2.59$ m la altura del contenedor estándar según la norma ISO.
+\end{itemize}
+\noindent\textbf{Ecuaciones de movimiento}
+
+Aplicando la segunda ley de Newton a la carga suspendida, considerando las fuerzas de gravedad,
+las fuerzas de contacto con el perfil de obstáculos y las fuerzas de tensión del cable de izaje, la aceleración de la carga queda como:
+\begin{itemize}
+    \item \textbf{Dinámica horizontal}: la componente horizontal de la fuerza de tensión del cable actúa como fuerza restauradora hacia la posición del carro.
+    \begin{equation}
+        m_l(\textcolor{signalcolor}{TLK}) \, \frac{d \, v_{lx}(t)}{dt} = -2 F_{hw}(t,l(t)-l_h(t)) \, \sin\theta_l(t) + F_{cx}(t, (y_l(t)-h_c(\textcolor{signalcolor}{TLK})) - y_{c0}(x_l,t))
+    \end{equation}
+    \item \textbf{Dinámica vertical}: 
+    \begin{equation}
+        m_l(\textcolor{signalcolor}{TLK}) \, \frac{d \, v_{ly}(t)}{dt} = 2 F_{hw}(t,l(t)-l_h(t)) \, \cos\theta_l(t) - m_l(\textcolor{signalcolor}{TLK}) \, g + F_{cy}(t, (y_l(t)-h_c(\textcolor{signalcolor}{TLK})) - y_{c0}(x_l,t))
+    \end{equation}
+\end{itemize}
+
+\noindent\textbf{Interacción con el entorno}
+
+La carga interactua con un perfil de obstáculos $y_{c0}(x,t)$, el cual representa la altura de la pila de contenedores, el suelo o los bordes del barco.
+Las fuerzas de contacto vertical ($F_{cy}(t)$) y horizontal ($F_{cx}(t)$) actúan solo cuando la carga está apoyada sobre el perfil de obstáculos, es decir, cuando la altura 
+de izaje $y_l(t)$ menos la altura de la carga $h_c$ es menor o igual a la altura del perfil $y_{c0}(x_l,t)$:
+
+\begin{itemize}
+\item \textbf{Fuerza de contacto vertical}: modelo elástico-amortiguado (resorte $K_{cy} = 1.8 \times 10^9$ N/m y amortiguador $b_{cy} = 10 \times 10^6$ Ns/m) que resiste la compresión.
+\begin{equation}
+    F_{cy}(t) = 
+    \begin{cases} 
+        K_{cy} \, (y_{c0}(x_l,t) - (y_l(t) - h_c(\textcolor{signalcolor}{TLK}))) - b_{cy} \, v_{ly}(t) & \text{si } (y_l(t) - h_c(\textcolor{signalcolor}{TLK})) \le y_{c0}(x_l,t) \text{ (Apoyado)} \\
+        0 & \text{si } (y_l(t) - h_c(\textcolor{signalcolor}{TLK})) > y_{c0}(x_l,t) \text{ (Suspendido)}
+    \end{cases}
+    \label{eq:fuerza_contacto_vertical}
+\end{equation}
+\item \textbf{Fuerza de contacto horizontal}: modelada como una fuerza de fricción que se activa solo en contacto ($b_{cx} = 1 \times 10^6$ Ns/m).
+\begin{equation}
+    F_{cx}(t) = 
+    \begin{cases} 
+        -b_{cx} \, v_{lx}(t) & \text{si } (y_l(t) - h_c(\textcolor{signalcolor}{TLK})) \le y_{c0}(x_l,t) \\
+        0 & \text{si } (y_l(t) - h_c(\textcolor{signalcolor}{TLK})) > y_{c0}(x_l,t)
+    \end{cases}
+    \label{eq:fuerza_contacto_horizontal}
+\end{equation}
+\end{itemize}
+
+\subsubsection{Acoplamiento elástico del cable}
+El cable de izaje se modela como un resorte-amortiguador. Su longitud desenrollada $l_h(t)$ varía más que la del carro,
+lo que afecta su rigidez y amortiguamiento. Tanto la rigidez unitaria $k_{hwu} = (236 \times 10^6$ N/m)$\cdot$m como el amortiguamiento unitario $b_{hwu} = (150$ Ns/m)$\cdot$m escalan
+con la longitud total del cable bajo tensión, que es $2 l_h(t) + L_{h0}$:
 
 \begin{equation}
-    (s + \omega_{cl})^2
-    = s^2 + 2\,\omega_{cl}\,s + \omega_{cl}^2
-    = 0
-    \label{eq:pol_deseado}
+    K_{hw}(l_h) \equiv \frac{k_{hwu}}{2 l_h(t) + L_{h0}} \quad ; \quad b_{hw}(l_h) \equiv b_{hwu}\,(2 l_h(t) + L_{h0})
+    \label{eq:rigidez_amortiguamiento_variable}
+\end{equation}
+Siendo $L_{h0} = 110$ m longitud de despliegue fijo de wirerope de izaje (desde el tambor hasta el extremo fijo).
+La fuerza de tensión del cable de izaje $F_{hw}(t)$ se calcula solo si el cable está tenso:
+\begin{equation}
+    F_{hw}(t) = 
+    \begin{cases} 
+        K_{hw}(l_h) \, 2 \, (l(t) - l_h(t)) + b_{hw}(l_h(t)) \, 2 \left( \frac{d \, l(t)}{dt} - \frac{d \, l_h(t)}{dt} \right), & \text{si } l(t) \ge l_h(t) \text{ (Tenso)} \\[6pt]
+        0, & \text{si } l(t) < l_h(t) \text{ (Flojo)}
+    \end{cases}
+    \label{eq:fuerza_izaje}
+\end{equation}
+\subsubsection{Dinámica del accionamiento}
+El sistema posee dos frenos y una transmisión.
+\begin{itemize}
+\item \textbf{Eje lento(tambor):} posee el freno de emergencia ($T_{hEb}$).
+\begin{equation}
+    J_{hd+hEb} \, \frac{d \, \omega_{hd}(t)}{dt} = T_{hd}(t) + T_{hEb}(t,\textcolor{signalcolor}{BRK_{hE}}) - b_{hd} \, \omega_{hd}(t) - T_{hdl}(t)
+\end{equation}
+Donde:
+\begin{itemize}
+    \item $J_{hd+hEb} = 3800$ kgm²: Momento de inercia equivalente del eje lento.
+    \item $T_{hd}(t)$: Torque de salida del tambor.
+    \item $T_{hEb}(t,\textcolor{signalcolor}{BRK_{hE}})$: Torque de frenado de emergencia.
+    \item $b_{hd} = 8$ Nms/rad: Coeficiente de fricción mecánica viscosa equivalente del eje lento.
+    \item $T_{hdl}(t)=F_{hw}(t)\,r_{hd}$: Torque de carga debido a la tensión del cable.
+    \item $r_{hd} = 0.75$ m: Radio primitivo de tambor.
+\end{itemize}
+\item \textbf{Eje rápido(motor):} posee el freno de operación ($T_{hb}$).
+\begin{equation}
+    J_{hm+hb} \, \frac{d \, \omega_{hm}(t)}{dt} = T_{hm}(t) + T_{hb}(t,\textcolor{signalcolor}{BRK_{h}}) - b_{hm} \, \omega_{hm}(t) - T_{hml}(t)
+\end{equation}
+Donde:
+\begin{itemize}
+    \item $J_{hm+hb} = 30$ kgm²: Momento de inercia equivalente del eje rápido.
+    \item $T_{hm}(t)$: Torque de salida del motor.
+    \item $T_{hb}(t,\textcolor{signalcolor}{BRK_{h}})$: Torque de frenado del motor.
+    \item $b_{hm} = 18$ Nms/rad: Coeficiente de fricción mecánica viscosa equivalente del eje rápido.
+    \item $T_{hml}(t)$: Torque resistente que la caja reductora demanda al motor.
+\end{itemize}
+\end{itemize}
+Relación cinemática del reeving (2:1) y tambor:
+\begin{equation}
+    v_h(t) = \frac{r_{hd} \, \omega_{hd}(t)}{2} = -\frac{d \, l_h(t)}{dt}
+\end{equation}
+El factor 2 divide la velocidad tangencial del tambor porque es un aparejo móvil.
+
+\vspace{0.3cm}
+\noindent\textbf{Frenos mecánicos}
+
+El sistema de izaje cuenta con dos sistemas de frenado independientes para garantizar la seguridad de la
+carga suspendida. Ambos operan con lógica NC.
+\begin{itemize}
+\item \textbf{Freno de operación}: ubicado en el eje del motor, actúa durante las paradas normales y el mantenimiento de posición. 
+\begin{equation}
+    T_{hb}(t,\textcolor{signalcolor}{BRK_{h}}) = 
+    \begin{cases} 
+        0 & \text{si } \textcolor{signalcolor}{BRK_h} = 1 \text{ (Energizado/Abierto)} \\
+        -T_{hb\max} \, \tanh(b_{hb} \, \omega_{hm}(t)) & \text{si } \textcolor{signalcolor}{BRK_h} = 0 \text{ (Desenergizado/Cerrado)}
+    \end{cases}
+\end{equation}
+Siendo $T_{hb\max} = 50 \times 10^3$ Nm el torque máximo de frenado del freno de operación cerrado y $b_{hb} = 100 \times 10^6$ Nms/rad el coeficiente de fricción viscosa equivalente del freno de operación cerrado.
+\item \textbf{Freno de emergencia}: ubicado directamente sobre el tambor, actúa solo ante fallas críticas(Nivel 0 de protección) o parada de emergencia.
+\begin{equation}
+    T_{hEb}(t,\textcolor{signalcolor}{BRK_{hE}}) = 
+    \begin{cases} 
+        0 & \text{si } \textcolor{signalcolor}{BRK_{hE}} = 1 \text{ (Energizado/Abierto)} \\
+        -T_{hEb\max} \, \tanh(b_{hEb} \, \omega_{hd}(t)) & \text{si } \textcolor{signalcolor}{BRK_{hE}} = 0 \text{ (Desenergizado/Cerrado)}
+    \end{cases}
+\end{equation}
+Siendo $T_{hEb\max} = 1.1 \times 10^6$ Nm el torque máximo de frenado del freno de emergencia cerrado y $b_{hEb} = 2.2 \times 10^9$ Nms/rad el coeficiente de fricción viscosa equivalente del freno de emergencia cerrado.
+\end{itemize}
+
+Ambos frenos cuentan con un diagrama de bloques similar al del freno del carro (Fig. \ref{fig:freno_carro}), 
+con sus respectivos parámetros de torque máximo y coeficiente de fricción viscosa equivalente y señales de control.
+\subsubsection{Modelo equivalente referido al motor}
+Al igual que con el subsistema del carro, se refiere la dinámica del tambor al eje del motor utilizando la relación de transmisión $i_h = 22$, quedando los parámetros 
+equivalentes referidos al motor como:
+\begin{equation}
+    J_{h,eq} = J_{hm+hb} + \frac{J_{hd+hEb}}{i_h^2}  \quad ; \quad
+    b_{h,eq} = b_{hm} + \frac{b_{hd}}{i_h^2}
 \end{equation}
 
-donde $\omega_{cl}$ es el único parámetro libre de diseño, elegido como:
+\subsubsection{Modelo dinámico del subsistema de izaje}
+El modelo dinámico del subsistema de izaje, implementado posteriormente en Simulink, queda definido por las siguientes ecuaciones diferenciales acopladas:
+\begin{itemize}
+    \item \textbf{Accionamiento de izaje}
+    \begin{equation}
+        \frac{d\,\omega_{hm}(t)}{dt}
+        = \frac{1}{J_{h,eq}}
+        \left[
+            T_{hm}(t)
+            + T_{hb}(t,\textcolor{signalcolor}{BRK_h})
+            + \frac{T_{hEb}(t,\textcolor{signalcolor}{BRK_{hE}})}{i_h}
+            - b_{h,eq}\,\omega_{hm}(t)
+            - \frac{r_{hd}}{i_h} \, F_{hw}(t)
+        \right]
+        \label{eq:dinamica_motor_izaje_final}
+    \end{equation}
+    \item \textbf{Dinámica de la carga}
+    \begin{equation}
+        \frac{d\,v_{ly}(t)}{dt}
+        = \frac{1}{m_l(\textcolor{signalcolor}{TLK})}
+        \left[
+            2\,F_{hw}(t)\cos\theta_l
+            - m_l(\textcolor{signalcolor}{TLK})\,g
+            + F_{cy}(t)
+        \right]
+    \end{equation}
+    \begin{equation}
+        \frac{d\,v_{lx}(t)}{dt}
+        = \frac{1}{m_l(\textcolor{signalcolor}{TLK})}\left[-2 F_{hw}(t) \, \sin\theta_l(t) + F_{cx}(t)\right]
+    \end{equation}
+    \item \textbf{Posición de la carga}
+    \begin{equation}
+        \frac{d\,y_l(t)}{dt} = v_{ly}(t)
+    \end{equation}
+    \item \textbf{Fuerzas de contacto}: Ecs. \ref{eq:fuerza_contacto_vertical} y \ref{eq:fuerza_contacto_horizontal}
+    \item \textbf{Fuerza del cable de izaje}: Ec. \ref{eq:fuerza_izaje}
+    \item \textbf{Longitud de cable desenrollado}
+    \begin{equation}
+        \frac{d\,l_h(t)}{dt}
+        = -\,\frac{r_{hd}}{2\,i_h}\,\omega_{hm}(t)
+    \end{equation}
+    El signo negativo indica que una velocidad positiva del motor ($\omega_{hm}(t) > 0$) enrolla el cable, reduciendo su longitud desenrollada $l_h(t)$.
+\end{itemize}
+\textbf{Variables auxiliares:}
+\begin{itemize}
+    \item Rigidez y amortiguamiento variable: Ec. \ref{eq:rigidez_amortiguamiento_variable}
+    \item Longitud geométrica actual: $l(t) = \sqrt{(x_l(t) - x_t(t))^2 + (Y_{t0} - y_l(t))^2}$
+    \item Velocidad de cambio de longitud:
+    \[ \frac{dl(t)}{dt} = \frac{(x_l(t) - x_t(t))(v_{lx}(t) - v_t(t)) - (Y_{t0} - y_l(t))v_{ly}(t)}{l(t)} \]
+    \item Cálculo del ángulo de balanceo:
+    \[ \theta_l = \text{atan2}\left(\frac{x_l(t) - x_t(t)}{Y_{t0} - y_l(t)}\right) \]
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{modelo_izaje.png}
+    \caption{Diagrama de bloques del modelo dinámico del subsistema de izaje}
+    \label{fig:modelo_izaje}
+\end{figure}
+
+\subsection{Discretización del perfil de obstáculos}
+
+El carro cuenta con un sistema de sensado LIDAR (escáner láser infrarrojo 1D) para relevar el perfil topográfico de obstáculos $y_{c0}$ en el área de operación. Este perfil define la superficie efectiva con la que puede interactuar la carga suspendida. El sensor está colocado en el carro, 3\,m hacia adelante del spreader, y mide la distancia vertical instantánea desde el carro en movimiento hasta la pila de obstáculos.
+
+Se puede discretizar la posición del carro (y por lo tanto del spreader) en el rango $x_t \in [x_{t\min}, x_{t\max}]$ utilizando el ancho del contenedor $W_c$ m como 
+paso entre centros. Luego, la cantidad de posiciones discretas a lo largo de $x_t$:
 
 \begin{equation}
-    \omega_{cl} = \alpha\,|p_{OL}| = \frac{\alpha}{\tau},
-    \qquad \alpha \in [3,\,20]
-    \label{eq:wcl}
+    N_{x_t} = \text{floor}\left( \frac{x_{t\max} - x_{t\min}}{W_c} \right)+1
 \end{equation}
 
-El tiempo de estabilización al 2\% resulta aproximadamente:
+Según la especificación se tiene que $x_{t\min} = -30\,\text{m}$ y $x_{t\max} = 50\,\text{m}$,
+y que $W_c = 2.44\,\text{m}$ (ancho de contenedor estándar ISO). Así se obtiene $N_{x_t} = 33$, y los posibles índices serán entonces:
 
 \begin{equation}
-    t_s \approx \frac{4}{\omega_{cl}}
+    i = 1, 2, 3, \ldots, 33
 \end{equation}
-
-\subsubsection{Igualación de coeficientes}
-
-Igualando \eqref{eq:ec_caract} con \eqref{eq:pol_deseado} término a término:
-
-\begin{align}
-    \frac{B_{eq} + i_h\,K_p}{J_{eq}} &= 2\,\omega_{cl}
-    \label{eq:ec1}\\[4pt]
-    \frac{i_h\,K_i}{J_{eq}} &= \omega_{cl}^2
-    \label{eq:ec2}
-\end{align}
-
-Despejando las ganancias del controlador:
-
-\begin{align}
-    \boxed{K_p = \frac{2\,\omega_{cl}\,J_{eq} - B_{eq}}{i_h}}
-    \label{eq:Kp}\\[8pt]
-    \boxed{K_i = \frac{\omega_{cl}^2\,J_{eq}}{i_h}}
-    \label{eq:Ki}
-\end{align}
-
-\subsubsection{Anti-windup por back-calculation}
-
-Para evitar la saturación del integrador cuando la consigna de torque supera
-$T_{hm,\text{MAX}}$ (límite físico del accionamiento), se implementa la corrección
-por \textit{back-calculation}:
+\newpage
+Luego, la última posición discreta corresponde a:
 
 \begin{equation}
-    \dot{x}_i(t) = e(t) + K_b\,\bigl[T^*_{sat}(t) - T^*(t)\bigr],
-    \qquad
-    K_b = \frac{1}{K_p}
+    x_{33} = -30\,\text{m} + (33-1) \cdot 2.44\,\text{m} = 48.08\,\text{m}
+\end{equation}
+Por lo que se verifica que el rango de discretización cubre todo el área de operación del carro sin exceder el límite de $x_{t\max}$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{perfil_obstaculos.png}
+    \caption{Diagrama de bloques del modelo de discretización del perfil de obstáculos}
+    \label{fig:perfil_obstaculos}
+\end{figure}
+
+Se genera un vector $y_{c0\ vec}$ de tamaño $N_{x_t}$ que representa el perfil de obstáculos discretizado a lo largo del rango de operación. Dicho vector es conocido
+por el autómata.
+
+Desde el punto de vista físico, este vector debería inicializarse con valores nulos, dado que el perfil de obstáculos es inicialmente desconocido y debe ser obtenido 
+mediante el escaneo realizado por el sensor LIDAR. Sin embargo, con el objetivo de simplificar la lógica del autómata y evitar el uso de múltiples vectores auxiliares 
+para gestionar el proceso de relevamiento, se opta por mantener un único vector de perfil de obstáculos disponible desde el inicio.
+
+Para preservar la coherencia operativa del sistema, se define como condición de habilitación del modo automático que el perfil de obstáculos haya sido previamente 
+escaneado en su totalidad. De esta manera, antes de ingresar a dicho modo, el operario debe desplazar el carro manualmente a lo largo de todo el rango de operación, 
+permitiendo que el sensor LIDAR releve completamente el entorno y valide la información contenida en el vector utilizado por el autómata.
+
+Durante la operación de la grúa, el vector $y_{c0\ vec}$ se actualiza dinámicamente conforme los contenedores cambian de posición. Esto permite que el sistema de control 
+y protección utilice el perfil de obstáculos actualizado para planificar las trayectorias seguras y evitar colisiones.
+
+
+
+\subsection{Sensores}
+Para la retroalimentación del sistema de control y protección automática, se modelan distintos sensores según la especificación:
+
+
+\noindent\textbf{Carro}
+\begin{itemize}
+    \item Encoder en el eje del motor del carro, que mide la posición angular $\theta_{tm}(t)$. Y usando la relación
+    $x_t(t) = \theta_{tm}(t) \, \frac{r_{td}}{i_t}$ se obtiene la posición lineal del carro.
+\end{itemize} 
+\noindent\textbf{Izaje}
+\begin{itemize}
+    \item Encoder en el eje del motor del izaje, que mide la posición angular $\theta_{hm}(t)$. Y usando la relación
+    $y_h(t) = \theta_{hm}(t) \, \frac{r_{hd}}{2\,i_h}$ se obtiene la altura de izaje.
+    \item Celda de carga en el cable de izaje, que mide la fuerza de tensión $F_{hw}(t)$.
+    \item Sensor de ángulo de spreader, que mide el ángulo de balanceo $\theta_l(t)$ y la velocidad $\frac{d\,\theta_l(t)}{dt}$
+    de la carga suspendida.
+\end{itemize}
+
+
+
+\subsubsection{Fines de carrera}
+Se modelan además fines de carrera de operación y emergencia para ambos ejes.
+La lógica de detección de límites es de acuerdo a la ubicación física descrita en 
+las especificaciones, siendo los sensores del carro externos (viga) y los sensores 
+del izaje internos (tambor). 
+\begin{itemize} 
+\item \textbf{Carro}: al estar montados físicamente sobre la estructura de la
+grúa, estos sensores detectan la posición real de la masa del carro $x_t(t)$, 
+independientemente de la posición del tambor o la longitud de cable desenrollado
+
+\begin{equation}
+    FC_{t,\,\text{derecha}} = 
+    \begin{cases} 
+        0 & \text{si } x_t(t) < x_{t\max}  \\
+        1 & \text{si } x_t(t) \ge x_{t\max} \quad (\text{Operativo}) \\
+        1 & \text{si } x_t(t) \ge x_{t\max} + 0.5 \text{m} \quad (\text{Emergencia})
+    \end{cases}
 \end{equation}
 
-donde $T^*_{sat}$ es la salida del limitador y $T^*$ la salida no saturada del PI.
-Cuando no hay saturación ambas coinciden y la corrección es nula.
-Cuando el actuador satura, el término de corrección detiene la integración,
-eliminando el fenómeno de \textit{windup}.
+\begin{equation}
+    FC_{t,\,\text{izquierda}} = 
+    \begin{cases} 
+        0 & \text{si } x_t(t) > x_{t\min}  \\
+        1 & \text{si } x_t(t) \le x_{t\min} \quad (\text{Operativo}) \\
+        1 & \text{si } x_t(t) \le x_{t\min} + 0.5 \text{m} \quad (\text{Emergencia})
+    \end{cases}
+\end{equation}
+\item \textbf{Izaje}: al estar acoplados mecánicamente al eje del tambor, estos 
+sensores detectan la cantidad de cable desenrollado. 
+\begin{equation}
+    FC_{h,\,\text{superior}} = 
+    \begin{cases}
+        0 & \text{si } y_h(t) < y_{h\max} \quad (\text{Operativo}) \\
+        1 & \text{si } y_h(t) \ge y_{h\max} \quad (\text{Operativo}) \\
+        1 & \text{si } y_h(t) \ge y_{h\max} + 0.5 \text{m} \quad (\text{Emergencia})
+    \end{cases}
+\end{equation}
 
+\begin{equation}
+    FC_{h,\,\text{inferior}} = 
+    \begin{cases}
+        0 & \text{si } y_h(t) > y_{h\min} \quad (\text{Operativo}) \\
+        1 & \text{si } y_h(t) \le y_{h\min} \quad (\text{Operativo}) \\
+        1 & \text{si } y_h(t) \le y_{h\min} + 0.5 \text{m} \quad (\text{Emergencia})
+    \end{cases}
+\end{equation}
+\end{itemize}
+
+\subsubsection{Modelo sensores Simulink}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{sensores_izaje.png}
+    \caption{Diagrama de bloques del modelo de sensores del izaje}
+\end{figure}
+\begin{figure}[H]
+    \centering
+        \centering
+        \includegraphics[width=0.6\textwidth]{sensores_carro.png}
+        \caption{Diagrama de bloques del modelo de sensores del carro}   
+\end{figure}
+
+\subsection{Moduladores de torque (accionamientos)}
+En la simulación de la planta física, no es posible aplicar la señal de control 
+de referencia de torque como fuerza mecánica instantánea. Esto se debe a que los accionamientos
+reales (variadores de frecuencia y motores eléctricos) presentan limitaciones tanto en su 
+capacidad de torque máximo como en su velocidad de respuesta dinámica. Para modelar
+esto se utilizan bloques moduladores de torque para cada eje.
+
+Los moduladores de torque cumplen dos funciones principales. Actúan como saturadores,
+limitando el torque aplicado a un valor máximo para proteger el motor y respetar sus curvas de operación nominales.
+Además, actúan como filtros de primer orden, modelando el retardo electromagnético del motor, usando una constante de tiempo $\tau = 1$ ms 
+que representa la inercia eléctrica del sistema.
+
+La dinámica general de los motores se representa mediante una ecuación diferencial de primer
+orden que vincula el torque limitado comandado $T_{Lim}^*(t)$ con el torque físico real entregado
+por el motor $T(t)$: 
+\begin{equation}
+\tau \frac{dT(t)}{dt} = T_{Lim}^*(t) - T(t)
+\end{equation}
+Dado que la planta física es un sistema continuo, pero recibe señales de un controlador digital discreto,
+el valor comandado se mantiene constante mediante un retenedor de orden cero (ZOH) durante cada intervalo de muestreo. 
+
+\subsubsection{Modulador del carro}
+Para el sistema de traslación del carro, el torque máximo es constante ($T_{tm\max} = 4 \times 10^3$ Nm),
+quedando la señal de torque limitado como:
+\begin{equation}
+T_{tm\ Lim}^*(k \, T_{s2} \leq t < (k+1) \, T_{s2}) = \text{min}\left(+T_{tm\max}, \text{max}\left(-T_{tm\max}, T_{tm}^*(k \, T_{s2})\right)\right)
+\end{equation}
+Siendo $T_{s2}$ el período de muestreo del controlador regulatorio (Nivel 2) a desarrollar, y $k$ el índice de muestreo discreto.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{modulador_carro.png}
+    \caption{Diagrama de bloques del modelo del modulador de torque del carro}
+    \label{fig:modulador_carro}
+\end{figure}
+
+\subsubsection{Modulador del izaje}
+A diferencia del carro, el sistema de izaje tiene un torque máximo que varía con la velocidad de operación del motor.
+Para evitar exceder la potencia nominal del equipo a altas velocidades (zona de debilitamiento de campo o de potencia constante),
+el límite máximo de torque se reduce en función de la velocidad angular comparada con su velocidad nominal ($\omega_{hm\ RATED}$).
+Esta restricción se modela como:
+\begin{equation}
+T_{hm\max}(t) = T_{hm\ MAX} \text{min} \left( 1, \left( \frac{\omega_{hm\ RATED}}{\omega_{hm}(t)} \right)^2 \right)
+\end{equation}
+Siendo $T_{hm\ MAX} = 20 \times 10^3$ Nm el torque máximo del motor y $\omega_{hm\ RATED} = 2 v_{h\ nom} i_h/r_{hd} = 88 $ rad/s la velocidad nominal del motor.
+Quedando la saturación aplicada al accionamiento del izaje en cada instante de muestreo discreto como:
+\begin{equation}
+T_{hm\ Lim}^*(k \, T_{s2} \leq t < (k+1) \, T_{s2}) = \text{min}\left(+T_{hm\max}(t), \text{max}\left(-T_{hm\max}(t), T_{hm}^*(k \, T_{s2})\right)\right)
+\end{equation}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{modulador_izaje.png}
+    \caption{Diagrama de bloques del modelo del modulador de torque del izaje}
+    \label{fig:modulador_izaje}    
+\end{figure}
+
+\subsection{Modelo de la planta en Simulink}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\textwidth]{modelo_planta.png}
+    \caption{Diagrama de bloques del modelo completo de la planta física en Simulink}
+    \label{fig:modelo_planta}
+\end{figure}
+\newpage
+
+\input{nivel2.tex}
+\input{nivel1.tex}
+\input{nivel0.tex}
+\input{simulacion.tex}
+\input{codesys.tex}
+\input{conclusiones.tex}
+
+\newpage
+\bibliographystyle{unsrt}
+\bibliography{references}
 \end{document}
-

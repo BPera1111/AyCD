@@ -1,0 +1,52 @@
+\section{Conclusiones}
+
+\begin{frame}{Conclusiones: logros por nivel}
+  \small
+  \begin{itemize}
+    \item \textbf{Nivel 2 --- regulatorio:}
+      \begin{itemize}
+        \item Seguimiento de velocidad preciso y \textbf{sin sobrepaso} en ambos ejes.
+        \item El izaje sostiene el peso \textbf{sin caída} de velocidad (compensación de gravedad).
+        \item El observador entrega una velocidad estimada limpia, sin ruido de derivar el encoder.
+        \item El \textit{anti-sway} reduce el balanceo a valores despreciables al finalizar la
+              maniobra $\Rightarrow$ apilado preciso.
+      \end{itemize}
+    \item \textbf{Nivel 1 --- supervisor:}
+      \begin{itemize}
+        \item Ciclos completos de carga/descarga \textbf{autónomos}, sin colisionar con la pila
+              (LIDAR).
+        \item La estimación de masa y el límite por curva de potencia \textbf{impiden la sobrecarga}.
+        \item El suavizado y los límites suaves logran trayectorias fluidas que nunca alcanzan los
+              finales de carrera de forma abrupta.
+      \end{itemize}
+    \item \textbf{Nivel 0 --- protección:}
+      \begin{itemize}
+        \item Ante las fallas inducidas (sobrevelocidad, FC de emergencia, parada manual, pérdida
+              del \textit{heartbeat}) lleva el sistema a un estado seguro.
+        \item Detiene \textbf{sólo el eje afectado}; la grúa nunca sigue operando con un comando
+              desactualizado.
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Validación e implementación}
+  \begin{itemize}
+    \item Comportamiento validado en \textbf{simulación}, apoyada en una animación 2D en tiempo
+          real que muestra la operación en los distintos modos.
+    \item La lógica de control se trasladó a un PLC virtual en \textbf{CODESYS} (SFC + texto
+          estructurado).
+    \item Co-simulación con la planta vía \textbf{OPC-UA}: el controlador implementado
+          \textbf{responde igual} que el modelo original.
+    \item Objetivo de \textbf{productividad}: $\geq 30$ contenedores por hora.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Trabajos futuros}
+  \begin{itemize}
+    \item Llevar el control a \textbf{hardware real} sobre un PLC físico.
+    \item Sustituir OPC-UA por un \textbf{enlace de menor latencia} apto para tiempo real.
+    \item Profundizar la \textbf{planificación de trayectorias} y el control \textbf{anti-balanceo}
+          para optimizar los tiempos de ciclo.
+  \end{itemize}
+\end{frame}
+

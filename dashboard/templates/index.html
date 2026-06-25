@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grúa STS — Dashboard</title>
+<link rel="stylesheet" href="/static/goldenlayout-base.css">
+<link rel="stylesheet" href="/static/style.css">
+<script>(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.dataset.theme=t;})();</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════════════════════════ -->
+<header>
+  <div class="header-left">
+    <span class="logo">⚓ GRÚA STS</span>
+    <span class="subtitle">Dashboard de Simulación</span>
+  </div>
+  <div class="header-right">
+    <button id="btn-reset-layout" title="Resetear layout por defecto">↺ Layout</button>
+    <div id="paneles-wrap" style="position:relative">
+      <button id="btn-paneles" title="Reabrir paneles cerrados">◉ Paneles</button>
+      <div id="paneles-dropdown" class="paneles-dropdown hidden"></div>
+    </div>
+    <label class="theme-switch" title="Alternar modo claro/oscuro">
+      <input type="checkbox" id="theme-toggle">
+      <span class="theme-slider"></span>
+    </label>
+    <div id="connection-badge" class="badge badge-off">SIN DATOS</div>
+    <div id="modo-badge" class="badge badge-mode">REPOSO</div>
+    <div id="fps-counter" class="fps">-- Hz</div>
+    <div id="rtf-display" class="fps rtf-badge">RTF: --</div>
+    <div id="tsim-display" class="fps">t: --s</div>
+  </div>
+</header>
+
+<!-- ══ GoldenLayout workspace ═════════════════════════════════════════════ -->
+<main id="workspace"></main>
+
+<!-- ══ Templates — contenido de cada panel ════════════════════════════════ -->
+
+<template id="tpl-crane">
+  <div class="gl-panel crane-panel">
+    <canvas id="craneCanvas"></canvas>
+    <div class="crane-info">
+      <span>Carro: <strong id="lbl-xt">---</strong> m</span>
+      <span>Izaje: <strong id="lbl-yh">---</strong> m</span>
+      <span>Cable: <strong id="lbl-lh">---</strong> m</span>
+      <span>Vel. Carro: <strong id="lbl-vt">---</strong> m/s</span>
+      <span>Vel. Izaje: <strong id="lbl-vh">---</strong> m/s</span>
+      <span>Ángulo: <strong id="lbl-tita">---</strong> rad</span>
+      <span>M. Est.: <strong id="lbl-m-est">---</strong> kg</span>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-status">
+  <div class="gl-panel gl-status">
+
+    <div class="modo-panel">
+      <div class="panel-label">MODO ACTIVO</div>
+      <div id="modo-activo-badge" class="modo-badge-large">REPOSO</div>
+      <div class="flags-grid">
+        <div class="flag-item" id="flag-reposo">   <div class="fd"></div><span>REPOSO</span>     </div>
+        <div class="flag-item" id="flag-manual">   <div class="fd"></div><span>MANUAL</span>     </div>
+        <div class="flag-item" id="flag-auto">     <div class="fd"></div><span>AUTO FULL</span>  </div>
+        <div class="flag-item" id="flag-man-auto"> <div class="fd"></div><span>MAN→AUTO</span>   </div>
+        <div class="flag-item" id="flag-ciclo">    <div class="fd"></div><span>CICLO DBL</span>  </div>
+        <div class="flag-item" id="flag-recup">    <div class="fd"></div><span>RECUPER.</span>   </div>
+        <div class="flag-item" id="flag-muerto">   <div class="fd"></div><span>M.MUERTO</span>   </div>
+        <div class="flag-item" id="flag-error">    <div class="fd"></div><span>ERROR</span>      </div>
+      </div>
+    </div>
+
+    <div class="panel-label" style="margin-top:0.7rem">ACTUADORES</div>
+    <div class="indicators">
+      <div class="indicator" id="ind-freno-c">
+        <div class="ind-dot"></div><div class="ind-label">Freno Carro N1</div>
+      </div>
+      <div class="indicator" id="ind-freno-c-n0">
+        <div class="ind-dot"></div><div class="ind-label">Freno Carro N0</div>
+      </div>
+      <div class="indicator" id="ind-freno-h-n1">
+        <div class="ind-dot"></div><div class="ind-label">Freno Izaje N1</div>
+      </div>
+      <div class="indicator" id="ind-freno-h-n0">
+        <div class="ind-dot"></div><div class="ind-label">Freno Izaje N0</div>
+      </div>
+      <div class="indicator" id="ind-tlk">
+        <div class="ind-dot"></div><div class="ind-label">TwistLock</div>
+      </div>
+      <div class="indicator" id="ind-container">
+        <div class="ind-dot"></div><div class="ind-label">Container</div>
+      </div>
+    </div>
+
+    <div class="fallas-panel">
+      <div class="panel-label">FALLAS</div>
+      <div id="any-falla-banner" class="falla-banner hidden">&#9888; FALLA ACTIVA</div>
+      <div class="falla-grid">
+        <div class="falla-item" id="ind-falla_man">       MAN <span class="falla-nivel">N0</span></div>
+        <div class="falla-item" id="ind-falla_wd">        WD <span class="falla-nivel">N0</span></div>
+        <div class="falla-item" id="ind-falla_carro_der"> CARRO DER <span class="falla-nivel">N0</span></div>
+        <div class="falla-item" id="ind-falla_carro_izq"> CARRO IZQ <span class="falla-nivel">N0</span></div>
+        <div class="falla-item" id="ind-falla_izaje_inf"> IZAJE INF <span class="falla-nivel">N0</span></div>
+        <div class="falla-item" id="ind-falla_izaje_sup"> IZAJE SUP <span class="falla-nivel">N0</span></div>
+        <div class="falla-item" id="ind-falla_izaje_sv">  IZAJE SV <span class="falla-nivel">N0</span></div>
+        <div class="falla-item" id="ind-falla_carro_sv">  CARRO SV <span class="falla-nivel">N0</span></div>
+        <div class="falla-item falla-n1" id="ind-falla_sobrecarga">SOBRECARGA <span class="falla-nivel">N1</span></div>
+      </div>
+    </div>
+
+    <div class="fc-panel">
+      <div class="panel-label">FINES DE CARRERA</div>
+      <div class="fc-grid">
+        <div class="fc-item" id="ind-fc_der">  FC DER</div>
+        <div class="fc-item" id="ind-fc_izq">  FC IZQ</div>
+        <div class="fc-item" id="ind-fc_sup">  FC SUP</div>
+        <div class="fc-item" id="ind-fc_inf">  FC INF</div>
+        <div class="fc-item fce" id="ind-fce_der"> FCE DER</div>
+        <div class="fc-item fce" id="ind-fce_izq"> FCE IZQ</div>
+        <div class="fc-item fce" id="ind-fce_sup"> FCE SUP</div>
+        <div class="fc-item fce" id="ind-fce_inf"> FCE INF</div>
+      </div>
+    </div>
+
+    <div class="gamepad-status">
+      <div class="gp-title">Gamepad</div>
+      <div id="gp-status" class="gp-badge gp-off">ViGEm: cargando...</div>
+      <div class="gp-axes">
+        <span>LX: <strong id="gp-lx">0.00</strong></span>
+        <span>RY: <strong id="gp-ry">0.00</strong></span>
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<template id="tpl-chart-pos">
+  <div class="gl-panel chart-panel">
+    <canvas id="chartPos"></canvas>
+  </div>
+</template>
+
+<template id="tpl-chart-vel">
+  <div class="gl-panel chart-panel">
+    <canvas id="chartVel"></canvas>
+  </div>
+</template>
+
+<template id="tpl-control">
+  <div class="gl-panel gl-control">
+    <div class="controls-row">
+
+      <div class="stick-container">
+        <div class="stick-label">CARRO (LX)</div>
+        <canvas id="stickCarro" class="stick-canvas" width="140" height="140"></canvas>
+        <div class="stick-val" id="val-carro">0.00</div>
+      </div>
+
+      <div class="buttons-panel">
+        <button class="ctrl-btn btn-manual" data-name="MANUAL" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
+          <span class="btn-main">MANUAL</span><span class="btn-sub">M | B</span>
+        </button>
+        <button class="ctrl-btn btn-auto" data-name="AUTO" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
+          <span class="btn-main">AUTO</span><span class="btn-sub">A | X</span>
+        </button>
+        <button class="ctrl-btn btn-tlk" data-name="TLK" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
+          <span class="btn-main">TLK</span><span class="btn-sub">T | A</span>
+        </button>
+        <button class="ctrl-btn btn-reset" data-name="RESET" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
+          <span class="btn-main">RESET</span><span class="btn-sub">R | Y</span>
+        </button>
+        <button class="ctrl-btn btn-emerg" data-name="EMERG" onmousedown="btnDown(this)" onmouseup="btnUp(this)" ontouchstart="btnDown(this)" ontouchend="btnUp(this)">
+          <span class="btn-main">EMERG</span><span class="btn-sub">Esp | Back</span>
+        </button>
+      </div>
+
+      <div class="stick-container">
+        <div class="stick-label">IZAJE (RY)</div>
+        <canvas id="stickIzaje" class="stick-canvas" width="140" height="140"></canvas>
+        <div class="stick-val" id="val-izaje">0.00</div>
+      </div>
+
+    </div>
+  </div>
+</template>
+
+<template id="tpl-selector">
+  <div class="gl-panel selector-panel">
+    <canvas id="selectorCanvas"></canvas>
+    <div class="selector-info" id="selector-info">Col: --  |  xt: -- m  |  -- cont.</div>
+  </div>
+</template>
+
+<template id="tpl-lidar">
+  <div class="gl-panel lidar-panel">
+    <div class="lidar-header">
+      <span class="lidar-title">PERFIL LIDAR</span>
+      <span class="lidar-info">
+        Celda: <strong id="lbl-i-li">--</strong> &nbsp;|&nbsp;
+        Lectura: <strong id="lbl-reading">--</strong> m &nbsp;|&nbsp;
+        Escaneadas: <strong id="lbl-scanned-count">--</strong>/33
+      </span>
+    </div>
+    <div class="lidar-chart-wrap">
+      <canvas id="chartLidar"></canvas>
+    </div>
+  </div>
+</template>
+
+<script src="/static/crane.js"></script>
+<script src="/static/selector.js"></script>
+<script src="/static/dashboard.js"></script>
+</body>
+</html>

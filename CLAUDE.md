@@ -1,87 +1,233 @@
-# CLAUDE.md — Proyecto AyCD 2025: Grúa Portacontenedores STS
+# CLAUDE.md
 
-## Contexto del proyecto
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Control de velocidad de carro e izaje de una grúa STS para la materia **Autómatas y Control Discreto** (10mo semestre, UNCUYO). Implementado en MATLAB/Simulink con controladores PI discretos y observadores de estado Luenberger orden 3.
+## Proyecto
 
-Modelo Simulink: `Proyecto_AyCD/controlador_torque.slx`
+Simulación de Grúa STS (Ship-to-Shore) para la materia Autómatas y Control Discreto — UNCUYO 2025. Combina modelos MATLAB/Simulink/Stateflow con un dashboard Python para visualización y control en tiempo real.
 
 ---
 
-## Problemas conocidos del modelo (NO tocar sin entender)
+## Comandos principales
 
-### 1. Signal Editor hardcodeado — carro
-`controlador_torque/Subsystem2/Signal Editor` genera la referencia de velocidad del carro desde `untitled.mat`, ignorando la variable `vx_cmd` del workspace.
-**Fix:** llamar `bypass_signal_editor(modelName)` antes de cada `sim()`.
+### Dashboard de simulación (reemplaza joystick.py)
 
-### 2. Step hardcodeado — izaje
-`controlador_torque/Subsystem1/Step` (Time=3, After=1) genera la referencia del izaje, ignorando `vh` del workspace.
-**Fix:** el mismo `bypass_signal_editor` lo resuelve también.
+```bash
+# Modo con MATLAB corriendo (flujo normal):
+venv\Scripts\python run_dashboard.py
 
-### 3. Manual Switches de frenos y TLK
-Los 4 Manual Switches del root bypasean los estados `BRK_*_state` y `TLK_state`. Hay que forzarlos con `set_param` antes de simular:
-```matlab
-set_param([modelName '/Manual Switch'],  'sw','1');  % BRK_t  libre
-set_param([modelName '/Manual Switch1'], 'sw','1');  % BRK_h  libre
-set_param([modelName '/Manual Switch2'], 'sw','1');  % BRK_hE libre
-set_param([modelName '/Manual Switch3'], 'sw','0');  % TLK    enganchado
+# Modo de prueba sin MATLAB (verifica que el dashboard funcione):
+venv\Scripts\python run_dashboard.py --sim-test
+
+# Puerto alternativo:
+venv\Scripts\python run_dashboard.py --port 8080
 ```
 
-### 4. Señales ToWorkspace disponibles
-Solo hay dos bloques ToWorkspace en el modelo:
-- `out.v_td` — velocidad del tambor del carro [m/s]
-- `out.whm_t` — velocidad angular del motor de izaje [rad/s]
+### Joystick legacy (solo control, sin visualización)
 
-Para convertir whm_t a velocidad lineal del cable: `v_cable = -whm_t * rhd/(2*ih)` (signo negativo: vh>0 = descender).
+```bash
+venv\Scripts\python joystick.py
+```
 
-### 5. Límite del mapa de obstáculos
-El subsistema de perfil de obstáculos falla si el carro recorre más de ~40 m desde `xt_0=25`. No simular más de ~15 s con `vx_cmd` grande.
+### Instalar dependencias Python
 
----
+```bash
+venv\Scripts\pip install flask flask-socketio watchdog vgamepad pygame
+```
 
-## Parámetros de controladores (vigentes)
-
-Sintonizados con `tune_controllers.m` el 2025-04-20 (barrido 81 sims, `Mc_X=Mc_max=50000 kg`).
-
-| Lazo | wn (rad/s) | ζ | p_obs | J | Overshoot | Settling |
-|------|-----------|---|-------|---|-----------|---------|
-| Carro | 0.80 | 0.70 | 2.4 | 24.4 | 1.5% | 4.7 s |
-| Izaje | 5.00 | 0.70 | 40 | 1.1 | 0.2% | 0.2 s |
-
-Las fórmulas en `init_plant_parameters.m` usan `M_carro_total = Mt+Ms+Mc_X` (carro) y `J_motor_izaje = Jhm_hb + Jhd_hEb/ih²` (izaje).
-
----
-
-## Scripts principales
-
-| Script | Uso |
-|--------|-----|
-| `init_plant_parameters.m` | Carga planta + ganancias. Siempre correr primero. |
-| `bypass_signal_editor.m` | Fix del modelo (Signal Editor + Step hardcodeados). Llamar después de `load_system`. |
-| `tune_controllers.m` | Barrido paramétrico completo (~5 min). Ver `WORKFLOW_SINTONIZACION.md`. |
-| `ver_respuesta.m` | Visualiza carro e izaje, genera `respuesta_controladores.png`. |
-| `metricas_respuesta.m` | Función pura: IAE, overshoot, settling. |
-
----
-
-## Secuencia mínima para simular
+### Setup MATLAB (ejecutar en orden en MATLAB)
 
 ```matlab
-init_plant_parameters
-load_system('controlador_torque')
-bypass_signal_editor('controlador_torque')
-set_param('controlador_torque/Manual Switch',  'sw','1')
-set_param('controlador_torque/Manual Switch1', 'sw','1')
-set_param('controlador_torque/Manual Switch2', 'sw','1')
-set_param('controlador_torque/Manual Switch3', 'sw','0')
-BRK_t_state=0; BRK_h_state=0; BRK_he_state=0; TLK_state=1;
-anti_sway_estate=1; Mc_X=Mc_max;
-vx_cmd=1.5; vh=0;
-out = sim('controlador_torque','StopTime','12');
+% 1. Parámetros (SIEMPRE primero)
+cd simulink
+run('init_plant_parameters.m')
+
+% 2. Iniciar telemetría externa (no modifica el modelo)
+run('telemetry_timer.m')
+
+% 3. Abrir modelo y simular
+open_system('nivel_1_full.slx')
+% → Presionar Play (el timer detecta señales automáticamente)
+
+% Para detener telemetría:
+stop(crane_telemetry_timer); delete(crane_telemetry_timer)
+
+% Explorar señales del modelo (debugging, si telemetría muestra 0s):
+run('discover_signals.m')
 ```
 
 ---
 
-## Re-sintonizar
+## Modelos Simulink
 
-Ver `Proyecto_AyCD/WORKFLOW_SINTONIZACION.md`.
+| Archivo | Propósito |
+|---|---|
+| `simulink/planta.slx` | **Planta física completa**: dinámica de carro, izaje, spreader, contacto, LIDAR virtual — sin controlador |
+| `simulink/nivel_1_full.slx` | **Modelo principal de prueba**: planta + L0 + L1 + L2 completos |
+| `simulink/nivel_2.slx` | Solo capa de torque (Level 2 aislado) |
+| `simulink/planta_codesys.slx` | Planta para integración con PLC CODESYS vía UDP |
+| `simulink/planta_codesys_opc.slx` | Variante con OPC-UA |
+| `simulink/planta_rots.slx` | Variante con rotaciones adicionales |
+
+Al modificar `.slx` directamente, abrirlos como ZIP y editar los XML internos en `simulink/systems/` y `simulink/stateflow/`.
+
+---
+
+## Arquitectura de control
+
+El sistema tiene 3 niveles de control en cascada:
+
+| Nivel | Ts | Responsabilidad |
+|---|---|---|
+| **0** | 20 ms | Seguridad: watchdog, límites de posición/velocidad, freno de emergencia |
+| **1** | 20 ms | Supervisión: Stateflow principal + generación de referencias de velocidad |
+| **2** | 1 ms | Torque: observador Luenberger + PI trapezoidal (carro e izaje) |
+
+### Scripts de Nivel 2
+
+| Script | Función |
+|---|---|
+| `simulink/nivel2_carro.m` | MATLAB Function Block: anti-sway por ángulo de carga, observador Luenberger, PI trapezoidal con anti-windup para velocidad del carro |
+| `simulink/nivel2_izaje.m` | Ídem para izaje: compensación gravitacional por masa del container, observador, PI con anti-windup |
+
+Ganancias del observador (`k_tita`, `k_omega`, `k_i`) y del PI (`Kp`, `Ki`) definidas en `init_plant_parameters.m`.
+
+---
+
+## Stateflow — Estados principales (nivel 1)
+
+La máquina de estados principal (`AUTOMATA_PRINCIPAL`, `chart_487.xml`) tiene estos estados:
+
+```
+REPOSO → MANUAL
+       → MODO_AUTO → [SELECCION] → ENGANCHAR → MISION
+       → MODO_AUTO_FULL → SUBIR_INICIAL → IR_ORIGEN → BAJAR_ORIGEN
+                        → ENGANCHAR → SUBIR_CARGADO → IR_DESTINO
+                        → BAJAR_DESTINO → DESENGANCHAR → FIN_MISION
+       → RECUPERACION
+       → ERROR
+```
+
+Estados paralelos: `TWISTLOCKS`, `INDICES_PERFIL`.
+
+---
+
+## Falso Sensor LIDAR
+
+El LIDAR es un escáner láser 1D **simulado** (no hardware real) montado 3 m adelante del carro. A medida que el carro se mueve, escanea el perfil de obstáculos debajo (containers en el barco o en el muelle).
+
+### Variables clave (`init_plant_parameters.m`)
+
+| Variable | Valor | Descripción |
+|---|---|---|
+| `x_LIDAR` | 3 m | Offset del sensor adelante del centro del carro |
+| `N_xt` | 33 | Cantidad de celdas del perfil de obstáculos |
+| `Wc` | 2.44 m | Ancho de container ISO = resolución espacial del perfil |
+| `yc0_vec` | vector 33×1 | Altura de obstáculo medida en cada celda [m] |
+| `is_scanned_vec` | vector 33×1 binario | `1` = celda ya escaneada por el LIDAR |
+| `i_lidar` | entero [1,33] | Índice de celda activa (calculado en Stateflow) |
+
+### Fórmula de índice (Stateflow `chart_487.xml`)
+
+```matlab
+i_lidar = floor((xt_enc + x_LIDAR - xt_min) / Wc) + 1;
+% Clamped a [1, N_xt]
+```
+
+En cada paso de simulación: `yc0_vec(i_lidar)` ← lectura actual; `is_scanned_vec(i_lidar) = 1`.
+
+### Integración con modo automático
+
+El modo automático (`MODO_AUTO_FULL`) **no puede ejecutar** una trayectoria hasta verificar que todos los índices del camino tengan `is_scanned_vec = 1`. Si alguna celda no fue escaneada, requiere pasada previa manual o semi-automática. `yc0_vec` completo se transmite por UDP al dashboard y se visualiza como perfil de obstáculos en tiempo real.
+
+---
+
+## Comunicación Python ↔ MATLAB
+
+### MATLAB → Python (UDP binario, puerto 1234)
+
+`planta.slx` y `nivel_1_full.slx` envían paquetes UDP binarios (doubles de 64 bits) a 50 Hz:
+- 28 señales de telemetría de planta (posiciones, velocidades, frenos, estado)
+- 33 doubles del perfil `yc0_vec`
+
+`dashboard/server.py` los parsea en `udp_receiver_thread()` y los emite al browser vía SocketIO a 30 Hz.
+
+Fallback: `crane_state.json` en `C:\Temp\` con campos `xt, yh, vt, vh, freno_c, freno_h, estado, modo, tlk, caught`.
+
+### Python → MATLAB (gamepad virtual)
+
+`vgamepad.VX360Gamepad()` emula Xbox 360. Simulink lee:
+- Eje [1] (LX): joystick izquierdo X → `Joy_CMD_X` → velocidad carro
+- Eje [5] (RY, gain -1): joystick derecho Y → `Joy_CMD_Y` → velocidad izaje
+- Botones: A=TLK, B=MANUAL, X=AUTO, Y=RESET, Back=EMERG
+
+---
+
+## Variables físicas clave
+
+| Variable | Descripción | Valor/Rango |
+|---|---|---|
+| `xt` | Posición carro [m] | [-30, 50] |
+| `yh` | Posición izaje [m] | [-20, 40] |
+| `Yt0` | Altura poleas [m] | 45 (fijo) |
+| `Ms` | Masa spreader [kg] | 15 000 (fijo) |
+| `Mc_max / Mc_min` | Masa container [kg] | 50 000 / 2 000 |
+| `Mt` | Masa equivalente carro [kg] | 30 000 |
+| `Hc` | Altura container ISO [m] | 2.59 (fijo) |
+| `Wc` | Ancho container ISO [m] | 2.44 (fijo) |
+| `vt_max / vh_max` | Velocidades máx. [m/s] | 4 / 3 |
+| `at_max / ah_max` | Aceleraciones máx. [m/s²] | 0.80 / 0.75 |
+
+---
+
+## Integración CODESYS
+
+`codesys/` contiene proyecto CODESYS 3.5 con PLC virtual que recibe la planta vía UDP:
+- `CONTROL_SEGURIDAD` (L0) y `CONTROL_SUPERVISOR` (L1) son stubs por ahora
+- Usar `planta_codesys.slx` como planta en MATLAB, no `nivel_1_full.slx`
+- Ver `codesys/README.md` para setup completo (DUT structs, GVL, task config)
+
+---
+
+## Invariantes críticos de Stateflow XML
+
+Al modificar `.slx` directamente como ZIP+XML:
+
+1. En `<Children>` de un estado: primero `<state>`, luego `<transition>`, luego `<junction>`.
+2. Las transiciones van dentro del `<Children>` del estado padre.
+3. Variables de datos van al final del `<Children>` del chart raíz.
+4. El atributo `<P Name="subviewer">` apunta al ID del Chart (ej. `180`), no al estado padre.
+
+---
+
+## Estructura de archivos relevante
+
+```
+simulink/
+  planta.slx                ← planta física completa (sin controlador)
+  nivel_1_full.slx          ← modelo principal de prueba (planta + L0+L1+L2)
+  init_plant_parameters.m   ← SIEMPRE correr antes de simular
+  nivel2_carro.m            ← MATLAB Function Block: control L2 carro
+  nivel2_izaje.m            ← MATLAB Function Block: control L2 izaje
+  add_telemetry.m           ← setup one-shot: agrega bloque UDP writer
+  discover_signals.m        ← lista señales disponibles en el modelo
+  build_auto_full.m         ← construye el modo automático completo
+  agregar_modo_auto.m       ← agrega modo semi-automático
+
+dashboard/
+  server.py                 ← backend Flask + SocketIO + UDP receiver
+  templates/index.html      ← UI web
+  static/crane.js           ← canvas 2D animación grúa
+  static/dashboard.js       ← charts + joystick virtual
+  static/style.css          ← estilos dark mode
+
+codesys/                    ← proyecto CODESYS 3.5 (PLC virtual)
+run_dashboard.py            ← entrypoint dashboard
+joystick.py                 ← control legacy (solo vgamepad, sin visualización)
+```
+
+---
+
+## ViGEm (vgamepad)
+
+`vgamepad` requiere el **ViGEm Bus Driver** instalado en Windows. Si no está instalado, el dashboard funciona igual pero el joystick virtual no llega a MATLAB. Descargar desde: https://github.com/ViGEm/ViGEmBus/releases

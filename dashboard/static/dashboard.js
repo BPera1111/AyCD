@@ -1,0 +1,715 @@
+/**
+ * dashboard.js — Lógica principal del dashboard: SocketIO, charts, joystick virtual
+ */
+
+// ── Configuración de charts ───────────────────────────────────────────────────
+const MAX_POINTS = 600;   // ~20s a 30Hz
+const COLORS = {
+  xt: '#4a90e2',
+  yh: '#5bc4a0',
+  vt: '#e2884a',
+  vh: '#c05bc4',
+};
+
+// ── Estado del joystick virtual ──────────────────────────────────────────────
+const stickState = {
+  carro: { ax: 0, ay: 0, dragging: false },
+  izaje: { ax: 0, ay: 0, dragging: false },
+};
+const RETURN_STEP = 0.06;
+const STICK_BG    = '#1e2a3e';
+const STICK_RING  = '#2e3e5e';
+const THUMB_CLR   = '#4a90e2';
+const CROSS_CLR   = '#2e3a50';
+
+// ── FPS counter + RTF ─────────────────────────────────────────────────────────
+let lastTelemetryTime = 0;
+let fpsAccum = [];
+let _rtfPrevTSim = null, _rtfPrevTWall = null, _rtfEma = null;
+
+// ── Socket.IO ─────────────────────────────────────────────────────────────────
+const socket = io({ transports: ['websocket', 'polling'] });
+
+socket.on('connect', () => {
+  console.log('[WS] Conectado al servidor');
+});
+
+socket.on('disconnect', () => {
+  updateConnectionBadge(false);
+});
+
+socket.on('telemetry', (data) => {
+  const now = performance.now();
+  if (lastTelemetryTime > 0) {
+    const dt = (now - lastTelemetryTime) / 1000;
+    fpsAccum.push(dt);
+    if (fpsAccum.length > 30) fpsAccum.shift();
+    const avgDt = fpsAccum.reduce((a, b) => a + b, 0) / fpsAccum.length;
+    document.getElementById('fps-counter').textContent = `${(1 / avgDt).toFixed(1)} Hz`;
+  }
+  lastTelemetryTime = now;
+
+  CraneViz.update(data);
+  SelectorViz.update(data);
+  updateUI(data);
+  updateCharts(data);
+  updateLidar(data);
+  updateRTF(data.t_sim);
+});
+
+// ── Actualizar UI de estado ───────────────────────────────────────────────────
+function updateUI(data) {
+  setLabel('lbl-xt',    data.xt,              2);
+  setLabel('lbl-yh',    data.yh,              2);
+  setLabel('lbl-lh',    data.l_h,             2);
+  setLabel('lbl-vt',    data.vt,              2);
+  setLabel('lbl-vh',    data.vh,              2);
+  setLabel('lbl-tita',  data.tita_l,          4);
+  setLabel('lbl-m-est', data.m_container_est, 0);
+
+  updateConnectionBadge(data.connected);
+
+  // Badge de modo en header
+  const modoBadge = document.getElementById('modo-badge');
+  if (modoBadge) modoBadge.textContent = data.modo_nombre || 'REPOSO';
+
+  updateModeFlags(data);
+  updateActuadores(data);
+  updateFaults(data);
+  updateFCs(data);
+}
+
+// ── Modo activo + flags booleanos ─────────────────────────────────────────────
+function updateModeFlags(data) {
+  const modoActivo = document.getElementById('modo-activo-badge');
+  if (modoActivo) {
+    modoActivo.textContent = data.modo_nombre || 'REPOSO';
+    // Color según modo
+    modoActivo.className = 'modo-badge-large';
+    if (data.modo_error)          modoActivo.classList.add('modo-error');
+    else if (data.modo_muerto)    modoActivo.classList.add('modo-muerto');
+    else if (data.recuperacion)   modoActivo.classList.add('modo-recuperacion');
+    else if (data.modo_auto || data.modo_manual_auto || data.ciclo_doble) modoActivo.classList.add('modo-auto');
+    else if (data.modo_manual)    modoActivo.classList.add('modo-manual');
+  }
+
+  const flagMap = {
+    'flag-reposo':   data.modo_reposo,
+    'flag-manual':   data.modo_manual,
+    'flag-auto':     data.modo_auto,
+    'flag-man-auto': data.modo_manual_auto,
+    'flag-ciclo':    data.ciclo_doble,
+    'flag-recup':    data.recuperacion,
+    'flag-muerto':   data.modo_muerto,
+    'flag-error':    data.modo_error,
+  };
+  for (const [id, val] of Object.entries(flagMap)) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    el.className = 'flag-item' + (val ? ' flag-on' : '');
+    if (val && id === 'flag-muerto') el.classList.add('flag-danger');
+    if (val && id === 'flag-error')  el.classList.add('flag-danger');
+    if (val && id === 'flag-recup')  el.classList.add('flag-warn');
+  }
+}
+
+// ── Actuadores ────────────────────────────────────────────────────────────────
+function updateActuadores(data) {
+  // Frenos: sentido invertido (0=activo/frenando, 1=liberado)
+  setIndicator('ind-freno-c',    !data.freno_c,    'warning');
+  setIndicator('ind-freno-c-n0', !data.freno_c_n0, 'warning');
+  setIndicator('ind-freno-h-n1', !data.freno_h_n1, 'warning');
+  setIndicator('ind-freno-h-n0', !data.freno_h_n0, 'warning');
+  setIndicator('ind-tlk',        data.tlk,          'active');
+  setIndicator('ind-container',  data.hay_container, 'active');
+}
+
+// ── Fallas ────────────────────────────────────────────────────────────────────
+const FALLA_MAP = {
+  'ind-falla_man':       'FALLA_MAN',
+  'ind-falla_wd':        'FALLA_WD',
+  'ind-falla_carro_der': 'FALLA_CARRO_DER',
+  'ind-falla_carro_izq': 'FALLA_CARRO_IZQ',
+  'ind-falla_izaje_inf': 'FALLA_IZAJE_INF',
+  'ind-falla_izaje_sup': 'FALLA_IZAJE_SUP',
+  'ind-falla_izaje_sv':  'FALLA_IZAJE_SV',
+  'ind-falla_carro_sv':  'FALLA_CARRO_SV',
+  'ind-falla_sobrecarga':'FALLA_SOBRECARGA',
+};
+
+function updateFaults(data) {
+  for (const [id, key] of Object.entries(FALLA_MAP)) {
+    const el = document.getElementById(id);
+    if (el) el.className = 'falla-item' + (data[key] ? ' falla-on' : '');
+  }
+  const banner = document.getElementById('any-falla-banner');
+  if (banner) banner.className = 'falla-banner' + (data.any_falla ? '' : ' hidden');
+}
+
+// ── Fines de carrera ──────────────────────────────────────────────────────────
+const FC_MAP = {
+  'ind-fc_der':  'FC_der',
+  'ind-fc_izq':  'FC_izq',
+  'ind-fc_sup':  'FC_sup',
+  'ind-fc_inf':  'FC_inf',
+  'ind-fce_der': 'FCE_der',
+  'ind-fce_izq': 'FCE_izq',
+  'ind-fce_sup': 'FCE_sup',
+  'ind-fce_inf': 'FCE_inf',
+};
+
+function updateFCs(data) {
+  for (const [id, key] of Object.entries(FC_MAP)) {
+    const el = document.getElementById(id);
+    if (el) el.className = 'fc-item' + (data[key] ? ' fc-on' : '');
+  }
+}
+
+// ── RTF (Real-Time Factor) ────────────────────────────────────────────────────
+function updateRTF(t_sim) {
+  if (t_sim === undefined || t_sim === null) return;
+  const tWall = performance.now() / 1000;
+  if (_rtfPrevTSim !== null && t_sim > _rtfPrevTSim) {
+    const dtSim  = t_sim  - _rtfPrevTSim;
+    const dtWall = tWall  - _rtfPrevTWall;
+    if (dtWall > 0 && dtWall < 2.0) {
+      const rtf = dtSim / dtWall;
+      _rtfEma = _rtfEma === null ? rtf : _rtfEma * 0.85 + rtf * 0.15;
+    }
+  }
+  _rtfPrevTSim  = t_sim;
+  _rtfPrevTWall = tWall;
+
+  const elRtf  = document.getElementById('rtf-display');
+  const elTsim = document.getElementById('tsim-display');
+  if (elTsim) elTsim.textContent = `t: ${t_sim.toFixed(1)}s`;
+  if (elRtf && _rtfEma !== null) {
+    elRtf.textContent = `RTF: ${_rtfEma.toFixed(2)}`;
+    elRtf.className = 'fps rtf-badge ' +
+      (_rtfEma >= 0.95 ? 'rtf-ok' : _rtfEma >= 0.6 ? 'rtf-warn' : 'rtf-slow');
+  }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function setLabel(id, val, dec) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (val === undefined || val === null) { el.textContent = '---'; return; }
+  el.textContent = parseFloat(val).toFixed(dec);
+}
+
+function updateConnectionBadge(connected) {
+  const el = document.getElementById('connection-badge');
+  if (!el) return;
+  if (connected) {
+    el.textContent = 'MATLAB OK';
+    el.className = 'badge badge-on';
+  } else {
+    el.textContent = 'SIN DATOS';
+    el.className = 'badge badge-off';
+  }
+}
+
+function setIndicator(id, value, cls) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = 'indicator' + (value ? ` ${cls}` : '');
+}
+
+// ── Charts Chart.js ───────────────────────────────────────────────────────────
+function makeChart(canvasId, label1, label2, color1, color2, yMin, yMax) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  return new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [
+        { label: label1, data: [], borderColor: color1, backgroundColor: color1 + '22',
+          borderWidth: 1.5, pointRadius: 0, tension: 0.3 },
+        { label: label2, data: [], borderColor: color2, backgroundColor: color2 + '22',
+          borderWidth: 1.5, pointRadius: 0, tension: 0.3 },
+      ],
+    },
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { labels: { color: '#7a8aaa', font: { size: 10 }, boxWidth: 12 } } },
+      scales: {
+        x: { ticks: { color: '#4a5570', maxTicksLimit: 6, font: { size: 9 } }, grid: { color: '#1a2230' } },
+        y: { min: yMin, max: yMax, ticks: { color: '#4a5570', maxTicksLimit: 5, font: { size: 9 } }, grid: { color: '#1a2230' } },
+      },
+    },
+  });
+}
+
+let chartPos   = null;
+let chartVel   = null;
+let chartLidar = null;
+let t_start    = null;
+const N_MIN_SCAN = 3;
+
+function updateCharts(data) {
+  if (!chartPos || !chartVel) return;
+  const now = Date.now();
+  if (t_start === null) t_start = now;
+  const t_s = ((now - t_start) / 1000).toFixed(1);
+
+  function pushData(chart, v1, v2) {
+    chart.data.labels.push(t_s + 's');
+    chart.data.datasets[0].data.push(parseFloat(v1) || 0);
+    chart.data.datasets[1].data.push(parseFloat(v2) || 0);
+    if (chart.data.labels.length > MAX_POINTS) {
+      chart.data.labels.shift();
+      chart.data.datasets.forEach(ds => ds.data.shift());
+    }
+    chart.update('none');
+  }
+
+  pushData(chartPos, data.xt, data.yh);
+  pushData(chartVel, data.vt, data.vh);
+}
+
+// ── Chart LIDAR ───────────────────────────────────────────────────────────────
+const LIDAR_N_FINE  = 328;         // bins a 0.244m  (80m / 0.244 ≈ 328)
+const LIDAR_X_MIN   = -30;
+const LIDAR_DX      = 0.244;
+const LIDAR_N_CELL  = 33;
+const LIDAR_DX_CELL = 2.44;
+
+function initLidarChart() {
+  const canvas = document.getElementById('chartLidar');
+  if (!canvas || chartLidar) return;
+
+  const N = LIDAR_N_FINE;
+  const labels = Array.from({length: N}, (_, i) =>
+    `${(LIDAR_X_MIN + (i + 0.5) * LIDAR_DX).toFixed(1)}m`
+  );
+
+  // Perfil real expandido de 33 celdas a 160 bins (cada celda = 4.88 bins ≈ 5)
+  function expandReal(yc0) {
+    return Array.from({length: N}, (_, i) => {
+      const cell = Math.min(Math.floor(i * LIDAR_DX / LIDAR_DX_CELL), LIDAR_N_CELL - 1);
+      return (yc0 && yc0[cell] !== undefined) ? yc0[cell] : 0;
+    });
+  }
+
+  chartLidar = new Chart(canvas, {
+    data: {
+      labels,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Scan LIDAR',
+          data: new Array(N).fill(0),
+          backgroundColor: 'rgba(74,144,226,0.45)',
+          borderColor:     '#4a90e2',
+          borderWidth: 0,
+          categoryPercentage: 1.0,
+          barPercentage: 1.0,
+          order: 2,
+        },
+        {
+          type: 'line',
+          label: 'Perfil real',
+          data: new Array(N).fill(0),
+          borderColor: 'rgba(255,255,255,0.85)',
+          borderWidth: 2.5,
+          borderDash: [4, 3],
+          pointRadius: 0,
+          stepped: 'middle',
+          fill: false,
+          order: 1,
+        },
+        {
+          type: 'bar',
+          label: 'Lectura actual',
+          data: new Array(N).fill(null),
+          backgroundColor: 'rgba(245,166,35,0.9)',
+          borderColor: '#f5a623',
+          borderWidth: 0,
+          categoryPercentage: 1.0,
+          barPercentage: 1.0,
+          order: 0,
+        },
+      ],
+    },
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#7a8aaa', font: { size: 10 }, boxWidth: 12 } },
+      },
+      scales: {
+        x: { ticks: { color: '#4a5570', maxTicksLimit: 16, font: { size: 8 } }, grid: { color: '#1a2230' } },
+        y: { ticks: { color: '#4a5570', font: { size: 9 } }, grid: { color: '#1a2230' },
+             title: { display: true, text: 'Altura [m]', color: '#4a5570', font: { size: 9 } } },
+      },
+    },
+  });
+}
+
+function updateLidar(data) {
+  if (!chartLidar) return;
+  const scan   = data.scan_h_vec  || [];
+  const counts = data.count_vec   || [];
+  const real   = data.yc0_vec     || [];
+  const N      = LIDAR_N_FINE;
+
+  // Perfil real revelado progresivamente: null donde aún no se escaneó
+  const realExpanded = Array.from({length: N}, (_, i) => {
+    if (!scan[i] || Math.abs(scan[i]) < 0.001) return null;
+    const cell = Math.min(Math.floor(i * LIDAR_DX / LIDAR_DX_CELL), LIDAR_N_CELL - 1);
+    return real[cell] !== undefined ? real[cell] : null;
+  });
+
+  // Barras scan: azul = positivo, naranja oscuro = negativo (bajo deck), transparente = no escaneado
+  const bgColors = scan.map(v =>
+    v > 0.01  ? 'rgba(74,144,226,0.80)' :
+    v < -0.01 ? 'rgba(210,100,40,0.80)' :
+                'rgba(74,144,226,0.0)'
+  );
+
+  chartLidar.data.datasets[0].data            = scan.slice(0, N);
+  chartLidar.data.datasets[0].backgroundColor = bgColors;
+  chartLidar.data.datasets[1].data            = realExpanded;
+
+  // Lectura actual: bin fino correspondiente al i_lidar actual
+  const i_li_1based = data.i_li || 1;
+  const xt_lidar = LIDAR_X_MIN + (i_li_1based - 1) * LIDAR_DX_CELL + LIDAR_DX_CELL / 2;
+  const i_fine   = Math.min(Math.max(Math.round((xt_lidar - LIDAR_X_MIN) / LIDAR_DX - 0.5), 0), N - 1);
+  const readingBars = new Array(N).fill(null);
+  if (data.reading !== undefined && data.reading !== 0) {
+    readingBars[i_fine] = data.reading;
+  }
+  chartLidar.data.datasets[2].data = readingBars;
+  chartLidar.update('none');
+
+  const scannedCount = counts.filter(c => c >= N_MIN_SCAN).length;
+  setLabel('lbl-i-li',    Math.round(i_li_1based), 0);
+  setLabel('lbl-reading', data.reading, 2);
+  const elSc = document.getElementById('lbl-scanned-count');
+  if (elSc) elSc.textContent = scannedCount;
+}
+
+// ── Joystick virtual ──────────────────────────────────────────────────────────
+function initStick(canvasId, stickKey, axis) {
+  const c = document.getElementById(canvasId);
+  if (!c) return;
+  const s = stickState[stickKey];
+  const ctx = c.getContext('2d');
+  const R = c.width / 2 - 4;
+
+  function drawStick() {
+    const cx = c.width / 2, cy = c.height / 2;
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.fillStyle = STICK_BG; ctx.fill();
+    ctx.strokeStyle = STICK_RING; ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = CROSS_CLR; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy);
+    ctx.moveTo(cx, cy - R); ctx.lineTo(cx, cy + R);
+    ctx.stroke();
+    const tx = cx + (axis === 'x' ? s.ax : 0) * R;
+    const ty = cy + (axis === 'y' ? s.ay : 0) * R;
+    const tr = 14;
+    const grad = ctx.createRadialGradient(tx - 2, ty - 2, 1, tx, ty, tr);
+    grad.addColorStop(0, '#80c0ff'); grad.addColorStop(1, '#3060c0');
+    ctx.beginPath(); ctx.arc(tx, ty, tr, 0, Math.PI * 2);
+    ctx.fillStyle = grad; ctx.fill();
+    ctx.strokeStyle = '#60a0ff'; ctx.lineWidth = 2; ctx.stroke();
+  }
+
+  function getVal(e) {
+    const rect = c.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const cx = c.width / 2, cy = c.height / 2;
+    return {
+      ax: Math.max(-1, Math.min(1, (clientX - rect.left - cx) / R)),
+      ay: Math.max(-1, Math.min(1, (clientY - rect.top  - cy) / R)),
+    };
+  }
+
+  c.addEventListener('mousedown', (e) => { s.dragging = true; Object.assign(s, getVal(e)); emitJoystick(); });
+  c.addEventListener('touchstart', (e) => { e.preventDefault(); s.dragging = true; Object.assign(s, getVal(e)); emitJoystick(); }, { passive: false });
+  window.addEventListener('mousemove', (e) => { if (!s.dragging) return; Object.assign(s, getVal(e)); emitJoystick(); });
+  window.addEventListener('touchmove', (e) => { if (!s.dragging) return; Object.assign(s, getVal(e)); emitJoystick(); }, { passive: false });
+  window.addEventListener('mouseup',  () => { s.dragging = false; });
+  window.addEventListener('touchend', () => { s.dragging = false; });
+
+  setInterval(() => {
+    if (!s.dragging) {
+      let changed = false;
+      ['ax', 'ay'].forEach(k => {
+        if (Math.abs(s[k]) > RETURN_STEP) { s[k] -= Math.sign(s[k]) * RETURN_STEP; changed = true; }
+        else if (s[k] !== 0)              { s[k] = 0; changed = true; }
+      });
+      if (changed) emitJoystick();
+    }
+    drawStick();
+    const valEl = document.getElementById(stickKey === 'carro' ? 'val-carro' : 'val-izaje');
+    if (valEl) valEl.textContent = (axis === 'x' ? s.ax : s.ay).toFixed(2);
+    document.getElementById('gp-lx').textContent = stickState.carro.ax.toFixed(2);
+    document.getElementById('gp-ry').textContent = stickState.izaje.ay.toFixed(2);
+  }, 16);
+}
+
+function emitJoystick() {
+  socket.emit('joystick', { lx: stickState.carro.ax, ry: stickState.izaje.ay });
+}
+
+// ── Botones de control ────────────────────────────────────────────────────────
+function btnDown(el) {
+  el.classList.add('pressed');
+  socket.emit('button', { name: el.dataset.name, pressed: true });
+}
+function btnUp(el) {
+  el.classList.remove('pressed');
+  socket.emit('button', { name: el.dataset.name, pressed: false });
+}
+
+// ── Control por teclado ───────────────────────────────────────────────────
+const _keyHeld = new Set();
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (_keyHeld.has(e.code)) return;
+  _keyHeld.add(e.code);
+  const cs = stickState.carro, is = stickState.izaje;
+  switch (e.code) {
+    case 'ArrowLeft':  e.preventDefault(); cs.ax = -1; cs.dragging = true;  emitJoystick(); break;
+    case 'ArrowRight': e.preventDefault(); cs.ax =  1; cs.dragging = true;  emitJoystick(); break;
+    case 'ArrowUp':    e.preventDefault(); is.ay = -1; is.dragging = true;  emitJoystick(); break;
+    case 'ArrowDown':  e.preventDefault(); is.ay =  1; is.dragging = true;  emitJoystick(); break;
+    case 'KeyM': _kbBtn('MANUAL', true); break;
+    case 'KeyA': _kbBtn('AUTO',   true); break;
+    case 'KeyT': _kbBtn('TLK',    true); break;
+    case 'KeyR': _kbBtn('RESET',  true); break;
+    case 'Space': e.preventDefault(); _kbBtn('EMERG', true); break;
+  }
+});
+document.addEventListener('keyup', (e) => {
+  _keyHeld.delete(e.code);
+  const cs = stickState.carro, is = stickState.izaje;
+  switch (e.code) {
+    case 'ArrowLeft':
+    case 'ArrowRight': cs.ax = 0; cs.dragging = false; emitJoystick(); break;
+    case 'ArrowUp':
+    case 'ArrowDown':  is.ay = 0; is.dragging = false; emitJoystick(); break;
+    case 'KeyM': _kbBtn('MANUAL', false); break;
+    case 'KeyA': _kbBtn('AUTO',   false); break;
+    case 'KeyT': _kbBtn('TLK',    false); break;
+    case 'KeyR': _kbBtn('RESET',  false); break;
+    case 'Space': _kbBtn('EMERG', false); break;
+  }
+});
+function _kbBtn(name, pressed) {
+  const el = document.querySelector(`.ctrl-btn[data-name="${name}"]`);
+  if (el) {
+    pressed ? btnDown(el) : btnUp(el);
+  } else {
+    socket.emit('button', { name, pressed });
+  }
+}
+
+// ── Verificar gamepad status ──────────────────────────────────────────────────
+async function checkGamepadStatus() {
+  try {
+    const res = await fetch('/api/gamepad');
+    const data = await res.json();
+    const el = document.getElementById('gp-status');
+    if (el) {
+      el.textContent = data.ok ? 'ViGEm: OK' : 'ViGEm: no disponible';
+      el.className   = 'gp-badge ' + (data.ok ? 'gp-ok' : 'gp-off');
+    }
+  } catch (e) {
+    console.warn('[API] gamepad status error:', e);
+  }
+}
+
+// ── GoldenLayout ──────────────────────────────────────────────────────────────
+const GL_KEY = 'craneGL';
+
+const GL_DEFAULT = {
+  root: {
+    type: 'row',
+    content: [
+      {
+        type: 'column',
+        width: 75,
+        content: [
+          {
+            type: 'row',
+            height: 80,
+            content: [
+              {
+                type: 'column',
+                width: 67,
+                content: [
+                  { type: 'component', componentType: 'crane',     title: 'Vista Grúa',     height: 65 },
+                  { type: 'row', height: 35, content: [
+                    { type: 'component', componentType: 'chart-pos', title: 'Posición (m)',    width: 25 },
+                    { type: 'component', componentType: 'chart-vel', title: 'Velocidad (m/s)', width: 25 },
+                    { type: 'component', componentType: 'selector',  title: 'Selector Pos.',   width: 25 },
+                    { type: 'component', componentType: 'lidar',     title: 'Perfil LIDAR',    width: 25 },
+                  ]},
+                ],
+              },
+            ],
+          },
+          { type: 'component', componentType: 'control', title: 'Control', height: 20 },
+        ],
+      },
+      { type: 'component', componentType: 'status', title: 'Estado del Sistema', width: 25 },
+    ],
+  },
+};
+
+const PANEL_META = {
+  'crane':     { title: 'Vista Grúa',         init: () => { CraneViz.init(); } },
+  'status':    { title: 'Estado del Sistema',  init: () => {} },
+  'chart-pos': { title: 'Posición (m)',        init: () => { if (chartPos) { chartPos.destroy(); chartPos = null; } chartPos = makeChart('chartPos', 'xt (m)',   'yh (m)',   COLORS.xt, COLORS.yh, -25, 55); } },
+  'chart-vel': { title: 'Velocidad (m/s)',     init: () => { if (chartVel) { chartVel.destroy(); chartVel = null; } chartVel = makeChart('chartVel', 'vt (m/s)', 'vh (m/s)', COLORS.vt, COLORS.vh, -5,  5);  } },
+  'control':   { title: 'Control',             init: () => { initStick('stickCarro', 'carro', 'x'); initStick('stickIzaje', 'izaje', 'y'); } },
+  'selector':  { title: 'Selector Posición',   init: () => { SelectorViz.init(); } },
+  'lidar':     { title: 'Perfil LIDAR',        init: () => { initLidarChart(); } },
+};
+
+function cloneTpl(id) {
+  return document.getElementById(id).content.cloneNode(true);
+}
+
+async function initGoldenLayout() {
+  const ws = document.getElementById('workspace');
+
+  let GoldenLayout, LayoutConfig;
+  try {
+    const mod = await import('https://esm.sh/golden-layout@2.6.0');
+    GoldenLayout = mod.GoldenLayout;
+    LayoutConfig = mod.LayoutConfig;
+  } catch (e) {
+    ws.innerHTML = `<div style="color:#ff6060;padding:2rem;font-family:monospace;font-size:1.2rem">ERROR: GoldenLayout no cargó.<br>${e.message}</div>`;
+    return;
+  }
+  const layout = new GoldenLayout(ws);
+
+  layout.registerComponentConstructor('crane',     class { constructor(c) { c.element.appendChild(cloneTpl('tpl-crane'));     } });
+  layout.registerComponentConstructor('status',    class { constructor(c) { c.element.appendChild(cloneTpl('tpl-status'));    } });
+  layout.registerComponentConstructor('chart-pos', class { constructor(c) { c.element.appendChild(cloneTpl('tpl-chart-pos')); } });
+  layout.registerComponentConstructor('chart-vel', class { constructor(c) { c.element.appendChild(cloneTpl('tpl-chart-vel')); } });
+  layout.registerComponentConstructor('control',   class { constructor(c) { c.element.appendChild(cloneTpl('tpl-control'));   } });
+  layout.registerComponentConstructor('selector',  class { constructor(c) { c.element.appendChild(cloneTpl('tpl-selector'));  } });
+  layout.registerComponentConstructor('lidar',     class { constructor(c) { c.element.appendChild(cloneTpl('tpl-lidar'));     } });
+
+  // loadLayout es síncrono — cuando retorna, todos los elementos YA están en el DOM
+  const saved = localStorage.getItem(GL_KEY);
+  requestAnimationFrame(() => {
+    let loaded = false;
+    if (saved) {
+      try {
+        const resolved = JSON.parse(saved);
+        layout.loadLayout(LayoutConfig.fromResolved(resolved));
+        loaded = true;
+      } catch (e) { console.warn('[GL] Layout guardado inválido, usando default:', e); }
+    }
+    if (!loaded) {
+      try { layout.loadLayout(GL_DEFAULT); } catch (e2) {
+        ws.innerHTML = `<div style="color:#ff6060;padding:2rem;font-family:monospace">GL Error: ${e2.message}</div>`;
+        return;
+      }
+    }
+    // Ahora sí: inicializar componentes (elementos ya en el DOM)
+    if (document.getElementById('craneCanvas'))  CraneViz.init();
+    if (document.getElementById('chartPos'))     chartPos = makeChart('chartPos', 'xt (m)',   'yh (m)',   COLORS.xt, COLORS.yh, -25, 55);
+    if (document.getElementById('chartVel'))     chartVel = makeChart('chartVel', 'vt (m/s)', 'vh (m/s)', COLORS.vt, COLORS.vh, -5,  5);
+    if (document.getElementById('stickCarro'))    { initStick('stickCarro', 'carro', 'x'); initStick('stickIzaje', 'izaje', 'y'); }
+    if (document.getElementById('selectorCanvas')) SelectorViz.init();
+    if (document.getElementById('chartLidar'))    initLidarChart();
+  });
+
+  // Reset layout
+  document.getElementById('btn-reset-layout')?.addEventListener('click', () => {
+    localStorage.removeItem(GL_KEY);
+    location.reload();
+  });
+
+  // ── Paneles dropdown — reabrir paneles cerrados ──────────────────────────────
+  const closedPanels = new Set();
+
+  function walkLayout(item, found) {
+    if (!item) return;
+    if (item.type === 'component') found.add(String(item.componentType));
+    (item.contentItems || []).forEach(child => walkLayout(child, found));
+  }
+
+  function syncClosedPanels() {
+    const open = new Set();
+    walkLayout(layout.rootItem, open);
+    closedPanels.clear();
+    for (const type of Object.keys(PANEL_META)) {
+      if (!open.has(type)) closedPanels.add(type);
+    }
+  }
+
+  function updatePanelDropdown() {
+    const dd = document.getElementById('paneles-dropdown');
+    if (!dd) return;
+    dd.innerHTML = '';
+    if (closedPanels.size === 0) {
+      dd.innerHTML = '<span class="paneles-no-closed">Todos abiertos</span>';
+      return;
+    }
+    for (const type of closedPanels) {
+      const btn = document.createElement('button');
+      btn.className = 'panel-reopen-btn';
+      btn.textContent = '+ ' + PANEL_META[type].title;
+      btn.addEventListener('click', () => {
+        layout.addComponent(type, undefined, PANEL_META[type].title);
+        PANEL_META[type].init();
+        dd.classList.add('hidden');
+      });
+      dd.appendChild(btn);
+    }
+  }
+
+  // stateChanged dispara en cada cierre/apertura/resize — fuente confiable
+  layout.on('stateChanged', () => {
+    try { localStorage.setItem(GL_KEY, JSON.stringify(layout.saveLayout())); } catch (_) {}
+    syncClosedPanels();
+    updatePanelDropdown();
+  });
+
+  document.getElementById('btn-paneles')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('paneles-dropdown')?.classList.toggle('hidden');
+  });
+
+  window.addEventListener('click', () => {
+    document.getElementById('paneles-dropdown')?.classList.add('hidden');
+  });
+}
+
+// ── Inicialización ────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Tema claro/oscuro
+  const themeToggle = document.getElementById('theme-toggle');
+  const savedTheme = document.documentElement.dataset.theme || 'dark';
+  themeToggle.checked = (savedTheme === 'light');
+  CraneViz.setTheme(savedTheme === 'light');
+  SelectorViz.setTheme(savedTheme === 'light');
+  themeToggle.addEventListener('change', () => {
+    const t = themeToggle.checked ? 'light' : 'dark';
+    document.documentElement.dataset.theme = t;
+    localStorage.setItem('theme', t);
+    CraneViz.setTheme(t === 'light');
+    SelectorViz.setTheme(t === 'light');
+  });
+
+  initGoldenLayout();
+  checkGamepadStatus();
+  setInterval(checkGamepadStatus, 10000);
+});

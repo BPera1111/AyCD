@@ -1,0 +1,48 @@
+\section{Generación automática de código ST}
+
+\begin{frame}{Generación automática de código ST}
+  \begin{block}{Herramienta: Simulink PLC Coder}
+    Traduce automáticamente los Statecharts a \textbf{Texto Estructurado} (ST, norma IEC 61131-3).
+  \end{block}
+
+  \begin{block}{Estructura del código generado}
+    Autómata \textbf{plano y monolítico}: un \texttt{CASE} global sobre la variable de estado, con
+    una densa red de \texttt{IF/ELSIF} anidados para resolver transiciones y acciones.
+  \end{block}
+
+  \begin{alertblock}{Manual (SFC) vs. autogenerado (ST)}
+    \begin{itemize}
+      \item \textbf{Eficiencia / CPU}: comparable (el compilador del PLC optimiza ambos).
+      \item \textbf{Legibilidad y diagnóstico}: el ST autogenerado \textbf{carece de trazabilidad
+            visual} $\Rightarrow$ difícil de interpretar en planta.
+    \end{itemize}
+    Por eso se optó por \textbf{SFC manual} para la arquitectura y ST sólo para los cálculos.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Fragmento de código ST autogenerado (PLC Coder)}
+  \centering
+  \includegraphics[height=0.95\textheight]{codesys/st_generado_2.png}
+\end{frame}
+
+\begin{frame}{Funcionamiento ST autogenerado}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \centering
+      \begin{figure}
+        \includegraphics[width=0.6\textwidth]{codesys/arbol_codesys_st.png}
+      \end{figure}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \begin{figure}
+        \includegraphics[width=0.6\textwidth]{codesys/codesys_main_st.png}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Simulación del ST autogenerado}
+  \centering
+  \includegraphics[height=0.95\textheight]{codesys/codesys_interfaz_st.png}
+\end{frame}

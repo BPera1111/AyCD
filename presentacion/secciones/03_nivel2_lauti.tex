@@ -1,0 +1,252 @@
+\section{Nivel 2 --- Control regulatorio}
+\begin{frame}{Nivel 2}
+  \begin{block}{Función del control regulatorio}
+    Genera comandos de \textbf{torque} $T_{tm}^*$ a partir de referencias de \textbf{velocidad} $v_t^*$ provenientes del Nivel 1 (supervisor)
+  \end{block}
+
+  \begin{block}{Objetivos de control}
+    \begin{itemize}
+      \item Seguimiento preciso de referencias de velocidad
+      \item Suavidad en la respuesta transitoria
+      \item Atenuación de perturbaciones: balanceo de carga, variaciones de masa
+      \item Operación en tiempo discretizado (muestreado)
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}{Modelo del carro para control de velocidad}
+  \begin{block}{Dinámica simplificada de traslación}
+    Se desprecian dinámicas rotacionales internas del accionamiento y se agrupan perturbaciones externas:
+    \[
+    M_t\,\frac{dv_t(t)}{dt} + b_t\,v_t(t) = F_{\text{cmd}}(t) + F_{\text{pert}}(t)
+    \]
+  \end{block}
+
+  \vspace{-0.2cm}
+  \begin{block}{Términos de la ecuación}
+    \begin{itemize}
+      \item $F_{\text{cmd}}(t) = K_f \, T_{tm}(t)$ con $K_f = \frac{i_t}{r_{td}}$
+      \vspace{0.05cm}
+      \item $F_{\text{pert}}(t) = 2F_{hw}(t)\sin(\theta_l(t))$ 
+    \end{itemize}
+  \end{block}
+
+  \begin{alertblock}{Transformada de Laplace}
+    \[
+    G_{vel,t}(s) = \frac{V_t(s)}{T_{tm}(s)} = \frac{K_f}{M_t\,s + b_t} \approx \frac{K_f}{M_t\,s}
+    \]
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Controlador PI}
+  \begin{block}{Tipo de controlador}
+    Proporcional-integral (PI):
+    \[
+    C_{\text{vel}}(s) = K_p + \frac{K_i}{s}
+    \]
+  \end{block}
+
+  \begin{block}{Función de transferencia a lazo cerrado}
+    \[
+    T(s) = \frac{C_{\text{vel}}(s) \, G_{vel,t}(s)}{1 + C_{\text{vel}}(s) \, G_{vel,t}(s)} = \frac{K_p K_f\,s + K_i K_f}{M_t\,s^2 + K_p K_f\,s + K_i K_f}
+    \]
+  \end{block}
+\end{frame}
+
+\begin{frame}{Asignación de polos: ecuación característica}
+  \begin{block}{Polinomio característico deseado de 2do orden}
+    \[
+    s^2 + 2\zeta\omega_n\,s + \omega_n^2
+    \]
+    con amortiguamiento $\zeta$ y frecuencia natural $\omega_n$
+  \end{block}
+
+  \begin{block}{Comparación e igualación de coeficientes}
+    \begin{align*}
+      \frac{K_p K_f}{M_t} &= 2\zeta\omega_n \quad \Rightarrow \quad K_p = \frac{2\zeta\omega_n M_t}{K_f} \\[4pt]
+      \frac{K_i K_f}{M_t} &= \omega_n^2 \quad \Rightarrow \quad K_i = \frac{\omega_n^2 M_t}{K_f}
+    \end{align*}
+  \end{block}
+  \begin{block}{Parámetros elegidos}
+    \vspace{0.2cm}
+    \begin{columns}[T]
+      \begin{column}{0.48\textwidth}
+        \begin{itemize}
+          \item $\omega_n = 0.8$ rad/s
+        \end{itemize}
+      \end{column}
+      \begin{column}{0.48\textwidth}
+        \begin{itemize}
+          \item $\zeta = 1$
+        \end{itemize}
+      \end{column}
+    \end{columns}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Modelo controlador PI del carro}
+
+  \begin{block}{Comando de torque en tiempo discreto}
+    \[
+    T_{tm}^\ast(k) = K_p\,e_v(k) + K_i \sum_{j=1}^{k} \frac{T_s}{2}\left[e_v(j) + e_v(j-1)\right], \quad siendo\quad e_v(k) = v_t^\ast - v_t(k)
+    \]
+  \end{block}
+  \begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{nivel_2/lazo_controlador_carro.png}
+  \caption{Diagrama de bloques del controlador PI discreto del carro en Simulink}
+  \end{figure}
+\end{frame}
+
+\input{secciones/03_nivel2_bruno.tex}
+
+\begin{frame}{Modelo del carro simplificado}
+  \begin{block}{Sistema simplificado}
+    \[
+    \begin{cases}
+      \dot{\theta}_{tm}(t) = \omega_{tm}(t) \\[6pt]
+      \dot{\omega}_{tm}(t) = -\frac{b_{t,eq}}{J_{t,eq}}\omega_{tm}(t) + \frac{1}{J_{t,eq}}T_{tm}^*(t)
+    \end{cases}
+    \]
+  \end{block}
+
+  \vspace{-0.1cm}
+  \begin{block}{Forma matricial: $\dot{\mathbf{x}} = A\mathbf{x} + B_c u$ ; $y = C\mathbf{x}$}
+    \[
+    \begin{bmatrix}
+      \dot{\theta}_{tm}(t) \\
+      \dot{\omega}_{tm}(t)
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+      0 & 1 \\
+      0 & -\frac{b_{t,eq}}{J_{t,eq}}
+    \end{bmatrix}
+    \begin{bmatrix}
+      \theta_{tm}(t) \\
+      \omega_{tm}(t)
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+      0 \\
+      \frac{1}{J_{t,eq}}
+    \end{bmatrix}
+    T_{tm}^*(t)
+    \]
+    \[
+    y(t) = \begin{bmatrix} 1 & 0 \end{bmatrix}
+    \begin{bmatrix}
+      \theta_{tm}(t) \\
+      \omega_{tm}(t)
+    \end{bmatrix}
+    = \theta_{tm}(t)
+    \]
+  \end{block}
+\end{frame}
+
+\begin{frame}{Observador de estado}
+  \begin{block}{Ecuación del observador}
+    \[
+    \dot{\hat{\mathbf{x}}} = (A - K_e C) \hat{\mathbf{x}} + B_c u + K_e y
+    \]
+    con matriz de ganancia $K_e = \begin{bmatrix} k_{\theta t} \\ k_{\omega t} \end{bmatrix}$
+  \end{block}
+
+  \vspace{0.1cm}
+  \begin{block}{Acción integral}
+    \[
+    \dot{x}_I(t) = y(t) - \tilde{y}(t) = \theta_{tm}(t) - \tilde{\theta}_{tm}(t)
+    \]
+    Esto se inyecta como control adicional en la dinámica estimada
+  \end{block}
+\end{frame}
+
+\begin{frame}{Sistema aumentado del observador}
+  \begin{block}{Estado ampliado}
+    \[
+    \tilde{\mathbf{x}}_{\text{aug}}(t) = \begin{bmatrix} \tilde{\theta}_{tm}(t) \\ \tilde{\omega}_{tm}(t) \\ x_I(t) \end{bmatrix}
+    \]
+  \end{block}
+
+  \vspace{-0.15cm}
+  \begin{block}{Forma matricial del observador aumentado}
+    \[
+    \begin{bmatrix}
+      \dot{\tilde{\theta}}_{tm}(t) \\
+      \dot{\tilde{\omega}}_{tm}(t) \\
+      \dot{x}_I(t)
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+      -k_{\theta t} & 1 & 0 \\
+      -k_{\omega t} & -\frac{b_{t,eq}}{J_{t,eq}} & k_{it} \\
+      -1 & 0 & 0
+    \end{bmatrix}
+    \begin{bmatrix}
+      \tilde{\theta}_{tm}(t) \\
+      \tilde{\omega}_{tm}(t) \\
+      x_I(t)
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+      0 \\
+      \frac{1}{J_{t,eq}} \\
+      0
+    \end{bmatrix}
+    T_{tm}^*(t)
+    +
+    \begin{bmatrix}
+      k_{\theta t} \\
+      k_{\omega t} \\
+      1
+    \end{bmatrix}
+    \theta_{tm}(t)
+    \]
+  \end{block}
+
+  \vspace{-0.1cm}
+  \begin{block}{Salida estimada}
+    \[
+    \tilde{y}(t) = \tilde{\theta}_{tm}(t)
+    \]
+  \end{block}
+\end{frame}
+
+\begin{frame}{Asignación de polos del observador}
+  \begin{block}{Polinomio característico aumentado}
+    \[
+    p(s) = \det(sI - A_{\text{aug}}) = s^3 + s^2 \left( k_{\theta t}+\frac{b_{t,eq}}{J_{t,eq}}\right) + s\left( k_{\omega t}+k_{\theta t}\frac{b_{t,eq}}{J_{t,eq}}\right) + k_{it}
+    \]
+  \end{block}
+
+  \vspace{-0.15cm}
+  \begin{block}{Polinomio deseado}
+    Tres polos coincidentes en $\omega_{\text{obs}, t} = -20\frac{b_{t,eq}}{J_{t,eq}}= -14.4048\, rad/s$:
+    \[
+    p_d(s) = (s + \omega_{\text{obs}, t})^3 = s^3 + 3\,\omega_{\text{obs}, t}\, s^2 + 3\,\omega_{\text{obs}, t}^2\, s + \omega_{\text{obs}, t}^3
+    \]
+  \end{block}
+
+  \vspace{-0.15cm}
+  \begin{block}{Igualación de coeficientes}
+    \begin{equation*}
+      k_{\theta t} = 3\, \omega_{\text{obs}, t}-\frac{b_{t,eq}}{J_{t,eq}}, \quad 
+      k_{\omega t} = 3\, \omega_{\text{obs}, t}^2 - k_{\theta t}\frac{b_{t,eq}}{J_{t,eq}}, \quad
+      k_{it} = \omega_{\text{obs}, t}^3
+    \end{equation*}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Diagrama observador PI del carro}
+    \[
+    \begin{cases}
+      \dot{\tilde{\theta}}_{tm}(t) = \tilde{\omega}_{tm}(t) + k_{\theta t}\left(\theta_{tm}(t)-\tilde{\theta}_{tm}(t)\right) \\[6pt]
+      \dot{\tilde{\omega}}_{tm}(t) = \frac{1}{J_{t,eq}}T_{tm}^*(t) + k_{\omega t}\left(\theta_{tm}(t)-\tilde{\theta}_{tm}(t)\right) + k_{it}\,x_I(t) \\[6pt]
+      \dot{x}_I(t) = \theta_{tm}(t)-\tilde{\theta}_{tm}(t)
+    \end{cases}
+    \]
+  \centering
+  \includegraphics[width=0.9\textwidth]{nivel_2/obs_pid_carro.png}
+\end{frame}

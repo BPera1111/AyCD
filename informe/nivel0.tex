@@ -1,0 +1,84 @@
+\newpage
+\section{Diseño del control de seguridad (Nivel 0)}
+
+El Nivel 0 representa la capa de protección más baja, pero con mayor jerarquía dentro de la
+arquitectura de control. Su función exclusiva es salvaguardar la integridad de la grúa, la carga
+y el personal. Este nivel tiene la autoridad para sobrescribir cualquier comando proveniente del
+Nivel 1, cortando la energía de los actuadores y aplicando los frenos mecánicos ante cualquier
+anomalía. 
+
+A diferencia de los niveles superiores, el control de seguridad opera de forma permanente y
+supervisa la planta mediante la redundancia de sensores (finales de carrera de emergencia,
+detectores de sobrevelocidad, botón físico de emergencia y el \textit{heartbeat}). La lógica
+se modeló mediante dos procesos paralelos que se describen a continuación.
+\subsection{Autómata de estados de seguridad}
+La máquina de estados \texttt{ESTADOS\_SEGURIDAD} supervisa constantemente el estado físico de la
+grúa. Durante la operación normal permanece en el estado \texttt{SISTEMA\_OK}, con ambos frenos
+abiertos: el de operación del carro (\textcolor{signalcolor}{$BRK_t$} $= 1$) y el de
+emergencia de izaje (\textcolor{signalcolor}{$BRK_{hE}$} $= 1$).
+
+Dentro de este estado normal, el bloque realiza además un cálculo de seguridad redundante:
+recomputa en tiempo real el límite de velocidad de izaje permitido ($vh\ lim$)
+en función de la masa del container, según la curva de potencia constante del motor. De esta forma,
+la restricción de sobrevelocidad por debilitamiento de campo queda garantizada de manera
+independiente al cálculo que realiza el Nivel 1.
+
+Ante la detección de una condición crítica, el autómata transiciona a un estado de emergencia
+específico, aplicando inmediatamente los frenos correspondientes. Una característica de diseño es
+que solo se detiene el eje afectado por la falla, dejando libre el otro
+para no introducir esfuerzos innecesarios. Las condiciones de falla contempladas son:
+
+\begin{itemize}
+    \item \textbf{Emergencia de izaje:} se activa uno de tres estados según corresponda:
+    si se accionan los finales de carrera de emergencia superior o inferior del izaje ($FC_{hE\ sup}$ o $FC_{hE\ inf}$), o si la
+    velocidad observada supera en un 15\,\% al límite dinámico calculado (sobrevelocidad). En todos
+    los casos se cierra el freno de emergencia del izaje (\textcolor{signalcolor}{$BRK_{hE}$} $= 0$),
+    manteniendo el carro libre.
+
+    \item \textbf{Emergencia de carro:} se activa uno de tres estados: si el carro acciona los finales
+    de carrera de emergencia izquierdo o derecho ($FC_{tE\ izq}$ o $FC_{tE\ der}$), o si supera el umbral de sobrevelocidad. Se cierra
+    el freno de operación del carro (\textcolor{signalcolor}{$BRK_t$} $= 0$), dejando libre el izaje.
+
+    \item \textbf{Emergencia manual:} detención forzada accionada por el operador mediante el botón
+    físico de emergencia. En este caso se cierran ambos frenos
+    (\textcolor{signalcolor}{$BRK_t$} $= 0$, \textcolor{signalcolor}{$BRK_{hE}$} $= 0$), llevando la
+    grúa a una parada total.
+
+    \item \textbf{Emergencia de comunicación:} disparada por la pérdida de comunicación con el
+    control supervisor ($FALLA_{WD}$), detectada por el proceso watchdog.
+\end{itemize}
+
+Para volver del estado de error a la operación normal, primero se debe presionar el botón de reset, que hace transicionar
+la máquina a un estado de recuperación específico para cada tipo de emergencia. En este estado, el sistema espera a que el operador 
+solucione la causa de la parada si es un error de posición o directamente permite el rearme inmediato si se trató de una emergencia 
+manual, de comunicación o de sobrevelocidad. 
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{nivel_0/estados_seguridad.png}
+    \caption{Máquina de estados de seguridad en Stateflow}
+    \label{fig:n0_estados_seguridad}
+\end{figure}
+
+\subsection{Monitor de comunicaciones}
+
+Este segundo proceso paralelo funciona como un supervisor de la integridad del enlace de datos
+con el Nivel 1. El control supervisor debe emitir una señal  \textit{heartbeat} que
+alterna su estado constantemente.
+La máquina de estados \texttt{WATCHDOG} alterna entre \texttt{HEARTBEAT\_DOWN} y
+\texttt{HEARTBEAT\_UP} persiguiendo dicha señal, reiniciando un contador de ciclos
+($WD_{counter}$) en cada conmutación válida. Si la señal se congela y el
+sistema permanece en un solo estado durante una cantidad de ciclos que supere el límite seguro
+($counter limit$), se transiciona al estado \texttt{DETECCION\_FALLO} y se
+declara una falla de red ($FALLA_{WD} = 1$). Esta señal dispara la parada
+de emergencia en el autómata principal, evitando que la grúa continúe moviéndose con el último
+comando recibido ante una pérdida de comunicación.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{nivel_0/watchdog.png}
+    \caption{Monitor de comunicaciones en Stateflow}
+    \label{fig:n0_watchdog}
+\end{figure}
+

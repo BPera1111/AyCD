@@ -1,0 +1,209 @@
+\newpage
+\section{CODESYS codificación manual}
+Los Niveles 0 y 1 se han diseñado en Stateflow y el Nivel 2 en Simulink como diagrama de bloques discretos, sin embargo, 
+para la implementación en hardware real, se debe traducir la lógica desarrollada a un programa en CODESYS utilizando una mezcla de los lenguajes
+diagrama de funciones secuenciales (SFC) y texto estructurado (ST). Este proceso implica mapear 
+cada bloque funcional a funciones y estructuras de control equivalentes en SFC y ST, asegurando que la lógica de control se mantenga 
+intacta durante la transición al entorno de ejecución real. Puede verse a continuación la estructura resultante:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.35\textwidth]{codesys/arbol_codesys.png}
+    \caption{Árbol de componentes del programa en CODESYS}
+\end{figure}
+
+Los dos POUs principales corresponden a los Niveles 0 y 1, mientras que el Nivel 2 se implementa como bloques de función 
+desarrollados en Matlab con comportamiento equivalente al lenguaje ST y ejecutados
+en tiempo discreto. Estos dos POUs se ejecutan de forma cíclica e independiente. En un sistema con múltiples CPUs podrían ejecutarse en paralelo; sin embargo, en CODESYS, debido a la utilización de un PLC virtual con una única CPU, ambas tareas se ejecutan de forma secuencial, alternando su ejecución en cada ciclo de planificación. 
+A pesar de la limitación, se ejecuta a tal velocidad que, a fines prácticos, el comportamiento es equivalente al de una ejecución paralela.
+
+\subsection{Control regulatorio en simil ST}
+Se rediseña el modelo del Nivel 2 usando la misma lógica pero representándola con bloques de función de Matlab (simil ST):
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{codesys/control_carro_funciones2.png}
+    \caption{Diagrama de control del carro con funciones de Matlab}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{codesys/control_izaje_funciones2.png}
+    \caption{Diagrama de control de izaje con funciones de Matlab}
+\end{figure}
+Se agregan varios bloques \textit{Delay} para solucionar problemas de loops algebráicos en la simulación.
+El código de cada controlador queda de la siguiente forma:
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{codesys/matlab_function_nivel2_carro.png}
+        \caption{Control del carro simil ST}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{codesys/matlab_function_nivel2_izaje.png}
+        \caption{Control de izaje simil ST}
+    \end{subfigure}
+    \caption{Código de los controladores del Nivel 2 en simil ST}
+\end{figure}
+
+\subsection{Control supervisor en CODESYS}
+En el control supervisor se pasan los bloques de Stateflow a SFC, manteniendo el mismo número de estados y lógica de transición. 
+De este proceso se obtiene un conjunto de varios bloques en paralelo:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{codesys/codesys_supervisor11.png}
+    \caption{Diagrama general de control supervisor en CODESYS}
+\end{figure}
+
+El autómata principal se desarrolla de forma similar, y se encarga de alternar entre los modos de reposo, 
+manual, automático, errores y recuperación. 
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{1\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{codesys/codesys_supervisor12.png}
+    \end{subfigure}
+    \begin{subfigure}{1\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{codesys/codesys_supervisor13.png}
+    \end{subfigure}
+    \caption{Diagrama del autómata principal en CODESYS}
+\end{figure}
+
+Para el modo automático se realizan algunos cambios. En Stateflow, al entrar al modo automático se pasa por una \textit{junction} para decidir si la ejecución comienza desde cero o si se retoma desde el paso interrumpido. En SFC esto no es posible, ya que el diagrama debe iniciar obligatoriamente en un estado, por lo que se utiliza un estado vacío.
+Además, al finalizar el movimiento de \textit{homing}, en Stateflow la transición de salida del modo automático conduce directamente al modo reposo. En cambio, en SFC es necesario incluir una transición o un salto luego del estado para que el programa compile correctamente. Por este motivo, se agrega una transición con condición \textit{FALSE}, la cual nunca se cumple.
+En la siguiente imágen se puede ver la implementación utilizada:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{codesys/codesys_supervisor15.png}
+    \caption{Diagrama del modo automático en CODESYS}
+\end{figure}
+
+
+Sin modificaciones notorias, se replica el bloque encargado de la lógica de los Twistlocks. Como es un SFC cíclico, el último paso regresa al inicial al cumplir su transición:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{codesys/codesys_supervisor4.png}
+    \caption{Diagrama de la lógica de los Twistlocks en CODESYS}
+\end{figure}
+
+De la misma forma, se utilizan las entradas de los sensores para calcular la posición discreta del carro y actualizar el perfil de 
+obstáculos, información que es fundamental para la generación de trayectorias en modo automático. También maneja la lógica del
+escaneo del muelle:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{codesys/codesys_supervisor14.png}
+    \caption{Diagrama del bloque indices perfil en CODESYS}
+\end{figure}
+
+Los bloques de \textit{Suavizado velocidad}, \textit{Velocidad límites} y \textit{Watchdog heartbeat} se mantienen prácticamente iguales, desarrollados en ST directamente debido a su sencillez.
+
+\subsection{Control de protección en CODESYS}
+Para el nivel de protección se mantiene el mismo diseño, con dos procesos paralelos, uno para la máquina de estados de seguridad y 
+otro para el watchdog. La lógica de ambos procesos es prácticamente la misma que en Stateflow, con pequeñas modificaciones para adaptarse a la 
+sintaxis y estructura de SFC.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{codesys/codesys_seguridad1.png}
+    \caption{Diagrama general del control de protección en CODESYS}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{codesys/codesys_seguridad22.png}
+    \caption{Diagrama de la máquina de estados de seguridad en CODESYS}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.83\textwidth]{codesys/codesys_seguridad3.png}
+    \caption{Diagrama del watchdog en CODESYS}
+\end{figure}
+
+\subsection{Comunicación OPC Simulink/CODESYS}
+Para poder comunicar el PLC virtual de CODESYS con Simulink, se usa el protocolo de comunicación industrial \texttt{OPC-UA}. La versión de CODESYS utilizada (CODESYS V3.5 SP21 Patch 2) cuenta con la posibilidad de montar un servidor OPC-UA y de seleccionar qué variables del programa se quieren exponer a través de este protocolo. Por otro lado, Matlab R2025b cuenta con un cliente OPC-UA que permite conectarse a este servidor y leer/escribir las variables expuestas en tiempo real.
+
+El único ajuste de seguridad que se modifica es el de \textit{User allow anonymous},
+lo que permite a Simulink conectarse al servidor OPC-UA de CODESYS sin problemas, y leer/escribir las variables expuestas en tiempo real. Sin embargo, lo hace de forma anónima y sin seguridad alguna, lo cual no es recomendable para un entorno real, pero para fines de simulación y pruebas es suficiente.
+
+Debido a la naturaleza de la comunicación OPC, cada lectura o escritura de una variable implica un proceso de comunicación 
+cliente-servidor que introduce un retardo significativo. Este retardo se vuelve especialmente problemático cuando se intenta 
+realizar lecturas/escrituras a alta frecuencia, lo cual es necesario para el control supervisor. OPC es un estandar de tipo TCP/IP, el cuál está diseñado para sistemas SCADA, con retardos de comunicación de $500$ ms o más, y no para sistemas de control en tiempo real. 
+
+Para solucionar este problema, se implementan bloques de comunicación que se ejecutan a diferentes tiempos de muestreo. 
+El control supervisor y de protección se ejecutan a $500$ ms y para no tener errores 
+con el heartbeat del watchdog, su variable corre al tiempo de muestro original de $20$ ms. De esta forma, se reduce la cantidad
+de lecturas/escrituras por segundo, disminuyendo la carga en la red y permitiendo Simulink pueda correr a $1$s por segundo de simulación.
+
+Con el uso de los bloques de comunicación con mayor tiempo de muestreo, se mejora significativamente la fluidez de la simulación, manteniendo una comunicación efectiva entre Simulink y CODESYS. Además, se comprueba de forma satisfactoria que el controlador responde de la misma manera que el modelo en Simulink.
+
+A continuación, los bloques de escritura/lectura de las variables de control supervisor y protección y una captura de la simulación 
+con la comunicación OPC-UA funcionando, respectivamente:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.79\textwidth]{codesys/opc_ua_1.png}
+    \caption{Diagrama de bloques de comunicación OPC-UA para el control supervisor en Simulink}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.79\textwidth]{codesys/opc_ua_0.png}
+    \caption{Diagrama de bloques de comunicación OPC-UA para el control de protección en Simulink}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{codesys/codesys_interfaz.png}
+    \caption{Simulación con comunicación OPC-UA en funcionamiento.}
+\end{figure}
+
+
+\section{Generación automática de código ST}
+Simulink ofrece una herramienta llamada PLC Coder, que tiene la capacidad de traducir automáticamente diagramas Stateflow a ST bajo 
+la norma IEC 61131-3. Analizando el código ST resultante de esta autogeneración, se puede observar que el traductor 
+implementa el autómata de forma ``plana'' y monolítica. Para lograrlo, recurre a una estructura de control \texttt{CASE} global que evalúa una variable entera 
+representativa del estado actual, combinada con una densa red de sentencias \texttt{IF/ELSIF} anidadas para resolver las transiciones y acciones correspondientes.
+A continuación se muestran fragmentos del código autogenerado para el control de seguridad, evidenciando 
+la complejidad y falta de claridad que presenta:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{codesys/st_generado_2.png}
+    \caption{Fragmento de código ST autogenerado por Simulink PLC Coder en CODESYS}
+\end{figure}
+
+
+Además de la complejidad visual, el código autogenerado es un archivo .ST para cada nivel, por lo que para su uso en CODESYS es necesario 
+dividir manualmente cada archivo en varios bloques de función. También se debe crear y llamar una instancia del bloque de función de cada nivel en el programa principal,
+ya que este es el que se comunica con Simulink a través de OPC-UA, conteniendo las variables de entrada/salida que se exponen a través del protocolo. El programa
+principal y la estructura de bloques de función resultante del código autogenerado se muestra a continuación:
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.35\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{codesys/arbol_codesys_st.png}
+        \caption{Estructura de bloques de función}
+    \end{subfigure}
+    \hspace{0.05\textwidth}
+    \begin{subfigure}{0.35\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{codesys/codesys_main_st.png}
+        \caption{Programa principal}
+    \end{subfigure}
+    \caption{Estructura de bloques de función y programa principal resultante del código autogenerado}
+\end{figure}
+
+
+En teoría a nivel de eficiencia computacional y carga de CPU, el rendimiento del código autogenerado es comparable al de la implementación manual. 
+Los compiladores modernos de los PLC optimizan ambas estructuras a un código máquina de ejecución sumamente rápida, por lo que el 
+tiempo de ciclo del autómata no se ve significativamente alterado por la elección de uno u otro método.
+
+Sin embargo, la divergencia crítica entre ambos enfoques radica en la legibilidad, la mantenibilidad y el diagnóstico de fallas en el 
+entorno industrial. El código ST autogenerado carece de trazabilidad visual; resulta ser una estructura de difícil interpretación para 
+los operarios de planta. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{codesys/codesys_interfaz_st.png}
+    \caption{Simulación con comunicación OPC-UA en funcionamiento usando código ST autogenerado}
+\end{figure}

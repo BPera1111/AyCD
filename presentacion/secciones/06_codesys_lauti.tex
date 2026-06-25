@@ -1,0 +1,97 @@
+\begin{frame}{Nivel 1 CODESYS}
+  \centering
+  \includegraphics[width=\textwidth]{codesys/codesys_supervisor11.png}
+  
+  Conversión de bloques Stateflow a SFC (Sequential Function Chart) manteniendo estados y transiciones
+\end{frame}
+
+\begin{frame}{Autómata principal en CODESYS}
+  \centering
+  \includegraphics[width=0.9\textwidth]{codesys/codesys_supervisor12.png}
+    
+  \includegraphics[width=0.9\textwidth]{codesys/codesys_supervisor13.png}
+\end{frame}
+
+\begin{frame}{Modo automático}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{codesys/auto_1.png}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{codesys/auto_2.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Twistlocks}
+  \centering
+  \includegraphics[width=\textwidth]{codesys/codesys_supervisor4.png}
+\end{frame}
+
+\begin{frame}{Análisis espacial}
+  \centering
+  \includegraphics[width=0.79\textwidth]{codesys/codesys_supervisor14.png}
+  
+\end{frame}
+
+\begin{frame}{Nivel 0 CODESYS}
+  \begin{columns}[T]
+    \begin{column}{0.4\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{codesys/codesys_seguridad1.png}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{codesys/codesys_seguridad3.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Autómata de protección}
+  \centering
+  \includegraphics[width=\textwidth]{codesys/codesys_seguridad22.png}
+\end{frame}
+
+\subsection{Comunicación OPC-UA Simulink/CODESYS}
+
+\begin{frame}{Comunicación OPC-UA Simulink/CODESYS}
+\begin{itemize}
+  \item CODESYS V3.5 SP21 Patch 2: servidor OPC-UA integrado, permite exponer variables del programa
+  \item Matlab R2025b: cliente OPC-UA, permite conectar al servidor de CODESYS y leer/escribir variables en tiempo real
+  \item Ajuste de seguridad: \textit{User allow anonymous} habilitado para permitir conexión sin autenticación
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Protocolo OPC-UA Nivel 1}
+  \centering
+  \includegraphics[width=1\textwidth]{codesys/opc_ua_1.png}
+\end{frame}
+
+\begin{frame}{Protocolo OPC-UA Nivel 0}
+  \centering
+  \includegraphics[width=1\textwidth]{codesys/opc_ua_0.png}
+  \end{frame}
+
+\begin{frame}{Desafío: retardo de comunicación}
+  \begin{block}{Problema}
+    OPC es protocolo TCP/IP diseñado para SCADA (retardos $\geq 500$ ms), no para control tiempo real
+  \end{block}
+  
+  \begin{block}{Solución implementada}
+    Bloques de comunicación con tiempos de muestreo diferenciados:
+    \begin{itemize}
+      \item Control supervisor y protección: $500$ ms
+      \item Watchdog heartbeat: $20$ ms (tiempo original)
+    \end{itemize}
+    Reduce carga en red permitiendo Simulink correr a $1$s por segundo de simulación
+  \end{block}
+\end{frame}
+
+\begin{frame}{Simulación con OPC-UA en funcionamiento}
+  \centering
+  \includegraphics[width=0.9\textwidth]{codesys/codesys_interfaz.png}
+\end{frame}
+

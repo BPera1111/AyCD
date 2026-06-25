@@ -1,0 +1,158 @@
+\begin{frame}{Subsistema de izaje}
+  \begin{block}{Características del sistema}
+    Controla la elevación de la carga mediante:
+    \begin{itemize}
+      \item Motor eléctrico accionando un \textbf{tambor}
+      \item Sistema de cableado con relación de transmisión \textbf{2:1}
+      \item Carga suspendida: \textbf{2 grados de libertad}
+    \end{itemize}
+    Característica clave:
+    \begin{itemize}
+    \item\alert{Dinámica híbrida}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Parámetros discretos}
+  \begin{block}{Masa total ($m_l$)}
+    \[
+    m_l(\text{TLK}) = 
+    \begin{cases} 
+      M_s & \text{si TLK} = 0 \text{ (solo spreader)} \\[6pt]
+      M_s + M_{cX} & \text{si TLK} = 1 \text{ (spreader + contenedor)}
+    \end{cases}
+    \]
+  \end{block}
+
+  \begin{block}{Altura de la carga ($h_c$)}
+    \[
+    h_c(\text{TLK}) = 
+    \begin{cases} 
+      0 & \text{si TLK} = 0 \\
+      H_c & \text{si TLK} = 1
+    \end{cases}
+    \]
+  \end{block}
+\end{frame}
+
+\begin{frame}{Ecuaciones de movimiento de la carga}
+  \begin{block}{Dinámicas acopladas}
+    \begin{equation*}
+      m_l(\textcolor{signalcolor}{TLK}) \, \frac{d \, v_{lx}(t)}{dt} = -2 F_{hw}(t,l(t)-l_h(t)) \, \sin\theta_l(t) + F_{cx}(t, \delta y)
+    \end{equation*}
+    \begin{equation*}
+        m_l(\textcolor{signalcolor}{TLK}) \, \frac{d \, v_{ly}(t)}{dt} = 2 F_{hw}(t,l(t)-l_h(t)) \, \cos\theta_l(t) - m_l(\textcolor{signalcolor}{TLK}) \, g + F_{cy}(t, \delta y)
+    \end{equation*}
+    \begin{equation*}
+      \delta y = y_l(t) - h_c(\textcolor{signalcolor}{TLK}) - y_{c0}(x_l(t), t)
+    \end{equation*}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Interacción con el entorno}
+  \begin{block}{Condición de contacto}
+    Cuando: $\delta y \le 0$ 
+  \end{block}
+
+  \begin{block}{Fuerza vertical}
+    \[
+    F_{cy} = 
+    \begin{cases} 
+      K_{cy}(y_{c0} - (y_l - h_c)) - b_{cy} v_{ly} & \text{(Apoyado)} \\[4pt]
+      0 & \text{(Suspendido)}
+    \end{cases}
+    \]
+  \end{block}
+
+  \begin{block}{Fuerza horizontal}
+    \[
+    F_{cx} = 
+    \begin{cases} 
+      -b_{cx} v_{lx} & \text{(Apoyado)} \\[4pt]
+      0 & \text{(Suspendido)}
+    \end{cases}
+    \]
+  \end{block}
+\end{frame}
+
+\begin{frame}{Acoplamiento elástico del cable}
+  \begin{block}{Resorte-amortiguador con rigidez variable}
+    La rigidez y amortiguamiento escalan con la longitud del cable bajo tensión:
+    \[
+    K_{hw}(l_h) = \frac{k_{hwu}}{2 l_h + L_{h0}} \quad ; \quad b_{hw}(l_h) = b_{hwu}(2 l_h + L_{h0})
+    \]
+  \end{block}
+
+  \begin{block}{Fuerza de tensión}
+    \[
+    F_{hw} = 
+    \begin{cases} 
+      K_{hw}(l_h) \cdot 2(l - l_h) + b_{hw}(l_h) \cdot 2(\dot{l} - \dot{l}_h) & \text{(Tenso)} \\[4pt]
+      0 & \text{(Flojo)}
+    \end{cases}
+    \]
+  \end{block}
+\end{frame}
+
+\begin{frame}{Dinámica del accionamiento}
+  \small
+  \begin{block}{Ecuaciones de  los dos ejes}
+    \begin{itemize}
+      \item \textbf{Eje lento(tambor):}
+      \begin{equation*}
+        J_{hd+hEb} \, \frac{d \, \omega_{hd}(t)}{dt} = T_{hd}(t) + T_{hEb}(t,\textcolor{signalcolor}{BRK_{hE}}) - b_{hd} \, \omega_{hd}(t) - T_{hdl}(t)
+      \end{equation*}
+      \item \textbf{Eje rápido(motor):} 
+      \begin{equation*}
+        J_{hm+hb} \, \frac{d \, \omega_{hm}(t)}{dt} = T_{hm}(t) + T_{hb}(t,\textcolor{signalcolor}{BRK_{h}}) - b_{hm} \, \omega_{hm}(t) - T_{hml}(t)
+      \end{equation*}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Frenos mecánicos}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{freno_izaje.png}
+  \caption{Freno mecánico de operación izaje}
+\end{figure}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{freno_izaje_e.png}
+  \caption{Freno mecánico de emergencia izaje}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Modelo equivalente referido al motor}
+  \begin{block}{Reducción eje equivalente}
+    Al igual que el carro, se refiere la dinámica del tambor al motor usando $i_h$:
+  \end{block}
+
+  \vspace{-0.2cm}
+  \[
+  J_{h,eq} = J_{hm+hb} + \frac{J_{hd+hEb}}{i_h^2}
+  \]
+
+  \vspace{-0.3cm}
+  \[
+  b_{h,eq} = b_{hm} + \frac{b_{hd}}{i_h^2} 
+  \]
+  \begin{block}{Variables auxiliares}
+    \vspace{-0.2cm}
+    \begin{itemize}
+      \item Longitud geométrica: $l(t) = \sqrt{(x_l - x_t)^2 + (Y_{t0} - y_l)^2}$
+      \item Velocidad de cambio: $\frac{dl}{dt} = \frac{(x_l - x_t)(v_{lx} - v_t) - (Y_{t0} - y_l)v_{ly}}{l}$
+      \item Ángulo de balanceo: $\theta_l = \text{atan2}\left(\frac{x_l - x_t}{Y_{t0} - y_l}\right)$
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Subsistema izaje completo}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.77\textwidth]{modelo_izaje.png}
+  %\caption{Diagrama de bloques del subsistema de izaje}
+\end{figure}
+  
+\end{frame}
+

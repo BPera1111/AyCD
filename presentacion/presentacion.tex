@@ -1,0 +1,73 @@
+\documentclass[10pt,aspectratio=169]{beamer}
+
+\usetheme{metropolis}
+\metroset{block=fill, numbering=fraction, progressbar=foot}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{subcaption}
+\usepackage{xcolor}
+
+% Imágenes reutilizadas del informe (sin duplicar)
+\graphicspath{{../informe/figs/}}
+
+% Color de señales (coherente con el informe)
+\definecolor{signalcolor}{RGB}{0,115,195}
+\newcommand{\sig}[1]{\textcolor{signalcolor}{#1}}
+
+% Modo Lauti: fondo levemente teñido para distinguir slides en revisión
+\newcommand{\lautimode}{\setbeamercolor{background canvas}{bg=teal!8}}
+\newcommand{\defaultmode}{\setbeamercolor{background canvas}{bg=}}
+
+% Información
+\title{Control y Automatización de una\\Grúa Portacontenedores Portuaria (STS)}
+\subtitle{Proyecto Global Integrador - Autómatas y Control Discreto}
+\author{Peña Lautaro (13099) \and Peralta Bruno (13220)}
+\institute{Ing. Mecatrónica --- UNCuyo}
+\date{2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Contenido}
+  \setbeamertemplate{section in toc}[sections numbered]
+  {\footnotesize\tableofcontents[hideallsubsections]}
+\end{frame}
+
+\input{secciones/01_intro.tex}
+\input{secciones/02_planta_bruno.tex}
+% \lautimode
+\input{secciones/02_planta_lauti.tex}
+% \defaultmode
+\input{secciones/02_planta_bruno copy.tex}
+% \lautimode
+\input{secciones/02_planta_lauti copy.tex}
+% \defaultmode
+\input{secciones/02_planta_modulador_izaje.tex}
+% \lautimode
+\input{secciones/03_nivel2_lauti.tex}
+% \defaultmode
+\input{secciones/035_nivel2_bruno.tex}
+\input{secciones/04_nivel1_bruno.tex}
+% \lautimode
+\input{secciones/04_nivel1_lauti.tex}
+% \defaultmode
+% \lautimode
+\input{secciones/05_nivel0_lauti.tex}
+\input{secciones/05_nivel0_bruno.tex}
+
+% \defaultmode
+\input{secciones/06_codesys_bruno.tex}
+% \lautimode
+\input{secciones/06_codesys_lauti.tex}
+% \defaultmode
+% \input{secciones/07_simulacion.tex}
+\input{secciones/10_autogeneracion.tex}
+\input{secciones/08_conclusion.tex}
+
+\end{document}

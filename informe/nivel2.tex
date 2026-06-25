@@ -1,0 +1,461 @@
+\section{Diseño del control regulatorio (Nivel 2)}
+El Nivel 2 corresponde al control regulatorio de los accionamientos del sistema. Su objetivo es garantizar que estos
+sigan referencias de velocidad con precisión y suavidad, atenuando perturbaciones como el balanceo de la carga o variaciones de masa. Este nivel 
+opera en tiempo discretizado mediante muestreo (Sampled CTDS) y se implementará con compensaciones para mejorar la respuesta transitoria.
+
+
+\subsection{Control de traslación del carro}
+El controlador de traslación del carro se encarga de generar comandos de torque $T_{tm}^\ast$ a partir de 
+referencias de velocidad $v_{t}^\ast$ provenientes del nivel supervisor.
+
+\subsubsection{Modelo del carro para control de velocidad}
+Para el diseño del lazo externo de velocidad del carro, se adopta un modelo simplificado traslacional a partir de las Ecs. (\ref{eq:accionamiento_carro})
+y (\ref{eq:dinamica_carro}). En esta aproximación se desprecia la dinámica rotacional interna 
+del accionamiento y se agrupan las dinámicas externas al accionamiento como una fuerza perturbadora. Así, la dinámica 
+horizontal del carro puede escribirse como:
+\begin{equation}
+    M_t\,\frac{d \, v_t(t)}{dt} + b_t\,v_t(t) = F_{cmd}(t) + F_{pert}(t) 
+\end{equation}
+Donde:
+\begin{equation*}
+    F_{cmd}(t) = K_f\,T_{tm}(t), \quad siendo\quad K_f = \frac{i_t}{r_{td}} \\
+\end{equation*}
+\begin{equation*}
+    F_{pert}(t) = 2F_{hw}(t)sin(\theta_l(t))
+\end{equation*}
+
+Aplicando la Transformada de Laplace, la función de transferencia simplificada de la planta queda:
+\begin{equation}
+    G_{vel,t}(s) = \frac{V_t(s)}{T_{tm}(s)} = \frac{K_f}{M_t\,s + b_t}
+\end{equation}
+El polo mecánico resulta $P_{mec} = -b_t/M_t$. Dado que el rozamiento equivalente es pequeño frente a la inercia dominante del carro, para la sintonía se adopta la aproximación:
+\begin{equation}
+    G_{vel,t}(s) \approx \frac{K_f}{M_t\,s}
+\end{equation}
+
+\subsubsection{Diseño del lazo regulador}
+Se utiliza un controlador proporcional integral (PI) para asegurar error nulo de velocidad ante escalones de referencia y buen rechazo de perturbaciones constantes:
+\begin{equation}
+    C_{vel}(s) = K_p + \frac{K_i}{s}
+\end{equation}
+La función de transferencia a lazo cerrado $T(s)$ resulta:
+\begin{equation}
+    T(s) = \frac{C_{vel}(s) \, G_{vel,t}(s)}{1 + C_{vel}(s) \, G_{vel,t}(s)}
+\end{equation}
+Sustituyendo $C_{vel}(s)$ y $G_{vel,t}(s) \approx \frac{K_f}{M_t\,s}$:
+\begin{equation}
+    T(s) =
+    \frac{\left(K_p + \frac{K_i}{s}\right)\frac{K_f}{M_t\,s}}
+    {1 + \left(K_p + \frac{K_i}{s}\right)\frac{K_f}{M_t\,s}}
+\end{equation}
+Operando algebraicamente, se obtiene:
+\begin{equation}
+    T(s) = \frac{K_p K_f\,s + K_i K_f}{M_t\,s^2 + K_p K_f\,s + K_i K_f}
+\end{equation}
+Por lo que la ecuación característica de segundo orden queda:
+\begin{equation}
+    M_t\,s^2 + K_p K_f\,s + K_i K_f
+\end{equation}
+Mediante el método de asignación de polos, se compara la ecuación característica con un polinomio de segundo orden deseado ($s^2 + 2\zeta\omega_ns + \omega_n^2$). 
+Obteniéndose las ganancias:
+\begin{equation}
+    K_p = \frac{2\,\zeta\,\omega_n\,M_t}{K_f}, \quad
+    K_i = \frac{\omega_n^2\,M_t}{K_f}
+\end{equation}
+Se elige $\omega_n = 0.8$ rad/s en función del ancho de banda deseado del carro y las limitaciones de aceleración; además, se selecciona
+$\zeta =1$ para evitar sobrepasos.
+
+El torque de referencia en tiempo discreto es:
+\begin{equation}
+    T_{tm}^\ast(k) = K_p\,e_v(k) + K_i \sum_{j=1}^{k} \frac{T_s}{2}\left[e_v(j) + e_v(j-1)\right], \quad siendo\quad e_v(k) = v_t^\ast - v_t(k)
+\end{equation}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{nivel_2/lazo_controlador_carro.png}
+    \caption{Controlador PI del carro}
+\end{figure}
+
+
+\subsubsection{Anti-windup}
+Debido a la presencia del freno de operación en el sistema (\textcolor{signalcolor}{$BRK_t$}), es necesario implementar una estrategia de 
+anti-windup para evitar que el término integral acumule error excesivo durante los periodos en que el freno está activo, debido a que en 
+estos casos aunque haya una cierta consigna el accionamiento no puede alcanzarla. Esto se logra
+usando la señal del freno negada como un reset del tipo level en el integrador, de esta manera, cuando el freno está cerrado, el término integral se mantiene
+en cero, evitando sobreesfuerzos al abrir el freno y garantizando una respuesta más rápida y estable. 
+
+\subsection{Diseño del controlador de balanceo (Anti-Sway)}
+Para la implementación del sistema de control de oscilación de la carga, se ha optado por una estrategia de control desacoplado, en lugar de 
+un control basado en el modelo dinámico completo del sistema. 
+
+\subsubsection{Estructura desacoplada}
+El sistema de la grúa planteado posee dos dinámicas con escalas de tiempo claramente separadas:
+\begin{itemize}
+    \item \textbf{Dinámica del accionamiento:} El control de velocidad del motor del carro tiene una respuesta rápida (tiempo de establecimiento $< 100$ ms).
+    \item \textbf{Dinámica del péndulo:} La oscilación de la carga es un fenómeno lento, con periodos naturales en el orden de los 2 a 12 segundos (dependiendo de la altura de izaje $l_h$).
+\end{itemize}
+
+Bajo la hipótesis de que el lazo de velocidad está correctamente sintonizado, se asume que la velocidad real del carro $v_t$ sigue a la referencia de velocidad $v_t^\ast$ con una dinámica despreciable:
+\begin{equation}
+    v_t(t) \approx v_t^\ast(t)
+\end{equation}
+Esta asunción permite desacoplar la dinámica del actuador de la dinámica pendular, simplificando significativamente el diseño del controlador externo.
+
+\subsubsection{Deducción de la ley de control no lineal}
+A partir del modelo dinámico (Ley de Newton) de un péndulo simple excitado por la aceleración del carro $\ddot{x}_t$, la ecuación de movimiento está dada por:
+\begin{equation}
+    \ddot{\theta}_l(t) = -\frac{g}{l_h(t)}\sin(\theta_l(t)) - \frac{\ddot{x}_t(t)}{l_h(t)}\cos(\theta_l(t))
+    \label{eq:pendulo_nolineal}
+\end{equation}
+En esta arquitectura, la referencia de velocidad total enviada al variador del carro se compone de la velocidad de trayectoria planificada más la acción de control antibalanceo: $v_t^\ast = v_{t\ target} + v_{sway}$. 
+Se define entonces una ley de control antibalanceo proporcional al ángulo de oscilación:
+\begin{equation}
+    v_{sway}(t) = K_{sway} \, \theta_l(t)
+    \label{eq:ley_control}
+\end{equation}
+La aceleración resultante del carro impuesta sobre el pivote del péndulo será la derivada de la referencia total:
+\begin{equation}
+    \ddot{x}_t(t) \approx \dot{v}_t^\ast(t) \approx \dot{v}_{t\ target}(t) + \frac{d}{dt}(K_{sway} \, \theta_l(t)) = \dot{v}_{t\ target}(t) + K_{sway} \, \dot{\theta}_l(t)
+\end{equation}
+Sustituyendo esta expresión en la ec. \ref{eq:pendulo_nolineal} y agrupando los términos dependientes del estado del péndulo a la izquierda, se obtiene la ecuación diferencial del sistema en lazo cerrado:
+\begin{equation}
+    \ddot{\theta}_l(t) + \left( \frac{K_{sway}}{l_h(t)} \cos(\theta_l(t)) \right) \dot{\theta}_l(t) + \frac{g}{l_h(t)}\sin(\theta_l(t)) = -\frac{\dot{v}_{t\ target}(t)}{l_h(t)}\cos(\theta_l(t))
+    \label{eq:lazo_cerrado_nolineal}
+\end{equation}
+Este resultado desmuestra que la cinemática del sistema transforma la señal de velocidad inyectada en un término de amortiguamiento 
+viscoso no lineal. Dado que en la operación normal de la grúa el ángulo de oscilación está acotado ($-\pi/2 < \theta_l < \pi/2$), 
+el término $\cos(\theta_l)$ es estrictamente positivo. Esto garantiza que el coeficiente de amortiguamiento sea siempre mayor a cero, 
+asegurando la extracción continua de energía cinética del péndulo y la estabilidad del sistema ante cualquier ángulo operativo, 
+sin depender de aproximaciones de ángulos pequeños. La aceleración de la referencia $\dot{v}_{t\ target}$ actúa únicamente como una 
+perturbación acotada.
+
+\subsubsection{Sintonía por linealización local}
+Si bien la estabilidad está garantizada, para determinar analíticamente el valor óptimo de la ganancia $K_{sway}$ se evalúa el comportamiento del sistema en las cercanías del punto de equilibrio estable ($\theta_l = 0$, $\dot{\theta}_l = 0$). Siendo el error casi despreciable para ángulos de entre $10^\circ$ y $5^\circ$.
+Evaluando la ecuación (\ref{eq:lazo_cerrado_nolineal}) alrededor del origen ($\cos(\theta_l) \to 1$ y $\sin(\theta_l) \to \theta_l$), la dinámica local se reduce a:
+\begin{equation}
+    \ddot{\theta}_l(t) + \left( \frac{K_{sway}}{l_h(t)} \right) \dot{\theta}_l(t) + \left( \frac{g}{l_h(t)} \right) \theta_l(t) = 0
+\end{equation}
+Para garantizar un desempeño uniforme frente a la variación de la longitud del cable, se comparan los coeficientes de esta ecuación con la ecuación canónica de un sistema de segundo orden ($s^2 + 2\,\zeta\,\omega_n \,s + \omega_n^2 = 0$), donde la frecuencia natural es $\omega_n = \sqrt{g/l_h}$. Igualando el término de amortiguamiento:
+\begin{equation}
+    \frac{K_{sway}}{l_h(t)} = 2 \, \zeta \, \omega_n \implies K_{sway} = 2 \, \zeta \, l_h(t) \, \sqrt{\frac{g}{l_h(t)}}
+\end{equation}
+Simplificando, obtenemos la ganancia para un amortiguamiento crítico ($\zeta = 1$):
+\begin{equation}
+    K_{sway}(l_h) = 2 \,\sqrt{g \, l_h(t)}
+\end{equation}
+Dado que la altura de izaje determina directamente la dinámica del péndulo, se implementa una estrategia de \textit{gain scheduling}, ajustando la ganancia $K_{sway}$ dinámicamente en función de $l_h$ para mantener las raíces del polinomio característico local invariantes durante toda la operación.
+
+Esta ganancia teórica produce un amortiguamiento perfecto de la oscilación. Sin embargo, en la práctica esto genera correcciones horizontales 
+notorias. Para evitar sobrecorrecciones en la posición objetivo de la carga, se debe subamortiguar el balanceo. Después de varias pruebas, 
+se seleccionó $\zeta = 0.5$ para lograr un compromiso entre amortiguamiento efectivo y estabilidad robusta. Esto genera oscilaciones 
+adicionales pequeñas, pero a cambio la posición de la carga se mantiene más cercana a la deseada, sin introducir retrasos excesivos.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{nivel_2/control_balanceo.png}
+    \caption{Controlador del balanceo del carro}
+\end{figure}
+
+
+\subsection{Observador de estado del carro}
+
+Para el funcionamiento del controlador PI de la sección anterior,
+es necesario contar con la velocidad angular del motor. Sin embargo,
+solo se dispone de un encoder que mide la posición angular.
+Por este motivo se implementa un observador de estado, que estima
+la velocidad angular a partir de la posición medida.
+El modelo simplificado del sistema, obtenido a partir de la ec.
+\ref{eq:accionamiento_carro}, se expresa en forma matricial como:
+
+\[
+\left\{
+\begin{array}{l}
+\begin{bmatrix}
+\dot{\theta}_{tm}(t) \\
+\dot{\omega}_{tm}(t)
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 & 1 \\
+0 & -\frac{b_{t,eq}}{J_{t,eq}}
+\end{bmatrix}
+\begin{bmatrix}
+\theta_{tm}(t) \\
+\omega_{tm}(t)
+\end{bmatrix}
++
+\begin{bmatrix}
+0 \\
+\frac{1}{J_{t,eq}}
+\end{bmatrix}
+T_{tm}^\ast(t)
+\\[10pt]
+y(t) =
+\begin{bmatrix}
+1 & 0
+\end{bmatrix}
+\begin{bmatrix}
+\theta_{tm}(t) \\
+\omega_{tm}(t)
+\end{bmatrix}
+\end{array}
+\right.
+\]
+
+El problema de un observador de estado convencional radica en que,
+al ser un sistema de segundo orden, presenta error en régimen permanente
+ante perturbaciones constantes, como el balanceo de la carga.
+Para eliminar este error se agrega una acción integral sobre el error de observación.
+Definiendo la variable integradora:
+
+\[
+    \dot{x}_I(t) = y(t) - \tilde{y}(t) = \theta_{tm}(t) - \tilde{\theta}_{tm}(t)
+\]
+Donde $\tilde{y}(t)$ es la salida estimada por el observador e $y(t)$ es la salida medida por el encoder. 
+La acción integral $u_I(t)$, siendo $k_{it}$ la ganancia integral, queda definida por:
+
+\[
+    u_I(t) = J_{t,eq}\, k_{it}\, x_I(t)
+\]
+Y el estado aumentado se expresa como:
+
+\[
+    \tilde{x}_{aug}(t) = \begin{bmatrix} \tilde{x}(t) \\ x_I(t) \end{bmatrix}
+\]
+La entrada de control ahora tiene dos aportes, la consigna de torque $T_{tm}^\ast(t)$ y la acción integral. Quedando el modelo aumentado del observador como:
+
+\begin{equation}
+\left\{
+\begin{aligned}
+    \dot{\tilde{x}}(t) &= [A - K_e \, C]\, \tilde{x}(t) + B_c \left( T_{tm}^\ast(t) + J_{t,eq}\, k_{it}\, x_I(t) \right) + K_e\, C\,  x(t) \\
+    \dot{x}_I(t) &= C  (x(t) - \tilde{x}(t)) \\
+    \tilde{y}(t) &= C \tilde{x}(t)
+\end{aligned}
+\right.
+\end{equation}
+Siendo $K_e$ la matriz de ganancias del observador:
+
+\[
+    K_e = \begin{bmatrix} k_{\theta t} \\ k_{\omega t} \end{bmatrix}
+\]
+Reemplazando las matrices del sistema:
+
+\[
+\left\{
+\begin{aligned}
+    \begin{bmatrix}
+        \dot{\tilde{\theta}}_{tm}(t) \\
+        \dot{\tilde{\omega}}_{tm}(t) \\
+        \dot{x}_I(t)
+    \end{bmatrix}
+    =&
+    \begin{bmatrix}
+        -k_{\theta t} & 1 & 0 \\
+        -k_{\omega t} & -\frac{b_{t,eq}}{J_{t,eq}} & k_{it} \\
+        -1 & 0 & 0
+    \end{bmatrix}
+    \begin{bmatrix}
+        \tilde{\theta}_{tm}(t) \\
+        \tilde{\omega}_{tm}(t) \\
+        x_I(t)
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+        0 \\
+        \frac{1}{J_{t,eq}} \\
+        0
+    \end{bmatrix}
+    T_{tm}^\ast(t)
+    +
+    \begin{bmatrix}
+        k_{\theta t} & 0 \\
+        k_{\omega t} & 0 \\
+        1 & 0
+    \end{bmatrix}
+    \begin{bmatrix}
+        \theta_{tm}(t) \\
+        \omega_{tm}(t)
+    \end{bmatrix}
+    \\
+    \tilde{y}(t) = \tilde{\theta}_{tm}&(t)
+\end{aligned}
+\right.
+\]
+
+Para determinar los valores de las ganancias del observador se usa el polinomio característico del sistema aumentado:
+
+\[
+p(s) = 
+\begin{vmatrix}
+s + k_{\theta t} & -1 & 0 \\
+k_{\omega t} & s + \frac{b_{t,eq}}{J_{t,eq}} & -k_{it} \\
+1 & 0 & s
+\end{vmatrix}
+= s^3 + s^2 ( k_{\theta t}+\frac{b_{t,eq}}{J_{t,eq}}) + s( k_{\omega t}+k_{\theta t}\frac{b_{t,eq}}{J_{t,eq}}) + k_{it}
+\]
+
+La sintonía del observador se rige por el principio de separación de anchos de banda. Para garantizar que la dinámica de 
+estimación sea lo suficientemente veloz y no introduzca retardos de fase en el lazo de control regulatorio, la dinámica del 
+observador se diseñó para ser significativamente más rápida que la dinámica de la planta. Específicamente, el polo base del 
+observador ($\omega_{obs\ t}$) se ubicó de manera que su respuesta sea $20$ veces más rápida que el polo dominante de la planta 
+a lazo abierto ($-b_{eq}/J_{eq}$, lo que se demuestra en la sección \ref{sec:control_izaje}).
+El polinomio deseado con los tres polos en $\omega_{obs\ t} = -20\, b_{t,eq}/J_{t,eq}= -14.4048\, rad/s$, es:
+\begin{equation}
+p_d(s) = (s + \omega_{obs\ t})^3 = s^3 + 3\,\omega_{obs\ t}\, s^2 + 3\,\omega_{obs\ t}^2\, s + \omega_{obs\ t}^3
+\end{equation}
+Comparando términos semejantes se obtienen las ganancias buscadas:
+\begin{equation}
+\left\{
+\begin{aligned}
+    k_{\theta t} &= 3\, \omega_{obs\ t}-\frac{b_{t,eq}}{J_{t,eq}} \\
+    k_{\omega t} &= 3\, \omega_{obs\ t}^2 - k_{\theta t}\frac{b_{t,eq}}{J_{t,eq}} \\
+    k_{it} &= \omega_{obs\ t}^3
+\end{aligned}
+\right.
+\end{equation}
+
+Finalmente, las ecuaciones implementadas en Simulink para el observador con acción integral son:
+
+\[
+\left\{
+\begin{aligned}
+    \dot{\tilde{\theta}}_{tm}(t)
+    &=
+    \tilde{\omega}_{tm}(t)
+    +k_{\theta t}
+    \left(
+    \theta_{tm}(t)-\tilde{\theta}_{tm}(t)
+    \right)
+    \\
+    \dot{\tilde{\omega}}_{tm}(t)
+    &=
+    \frac{1}{J_{t,eq}}T_{tm}^\ast(t)
+    +k_{\omega t}
+    \left(
+    \theta_{tm}(t)-\tilde{\theta}_{tm}(t)
+    \right)
+    +k_{it}x_I(t)
+    \\
+    \dot{x}_I(t)
+    &=
+    \theta_{tm}(t)-\tilde{\theta}_{tm}(t)
+\end{aligned}
+\right.
+\]
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{nivel_2/obs_pid_carro.png}
+    \caption{Observador de estado del carro con ganancia integral}
+    \label{fig:observador_aumentado}
+\end{figure}
+
+\subsection{Control de izaje de la carga}
+El control de izaje de la carga se encarga de generar comandos de torque $T_{hm}^\ast$ a partir de referencias de velocidad $v_h^\ast$
+provenientes del nivel supervisor.
+
+\subsubsection{Modelo de izaje para control de velocidad} \label{sec:control_izaje}
+Partiendo de la ecuación dinámica del izaje (Ec. \ref{eq:dinamica_motor_izaje_final}) y agrupando las dinámicas externas 
+al accionamiento en un término de torque de perturbación $T_{pert}(t)$, la ecuación de balance de torques en el eje del motor es:
+\begin{equation}
+    J_{h,eq} \, \frac{d \, \omega_{hm}(t)}{dt} + b_{h,eq} \, \omega_{hm}(t) = T_{hm}(t) - T_{pert}(t)
+\end{equation}
+Donde:
+\begin{equation}
+    T_{pert}(t) = \frac{F_{hw}(t) \, r_{hd}}{i_h}
+\end{equation}
+Aplicando la Transformada de Laplace, la función de transferencia de la planta es:
+\begin{equation} \label{eq:G_vel}
+    G_{vel}(s) = \frac{\Omega_{hm}(s)}{T_{hm}(s)} = \frac{1}{J_{h,eq} \, s + b_{h,eq}}
+\end{equation}
+El polo mecánico del sistema es $P_{mec} = -b_{h,eq}/J_{h,eq}$. Dado que la fricción es muy baja en estos sistemas, el polo se encuentra muy cerca del origen ($P_{mec} \approx 0$), comportándose casi como un integrador puro.
+
+\subsubsection{Diseño del lazo regulador}
+Se utiliza un controlador PI para asegurar error nulo de velocidad ante escalones de referencia y rechazo de perturbaciones de carga constantes:
+\begin{equation}
+    C_{vel}(s) = K_p + \frac{K_i}{s}
+\end{equation}
+La función de transferencia a lazo cerrado $T(s)$ resulta:
+\begin{equation}
+    T(s) = \frac{K_p \, s + K_i}{J_{h,eq} \, s^2 + (b_{h,eq} + K_p) \, s + K_i}
+\end{equation}
+Mediante el método de asignación de polos, se compara la ecuación característica con un polinomio de segundo orden deseado ($s^2 + 2\zeta\omega_ns + \omega_n^2$), obteniéndose las ganancias:
+\begin{equation} \label{eq:gains_hoist}
+    K_p = 2 \, \zeta \, \omega_n \, J_{h,eq} + b_{h,eq} \quad ; \quad K_i = \omega_n^2 \, J_{h,eq}
+\end{equation}
+Se selecciona $\omega_n \approx 8$ rad/s para asegurar rapidez sin excitar la resonancia del cable, y $\zeta = 1$ para evitar sobrepasos. Esta sintonía garantiza la ``rigidez'' necesaria para sostener la carga.
+
+El torque calculado por el controlador PI en tiempo discreto es:
+\begin{equation}
+    T_{PI}(k) = K_p \, e_{\omega}(k) + K_i \sum_{j=1}^{k} \frac{T_s}{2} \left[ e_{\omega}(j) + e_{\omega}(j-1) \right], \quad donde \quad e_{\omega}(k) = \omega_{hm}^\ast(k) - \omega_{hm}(k)
+\end{equation}
+
+\subsubsection{Compensación de gravedad}
+Para mejorar el desempeño, se añade un término de pre-alimentación $T_{g,ff}$ a la salida del PI. Esto permite que el término integral solo corrija errores de modelo, delegando el esfuerzo de sostener el peso estático al compensador.
+\begin{equation}
+        T_{g,ff} = \frac{m_l(\textcolor{signalcolor}{TLK}) \, g \, r_{hd}}{2 \, i_h}
+\end{equation}
+La ley de control del lazo regulador queda como: 
+$T_{hm}^\ast(k) = T_{PI}(k) + T_{g,ff}$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\textwidth]{nivel_2/lazo_controlador_izaje.png}
+    \caption{Controlador PI del izaje con compensación de gravedad}
+\end{figure}
+
+\subsection{Anti-windup y observador de estado del izaje}
+Dado que el sistema de izaje cuenta con un freno de operación (\textcolor{signalcolor}{$BRK_h$}) y con un freno de emergencia (\textcolor{signalcolor}{$BRK_{hE}$}), 
+se implementa la misma estrategia de anti-windup que en el caso del carro, con la diferencia de que se usan cualquiera de las dos señales de freno para resetear el integrador. 
+
+Además, se implementa un observador de estado con acción integral para estimar la velocidad angular del motor, dado que solo se dispone de un encoder de posición.
+El sistema aumentado del observador es análogo al caso del carro, pero con las matrices correspondientes al sistema de izaje. Las ganancias del observador 
+se calculan usando el mismo criterio de separación de anchos de banda, seleccionando un polo base del observador que sea $20$ veces más rápido
+que el polo dominante de la planta a lazo abierto ($-b_{h,eq}/J_{h,eq}$), por lo que se usa $\omega_{obs\ h} = -20\, b_{h,eq}/J_{h,eq} = -9.5197\, rad/s$.
+Quedando así las ecuaciones implementadas en Simulink como:
+\[\left\{
+\begin{aligned}
+    \dot{\tilde{\theta}}_{hm}(t)
+    &=
+    \tilde{\omega}_{hm}(t)
+    +k_{\theta h}
+    \left(
+    \theta_{hm}(t)-\tilde{\theta}_{hm}(t)
+    \right)
+    \\
+    \dot{\tilde{\omega}}_{hm}(t)
+    &=
+    \frac{1}{J_{h,eq}}T_{hm}^\ast(t)
+    +k_{\omega h}
+    \left(
+    \theta_{hm}(t)-\tilde{\theta}_{hm}(t)
+    \right)
+    +k_{ih}x_I(t)
+    \\
+    \dot{x}_I(t)
+    &=
+    \theta_{hm}(t)-\tilde{\theta}_{hm}(t)
+\end{aligned}
+\right.
+\]
+
+Ya que el observador es análogo al caso del carro, el diagrama de bloques es el mismo, pero con las señales y ganancias correspondientes al izaje.
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{nivel_2/obs_pid_izaje.png}
+%     \caption{Observador de estado del izaje con ganancia integral}
+% \end{figure}
+
+
+
+\subsection{Modelo del controlador regulatorio en Simulink}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{nivel_2/controlador_carro.png}
+    \caption{Diagrama del controlador regulatorio del carro}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{nivel_2/controlador_izaje.png}
+    \caption{Diagrama del controlador regulatorio del izaje}
+\end{figure}

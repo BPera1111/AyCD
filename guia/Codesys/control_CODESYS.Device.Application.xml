@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Symbolconfiguration xmlns="http://www.3s-software.com/schemas/Symbolconfiguration.xsd">
+  <Header>
+    <Version>3.5.14.0</Version>
+    <SymbolConfigObject version="4.6.0.0" runtimeid="3.5.21.20" libversion="4.6.0.0" compiler="3.5.21.20" lmm="3.5.21.20" profile="CODESYS V3.5 SP21 Patch 2+" settings="SupportOPCUA, UseEmptyNamespaceByDefault, LayoutCalculator=OptimizedClientSideLayoutCalculator" />
+    <ProjectInfo name="control_CODESYS" devicename="Device" appname="Application" />
+  </Header>
+  <TypeList>
+    <TypeSimple name="T_BOOL" size="1" swapsize="0" typeclass="Bool" iecname="BOOL" />
+    <TypeSimple name="T_INT" size="2" swapsize="2" typeclass="Int" iecname="INT" />
+    <TypeSimple name="T_LREAL" size="8" swapsize="8" typeclass="LReal" iecname="LREAL" />
+    <TypeArray name="T_ARRAY__1__2__OF_INT" size="4" nativesize="4" typeclass="Array" iecname="ARRAY [1..2] OF INT" basetype="T_INT">
+      <ArrayDim minrange="1" maxrange="2" />
+    </TypeArray>
+    <TypeArray name="T_ARRAY__1__2__OF_LREAL" size="16" nativesize="16" typeclass="Array" iecname="ARRAY [1..2] OF LREAL" basetype="T_LREAL">
+      <ArrayDim minrange="1" maxrange="2" />
+    </TypeArray>
+    <TypeArray name="T_ARRAY__1__33__OF_LREAL" size="264" nativesize="264" typeclass="Array" iecname="ARRAY [1..33] OF LREAL" basetype="T_LREAL">
+      <ArrayDim minrange="1" maxrange="33" />
+    </TypeArray>
+  </TypeList>
+  <NodeList>
+    <Node name="CONTROL_SEGURIDAD">
+      <Node name="BRK_hE_N0" type="T_INT" access="ReadWrite" />
+      <Node name="BRK_t_N0" type="T_INT" access="ReadWrite" />
+      <Node name="BTN_Emerg" type="T_BOOL" access="ReadWrite" />
+      <Node name="BTN_Reset" type="T_BOOL" access="ReadWrite" />
+      <Node name="FALLA_CARRO_DER" type="T_BOOL" access="ReadWrite" />
+      <Node name="FALLA_CARRO_IZQ" type="T_BOOL" access="ReadWrite" />
+      <Node name="FALLA_IZAJE_INF" type="T_BOOL" access="ReadWrite" />
+      <Node name="FALLA_IZAJE_SUP" type="T_BOOL" access="ReadWrite" />
+      <Node name="FALLA_IZAJE_SV" type="T_BOOL" access="ReadWrite" />
+      <Node name="FALLA_MANUAL" type="T_BOOL" access="ReadWrite" />
+      <Node name="FALLA_WD" type="T_BOOL" access="ReadWrite" />
+      <Node name="FCE_der" type="T_BOOL" access="ReadWrite" />
+      <Node name="FCE_inf" type="T_BOOL" access="ReadWrite" />
+      <Node name="FCE_izq" type="T_BOOL" access="ReadWrite" />
+      <Node name="FCE_sup" type="T_BOOL" access="ReadWrite" />
+      <Node name="heartbeat" type="T_INT" access="ReadWrite" />
+      <Node name="m_container" type="T_LREAL" access="ReadWrite" />
+      <Node name="recup_ok" type="T_BOOL" access="ReadWrite" />
+      <Node name="vh_obs" type="T_LREAL" access="ReadWrite" />
+    </Node>
+    <Node name="CONTROL_SUPERVISOR">
+      <Node name="BRK_h_N1" type="T_INT" access="ReadWrite" />
+      <Node name="BRK_t_N1" type="T_INT" access="ReadWrite" />
+      <Node name="BTN_Auto" type="T_BOOL" access="ReadWrite" />
+      <Node name="BTN_Manual" type="T_BOOL" access="ReadWrite" />
+      <Node name="BTN_Reset" type="T_BOOL" access="ReadWrite" />
+      <Node name="BTN_TLK" type="T_BOOL" access="ReadWrite" />
+      <Node name="ejec_mov" type="T_BOOL" access="ReadWrite" />
+      <Node name="envolvente" type="T_ARRAY__1__33__OF_LREAL" access="ReadWrite" />
+      <Node name="error_der" type="T_BOOL" access="ReadWrite" />
+      <Node name="error_inf" type="T_BOOL" access="ReadWrite" />
+      <Node name="error_izq" type="T_BOOL" access="ReadWrite" />
+      <Node name="error_sup" type="T_BOOL" access="ReadWrite" />
+      <Node name="FALLA_H_INF" type="T_BOOL" access="ReadWrite" />
+      <Node name="FALLA_H_SUP" type="T_BOOL" access="ReadWrite" />
+      <Node name="FALLA_H_SV" type="T_BOOL" access="ReadWrite" />
+      <Node name="FALLA_MAN" type="T_BOOL" access="ReadWrite" />
+      <Node name="FALLA_T_DER" type="T_BOOL" access="ReadWrite" />
+      <Node name="FALLA_T_IZQ" type="T_BOOL" access="ReadWrite" />
+      <Node name="FALLA_WD" type="T_BOOL" access="ReadWrite" />
+      <Node name="FC_der" type="T_BOOL" access="ReadWrite" />
+      <Node name="FC_inf" type="T_BOOL" access="ReadWrite" />
+      <Node name="FC_izq" type="T_BOOL" access="ReadWrite" />
+      <Node name="FC_sup" type="T_BOOL" access="ReadWrite" />
+      <Node name="Fhw" type="T_LREAL" access="ReadWrite" />
+      <Node name="h_vec_output" type="T_ARRAY__1__33__OF_LREAL" access="ReadWrite" />
+      <Node name="heartbeat" type="T_INT" access="ReadWrite" />
+      <Node name="i_obj_vec" type="T_ARRAY__1__2__OF_INT" access="ReadWrite" />
+      <Node name="Joy_XY" type="T_ARRAY__1__2__OF_LREAL" access="ReadWrite" />
+      <Node name="m_container" type="T_LREAL" access="ReadWrite" />
+      <Node name="m_est" type="T_LREAL" access="ReadWrite" />
+      <Node name="modo_auto" type="T_BOOL" access="ReadWrite" />
+      <Node name="modo_error" type="T_BOOL" access="ReadWrite" />
+      <Node name="modo_manual" type="T_BOOL" access="ReadWrite" />
+      <Node name="modo_manual_auto" type="T_BOOL" access="ReadWrite" />
+      <Node name="modo_posicion_segura" type="T_BOOL" access="ReadWrite" />
+      <Node name="modo_standby" type="T_BOOL" access="ReadWrite" />
+      <Node name="recup_ok" type="T_BOOL" access="ReadWrite" />
+      <Node name="seleccionando" type="T_BOOL" access="ReadWrite" />
+      <Node name="seleccionando_i" type="T_ARRAY__1__2__OF_INT" access="ReadWrite" />
+      <Node name="sobrecarga" type="T_BOOL" access="ReadWrite" />
+      <Node name="theta_l" type="T_LREAL" access="ReadWrite" />
+      <Node name="theta_l_dot" type="T_LREAL" access="ReadWrite" />
+      <Node name="TLK" type="T_INT" access="ReadWrite" />
+      <Node name="vh_lim" type="T_LREAL" access="ReadWrite" />
+      <Node name="vh_obs" type="T_LREAL" access="ReadWrite" />
+      <Node name="vt_obs" type="T_LREAL" access="ReadWrite" />
+      <Node name="vx_cmd" type="T_LREAL" access="ReadWrite" />
+      <Node name="vy_cmd" type="T_LREAL" access="ReadWrite" />
+      <Node name="x_cruz_unity" type="T_LREAL" access="ReadWrite" />
+      <Node name="xt_enc" type="T_LREAL" access="ReadWrite" />
+      <Node name="y_cruz_unity" type="T_LREAL" access="ReadWrite" />
+      <Node name="yh_enc" type="T_LREAL" access="ReadWrite" />
+    </Node>
+  </NodeList>
+</Symbolconfiguration>

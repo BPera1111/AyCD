@@ -1,13 +1,48 @@
-# Simulink build cache & generated files
+# === MATLAB / Simulink generados ===
 slprj/
-**/slprj/
 *.slxc
+*.slxc.tmw
+sl_proj.tmw
 *.autosave
-*.slx.r*
-
-# MATLAB temporary
 *.asv
-*.mex*
 
-# Tune results binary
-Proyecto_AyCD/tune_results.mat
+# === CODESYS generados / temporales ===
+*.precompilecache
+*.compileinfo
+*.bootinfo
+*.bootinfo_guids
+*.~u
+*.opt
+
+# === Python ===
+__pycache__/
+*.pyc
+*.pyo
+venv/
+
+# === LaTeX generados ===
+*.aux
+*.log
+*.toc
+*.out
+*.nav
+*.snm
+*.vrb
+*.synctex.gz
+*.synctex(busy)
+*.fdb_latexmk
+*.fls
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.lof
+*.lot
+*.idx
+*.ind
+*.ilg
+*.xdv
+
+# === Sistema ===
+C:/Temp/
+planta_extracted/
